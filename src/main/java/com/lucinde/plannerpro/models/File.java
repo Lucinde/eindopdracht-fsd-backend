@@ -15,8 +15,8 @@ public class File {
 
     private String filename;
 
-    // Eerst gekozen voor Byte[] maar dan gaat hibernate klagen als je een INSERT wilt doen,
-    // nog uitzoeken of dit toch een byte[] of BLOB moet worden
-    private String pathToImage;
+    @Lob
+    private byte[] data;
+    private String mimeType;
     private String description;
 }

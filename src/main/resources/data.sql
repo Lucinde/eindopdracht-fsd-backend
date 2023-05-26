@@ -11,6 +11,3 @@ VALUES ('Repareer kapotte vaatwasser', 'Onderdelen vervangen en vaatwasser gerep
        ('Repareer kapotte friteuse', 'De oorzaak van het probleem opgespoord, dat een beschadigd verwarmingselement was, en vervolgens vervangen. Getest om ervoor te zorgen dat het opwarmt zoals het hoort.', true),
        ('Voer routinematig onderhoud uit aan koelunits', 'Koelunits schoongemaakt en geïnspecteerd, versleten onderdelen besteld.', false);
 
-INSERT INTO files (filename, path_to_image, description)
-VALUES ('bar.png', '/images/bar.png', 'Gerepareerde vaatwasser'),
-       ('foo.png', '/images/foo.png', 'De nieuwe oven klaar voor gebruik');

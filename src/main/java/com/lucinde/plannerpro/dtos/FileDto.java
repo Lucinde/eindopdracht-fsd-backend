@@ -7,6 +7,7 @@ public class FileDto {
 
     public String filename;
     @NotBlank
-    public String pathToImage;
+    public byte[] data;
+    public String mimeType;
     public String description;
 }

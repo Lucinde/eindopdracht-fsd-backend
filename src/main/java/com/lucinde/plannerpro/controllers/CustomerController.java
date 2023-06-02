@@ -1,6 +1,7 @@
 package com.lucinde.plannerpro.controllers;
 
 import com.lucinde.plannerpro.dtos.CustomerDto;
+import com.lucinde.plannerpro.helpers.Helpers;
 import com.lucinde.plannerpro.services.CustomerService;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
@@ -17,6 +18,7 @@ import java.util.Objects;
 @RequestMapping("/customers")
 public class CustomerController {
     private final CustomerService customerService;
+    private final Helpers helpers = new Helpers();
 
     public CustomerController(CustomerService customerService) {
         this.customerService = customerService;
@@ -35,22 +37,18 @@ public class CustomerController {
     @PostMapping
     public ResponseEntity<Object> addCustomer(@Valid @RequestBody CustomerDto customerDto, BindingResult br) {
         if(br.hasFieldErrors()) {
-            StringBuilder sb = new StringBuilder();
-            for (FieldError fe : br.getFieldErrors()) {
-                sb.append(fe.getField() + ": ");
-                sb.append(fe.getDefaultMessage());
-                sb.append("\n");
-            }
-            return ResponseEntity.badRequest().body(sb.toString());
-        } else {
-            CustomerDto addedCustomer = customerService.addCustomer(customerDto);
-            URI uri = URI.create(String.valueOf(ServletUriComponentsBuilder.fromCurrentRequest().path("/" + addedCustomer.id)));
-            return ResponseEntity.created(uri).body(addedCustomer);
+            return ResponseEntity.badRequest().body(helpers.fieldErrorBuilder(br));
         }
+        CustomerDto addedCustomer = customerService.addCustomer(customerDto);
+        URI uri = URI.create(String.valueOf(ServletUriComponentsBuilder.fromCurrentRequest().path("/" + addedCustomer.id)));
+        return ResponseEntity.created(uri).body(addedCustomer);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Object> updateCustomer(@PathVariable Long id, @RequestBody CustomerDto customerDto) {
+    public ResponseEntity<Object> updateCustomer(@PathVariable Long id, @Valid @RequestBody CustomerDto customerDto, BindingResult br) {
+        if(br.hasFieldErrors()) {
+            return ResponseEntity.badRequest().body(helpers.fieldErrorBuilder(br));
+        }
         CustomerDto updateCustomer = customerService.updateCustomer(id, customerDto);
         return ResponseEntity.ok().body(updateCustomer);
     }

@@ -1,6 +1,7 @@
 package com.lucinde.plannerpro.controllers;
 
 import com.lucinde.plannerpro.dtos.TaskDto;
+import com.lucinde.plannerpro.helpers.Helpers;
 import com.lucinde.plannerpro.services.TaskService;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
@@ -16,6 +17,7 @@ import java.util.List;
 @RequestMapping("/tasks")
 public class TaskController {
     private final TaskService taskService;
+    private final Helpers helpers = new Helpers();
 
     public TaskController(TaskService taskService) {
         this.taskService = taskService;
@@ -34,22 +36,18 @@ public class TaskController {
     @PostMapping
     public ResponseEntity<Object> addTask(@Valid @RequestBody TaskDto taskDto, BindingResult br) {
         if(br.hasFieldErrors()) {
-            StringBuilder sb = new StringBuilder();
-            for (FieldError fe : br.getFieldErrors()) {
-                sb.append(fe.getField() + ": ");
-                sb.append(fe.getDefaultMessage());
-                sb.append("\n");
-            }
-            return ResponseEntity.badRequest().body(sb.toString());
-        } else {
-            TaskDto addedTask = taskService.addTask(taskDto);
-            URI uri = URI.create(String.valueOf(ServletUriComponentsBuilder.fromCurrentRequest().path("/" + addedTask.id)));
-            return ResponseEntity.created(uri).body(addedTask);
+            return ResponseEntity.badRequest().body(helpers.fieldErrorBuilder(br));
         }
+        TaskDto addedTask = taskService.addTask(taskDto);
+        URI uri = URI.create(String.valueOf(ServletUriComponentsBuilder.fromCurrentRequest().path("/" + addedTask.id)));
+        return ResponseEntity.created(uri).body(addedTask);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Object> updateTask(@PathVariable Long id, @RequestBody TaskDto taskDto) {
+    public ResponseEntity<Object> updateTask(@PathVariable Long id, @Valid @RequestBody TaskDto taskDto, BindingResult br) {
+        if(br.hasFieldErrors()) {
+            return ResponseEntity.badRequest().body(helpers.fieldErrorBuilder(br));
+        }
         TaskDto updateTask = taskService.updateTask(id, taskDto);
         return ResponseEntity.ok().body(updateTask);
     }

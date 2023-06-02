@@ -44,6 +44,7 @@ public class ScheduleTaskService {
 
     public ScheduleTaskDto addScheduleTask(ScheduleTaskDto scheduleTaskDto) {
         ScheduleTask scheduleTask = transferDtoToScheduleTask(scheduleTaskDto);
+        //todo: controle toevoegen of de tijden kloppen en niet overlappen bij monteurs of tijden
         scheduleTaskRepository.save(scheduleTask);
 
         return transferScheduleTaskToDto(scheduleTask);
@@ -54,6 +55,7 @@ public class ScheduleTaskService {
         if(scheduleTaskOptional.isEmpty()) {
             throw new RecordNotFoundException("Geen ingeplande taak gevonden met id: " + id);
         }
+        //todo: controle toevoegen of tijden kloppen en niet overlappen bij monteurs en tijden (het id dat je wilt aanpassen uitsluiten! - optionele parameters? / Optional voor laatste param (standaard null? isPresent check))
 
         ScheduleTask updateScheduleTask = transferDtoToScheduleTask(scheduleTaskDto);
         updateScheduleTask.setId(id);

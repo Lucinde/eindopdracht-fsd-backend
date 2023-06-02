@@ -1,7 +1,7 @@
 package com.lucinde.plannerpro.controllers;
 
-import com.lucinde.plannerpro.dtos.CustomerDto;
 import com.lucinde.plannerpro.dtos.ScheduleTaskDto;
+import com.lucinde.plannerpro.helpers.Helpers;
 import com.lucinde.plannerpro.services.ScheduleTaskService;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
@@ -17,6 +17,7 @@ import java.util.List;
 @RequestMapping("/schedule-tasks")
 public class ScheduleTaskController {
     private final ScheduleTaskService scheduleTaskService;
+    private final Helpers helpers = new Helpers();
 
 
     public ScheduleTaskController(ScheduleTaskService scheduleTaskService) {
@@ -36,22 +37,19 @@ public class ScheduleTaskController {
     @PostMapping
     public ResponseEntity<Object> addScheduleTask(@Valid @RequestBody ScheduleTaskDto scheduleTaskDto, BindingResult br) {
         if(br.hasFieldErrors()) {
-            StringBuilder sb = new StringBuilder();
-            for (FieldError fe : br.getFieldErrors()) {
-                sb.append(fe.getField() + ": ");
-                sb.append(fe.getDefaultMessage());
-                sb.append("\n");
-            }
-            return ResponseEntity.badRequest().body(sb.toString());
-        } else {
-            ScheduleTaskDto addedScheduleTask = scheduleTaskService.addScheduleTask(scheduleTaskDto);
-            URI uri = URI.create(String.valueOf(ServletUriComponentsBuilder.fromCurrentRequest().path("/" + addedScheduleTask.id)));
-            return ResponseEntity.created(uri).body(addedScheduleTask);
+            return ResponseEntity.badRequest().body(helpers.fieldErrorBuilder(br));
         }
+        ScheduleTaskDto addedScheduleTask = scheduleTaskService.addScheduleTask(scheduleTaskDto);
+        URI uri = URI.create(String.valueOf(ServletUriComponentsBuilder.fromCurrentRequest().path("/" + addedScheduleTask.id)));
+        return ResponseEntity.created(uri).body(addedScheduleTask);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Object> updateScheduleTask(@PathVariable Long id, @RequestBody ScheduleTaskDto scheduleTaskDto) {
+    public ResponseEntity<Object> updateScheduleTask(@PathVariable Long id, @Valid @RequestBody ScheduleTaskDto scheduleTaskDto, BindingResult br) {
+        //todo: goed nadenken of deze check/@Valid nodig is. Bij het updaten van een taak, mag de datum dan wel naar het verleden verplaatst worden?
+        if(br.hasFieldErrors()) {
+            return ResponseEntity.badRequest().body(helpers.fieldErrorBuilder(br));
+        }
         ScheduleTaskDto updateScheduleTask = scheduleTaskService.updateScheduleTask(id, scheduleTaskDto);
         return ResponseEntity.ok().body(updateScheduleTask);
     }

@@ -1,5 +1,6 @@
 package com.lucinde.plannerpro.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -16,5 +17,9 @@ public class Task {
     private String description;
     private String workPerformed;
     private Boolean jobDone;
+
+    @ManyToOne
+    @JsonIgnore
+    private Customer customer;
 
 }

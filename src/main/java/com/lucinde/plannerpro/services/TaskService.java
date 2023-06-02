@@ -76,6 +76,7 @@ public class TaskService {
         taskDto.description = task.getDescription();
         taskDto.workPerformed = task.getWorkPerformed();
         taskDto.jobDone = task.getJobDone();
+        taskDto.customer = task.getCustomer();
 
         return taskDto;
     }
@@ -87,6 +88,7 @@ public class TaskService {
         task.setDescription(taskDto.description);
         task.setWorkPerformed(taskDto.workPerformed);
         task.setJobDone(taskDto.jobDone);
+        task.setCustomer(taskDto.customer);
 
         return task;
     }

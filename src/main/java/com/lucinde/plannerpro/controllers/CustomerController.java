@@ -44,6 +44,8 @@ public class CustomerController {
         return ResponseEntity.created(uri).body(addedCustomer);
     }
 
+    //todo: Add postmapping to add a task to a customer
+
     @PutMapping("/{id}")
     public ResponseEntity<Object> updateCustomer(@PathVariable Long id, @Valid @RequestBody CustomerDto customerDto, BindingResult br) {
         if(br.hasFieldErrors()) {

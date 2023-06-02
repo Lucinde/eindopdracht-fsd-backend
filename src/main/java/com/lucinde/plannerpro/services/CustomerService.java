@@ -83,6 +83,7 @@ public class CustomerService {
         customerDto.city = customer.getCity();
         customerDto.phoneNumber = customer.getPhoneNumber();
         customerDto.email = customer.getEmail();
+        customerDto.taskList = customer.getTaskList();
 
         return customerDto;
     }
@@ -98,6 +99,7 @@ public class CustomerService {
         customer.setCity(customerDto.city);
         customer.setPhoneNumber(customerDto.phoneNumber);
         customer.setEmail(customerDto.email);
+        customer.setTaskList(customerDto.taskList);
 
         return customer;
     }

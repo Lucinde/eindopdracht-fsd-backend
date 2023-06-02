@@ -1,6 +1,9 @@
 package com.lucinde.plannerpro.dtos;
 
+import com.lucinde.plannerpro.models.Task;
 import jakarta.validation.constraints.NotBlank;
+
+import java.util.List;
 
 public class CustomerDto {
     public Long id;
@@ -12,4 +15,6 @@ public class CustomerDto {
     public String city;
     public String phoneNumber;
     public String email;
+
+    public List<Task> taskList;
 }

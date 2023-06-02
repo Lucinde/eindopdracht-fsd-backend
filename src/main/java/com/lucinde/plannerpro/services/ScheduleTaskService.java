@@ -42,6 +42,34 @@ public class ScheduleTaskService {
         return transferScheduleTaskToDto(scheduleTask);
     }
 
+    public ScheduleTaskDto addScheduleTask(ScheduleTaskDto scheduleTaskDto) {
+        ScheduleTask scheduleTask = transferDtoToScheduleTask(scheduleTaskDto);
+        scheduleTaskRepository.save(scheduleTask);
+
+        return transferScheduleTaskToDto(scheduleTask);
+    }
+
+    public ScheduleTaskDto updateScheduleTask(Long id, ScheduleTaskDto scheduleTaskDto) {
+        Optional<ScheduleTask> scheduleTaskOptional = scheduleTaskRepository.findById(id);
+        if(scheduleTaskOptional.isEmpty()) {
+            throw new RecordNotFoundException("Geen ingeplande taak gevonden met id: " + id);
+        }
+
+        ScheduleTask updateScheduleTask = transferDtoToScheduleTask(scheduleTaskDto);
+        updateScheduleTask.setId(id);
+        scheduleTaskRepository.save(updateScheduleTask);
+
+        return transferScheduleTaskToDto(updateScheduleTask);
+    }
+
+    public void deleteScheduleTask(Long id) {
+        Optional<ScheduleTask> optionalScheduleTask = scheduleTaskRepository.findById(id);
+        if(optionalScheduleTask.isEmpty()) {
+            throw new RecordNotFoundException("Geen ingeplande taak gevonden met id: " + id);
+        }
+        scheduleTaskRepository.deleteById(id);
+    }
+
     public ScheduleTaskDto transferScheduleTaskToDto(ScheduleTask scheduleTask) {
         ScheduleTaskDto scheduleTaskDto = new ScheduleTaskDto();
 

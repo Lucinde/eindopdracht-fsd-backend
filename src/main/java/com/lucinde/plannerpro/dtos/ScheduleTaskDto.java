@@ -8,11 +8,8 @@ import java.time.LocalTime;
 
 public class ScheduleTaskDto {
     public Long id;
-    @NotEmpty
     @FutureOrPresent
     public LocalDate date;
-    @NotEmpty
     public LocalTime startTime;
-    @NotEmpty
     public LocalTime endTime;
 }

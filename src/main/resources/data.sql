@@ -11,3 +11,9 @@ VALUES ('Repareer kapotte vaatwasser', 'Onderdelen vervangen en vaatwasser gerep
        ('Repareer kapotte friteuse', 'De oorzaak van het probleem opgespoord, dat een beschadigd verwarmingselement was, en vervolgens vervangen. Getest om ervoor te zorgen dat het opwarmt zoals het hoort.', true),
        ('Voer routinematig onderhoud uit aan koelunits', 'Koelunits schoongemaakt en geïnspecteerd, versleten onderdelen besteld.', false);
 
+INSERT INTO schedule_tasks (date, start_time, end_time)
+VALUES ('2023-08-01', '13:00:00', '16:00:00'),
+       ('2023-08-01', '10:00:00', '12:00:00'),
+       ('2023-08-02', '10:00:00', '12:00:00'),
+       ('2023-08-02', '14:00:00', '16:00:00'),
+       ('2023-08-03', '09:00:00', '11:00:00');

@@ -12,7 +12,7 @@ VALUES ('Repareer kapotte vaatwasser', 'Onderdelen vervangen en vaatwasser gerep
        ('Voer routinematig onderhoud uit aan koelunits', 'Koelunits schoongemaakt en geïnspecteerd, versleten onderdelen besteld.', false);
 
 INSERT INTO schedule_tasks (date, start_time, end_time)
-VALUES ('2023-08-01', '13:00:00', '16:00:00'),
+VALUES ('2022-08-01', '13:00:00', '16:00:00'),
        ('2023-08-01', '10:00:00', '12:00:00'),
        ('2023-08-02', '10:00:00', '12:00:00'),
        ('2023-08-02', '14:00:00', '16:00:00'),

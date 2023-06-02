@@ -38,11 +38,10 @@ public class ScheduleTaskController {
     public ResponseEntity<Object> addScheduleTask(@Valid @RequestBody ScheduleTaskDto scheduleTaskDto, BindingResult br) {
         if(br.hasFieldErrors()) {
             return ResponseEntity.badRequest().body(helpers.fieldErrorBuilder(br));
-        } else {
-            ScheduleTaskDto addedScheduleTask = scheduleTaskService.addScheduleTask(scheduleTaskDto);
-            URI uri = URI.create(String.valueOf(ServletUriComponentsBuilder.fromCurrentRequest().path("/" + addedScheduleTask.id)));
-            return ResponseEntity.created(uri).body(addedScheduleTask);
         }
+        ScheduleTaskDto addedScheduleTask = scheduleTaskService.addScheduleTask(scheduleTaskDto);
+        URI uri = URI.create(String.valueOf(ServletUriComponentsBuilder.fromCurrentRequest().path("/" + addedScheduleTask.id)));
+        return ResponseEntity.created(uri).body(addedScheduleTask);
     }
 
     @PutMapping("/{id}")

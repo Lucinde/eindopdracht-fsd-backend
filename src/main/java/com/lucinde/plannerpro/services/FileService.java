@@ -2,8 +2,11 @@ package com.lucinde.plannerpro.services;
 
 import com.lucinde.plannerpro.dtos.FileDto;
 import com.lucinde.plannerpro.exceptions.RecordNotFoundException;
+import com.lucinde.plannerpro.exceptions.StringNotFoundException;
 import com.lucinde.plannerpro.models.File;
+import com.lucinde.plannerpro.models.Task;
 import com.lucinde.plannerpro.repositories.FileRepository;
+import com.lucinde.plannerpro.repositories.TaskRepository;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -16,9 +19,11 @@ import java.util.Optional;
 @Service
 public class FileService {
     private final FileRepository fileRepository;
+    private final TaskRepository taskRepository;
 
-    public FileService(FileRepository fileRepository) {
+    public FileService(FileRepository fileRepository, TaskRepository taskRepository) {
         this.fileRepository = fileRepository;
+        this.taskRepository = taskRepository;
     }
 
     public List<FileDto> getAllFiles() {
@@ -43,19 +48,26 @@ public class FileService {
         return transferFileToDto(file);
     }
 
-    public FileDto addFile(MultipartFile fileUpload, String description) throws IOException {
-        File newFile = createNewFile(fileUpload, description);
+    public FileDto addFile(MultipartFile fileUpload, String description, Long task_id) throws IOException {
+        if(description == null || description.isEmpty()) {
+            throw new StringNotFoundException("Voeg nog een beschrijving toe voor je afbeelding");
+        }
+        File newFile = createNewFile(fileUpload, description, task_id);
         fileRepository.save(newFile);
         return transferFileToDto(newFile);
     }
 
-    public FileDto updateFile(Long id, MultipartFile fileUpload, String description) throws IOException {
+    //todo: deze update file nog even goed checken!! Of de foutmeldingen in orde zijn etc.
+    public FileDto updateFile(Long id, MultipartFile fileUpload, String description, Long task_id) throws IOException {
         Optional<File> fileOptional = fileRepository.findById(id);
         if(fileOptional.isEmpty()) {
             throw new RecordNotFoundException("Geen bestand gevonden met id: " + id);
         }
+        if(description == null || description.isEmpty()) {
+            throw new StringNotFoundException("Voeg nog een beschrijving toe voor je afbeelding");
+        }
 
-        File newFile = createNewFile(fileUpload, description);
+        File newFile = createNewFile(fileUpload, description, task_id);
         newFile.setId(id);
         fileRepository.save(newFile);
 
@@ -70,12 +82,15 @@ public class FileService {
         fileRepository.deleteById(id);
     }
 
-    private File createNewFile(MultipartFile fileUpload, String description) throws IOException {
+    private File createNewFile(MultipartFile fileUpload, String description, Long task_id) throws IOException {
         File newFile = new File();
         newFile.setData(fileUpload.getBytes());
         newFile.setMimeType(fileUpload.getContentType());
         newFile.setFilename(fileUpload.getOriginalFilename());
         newFile.setDescription(description);
+
+        Task task = taskRepository.findById(task_id).orElseThrow(() -> new RecordNotFoundException("Er is geen taak met id: " + task_id));
+        newFile.setTask(task);
 
         return newFile;
     }
@@ -88,6 +103,7 @@ public class FileService {
         fileDto.description = file.getDescription();
         fileDto.data = file.getData();
         fileDto.mimeType = file.getMimeType();
+        fileDto.task = file.getTask();
 
         return fileDto;
     }
@@ -100,6 +116,7 @@ public class FileService {
         file.setDescription(fileDto.description);
         file.setData(fileDto.data);
         file.setMimeType(fileDto.mimeType);
+        file.setTask(fileDto.task);
 
         return file;
     }

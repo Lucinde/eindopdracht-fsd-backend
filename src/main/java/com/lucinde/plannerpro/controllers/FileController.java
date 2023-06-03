@@ -1,7 +1,9 @@
 package com.lucinde.plannerpro.controllers;
 
 import com.lucinde.plannerpro.dtos.FileDto;
+import com.lucinde.plannerpro.helpers.Helpers;
 import com.lucinde.plannerpro.services.FileService;
+import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
@@ -20,6 +22,7 @@ import java.util.List;
 public class FileController {
 
     private final FileService fileService;
+    private final Helpers helpers = new Helpers();
 
 
     public FileController(FileService fileService) {
@@ -37,21 +40,23 @@ public class FileController {
     }
 
     @PostMapping
-    public ResponseEntity<Object> addFile(@RequestParam("file")MultipartFile file, @RequestParam("description") String description) throws IOException {
+    public ResponseEntity<Object> addFile(@RequestParam("file")MultipartFile file, @Valid @RequestParam("description") String description, @RequestParam("task_id") Long task_id) throws IOException {
         if(file.isEmpty()) {
             return ResponseEntity.badRequest().body("Je moet een bestand uploaden!");
         }
-        FileDto addedFile = fileService.addFile(file, description);
+
+        FileDto addedFile = fileService.addFile(file, description, task_id);
         URI uri = URI.create(String.valueOf(ServletUriComponentsBuilder.fromCurrentRequest().path("/" + addedFile.id)));
         return ResponseEntity.created(uri).body(addedFile);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Object> updateFile(@PathVariable Long id, @RequestParam("file") MultipartFile file, @RequestParam("description") String description) throws IOException {
+    public ResponseEntity<Object> updateFile(@PathVariable Long id, @RequestParam("file") MultipartFile file, @RequestParam("description") String description, @RequestParam("task_id") Long task_id) throws IOException {
         if(file.isEmpty()) {
             return ResponseEntity.badRequest().body("Je moet een bestand uploaden!");
         }
-        FileDto updateFile = fileService.updateFile(id, file, description);
+
+        FileDto updateFile = fileService.updateFile(id, file, description, task_id);
         return ResponseEntity.ok().body(updateFile);
     }
 

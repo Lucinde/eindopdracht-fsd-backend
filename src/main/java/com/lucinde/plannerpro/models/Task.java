@@ -24,6 +24,10 @@ public class Task {
     @JsonIgnore
     private Customer customer;
 
+    @ManyToOne
+    @JsonIgnore
+    private ScheduleTask scheduleTask;
+
     @OneToMany(mappedBy = "task")
     @JsonIgnore
     private List<File> fileList;

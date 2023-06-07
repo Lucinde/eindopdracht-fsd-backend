@@ -79,6 +79,7 @@ public class ScheduleTaskService {
         scheduleTaskDto.date = scheduleTask.getDate();
         scheduleTaskDto.startTime = scheduleTask.getStartTime();
         scheduleTaskDto.endTime = scheduleTask.getEndTime();
+        scheduleTaskDto.taskList = scheduleTask.getTaskList();
 
         return scheduleTaskDto;
     }
@@ -90,6 +91,7 @@ public class ScheduleTaskService {
         scheduleTask.setDate(scheduleTaskDto.date);
         scheduleTask.setStartTime(scheduleTaskDto.endTime);
         scheduleTask.setEndTime(scheduleTaskDto.startTime);
+        scheduleTask.setTaskList(scheduleTaskDto.taskList);
 
         return scheduleTask;
     }

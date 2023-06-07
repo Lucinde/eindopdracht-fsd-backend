@@ -78,6 +78,7 @@ public class TaskService {
         taskDto.jobDone = task.getJobDone();
         taskDto.customer = task.getCustomer();
         taskDto.fileList = task.getFileList();
+        taskDto.scheduleTask = task.getScheduleTask();
 
         return taskDto;
     }
@@ -91,6 +92,7 @@ public class TaskService {
         task.setJobDone(taskDto.jobDone);
         task.setCustomer(taskDto.customer);
         task.setFileList(taskDto.fileList);
+        task.setScheduleTask(taskDto.scheduleTask);
 
         return task;
     }

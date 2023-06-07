@@ -22,8 +22,6 @@ import java.util.List;
 public class FileController {
 
     private final FileService fileService;
-    private final Helpers helpers = new Helpers();
-
 
     public FileController(FileService fileService) {
         this.fileService = fileService;
@@ -40,10 +38,11 @@ public class FileController {
     }
 
     @PostMapping
-    public ResponseEntity<Object> addFile(@RequestParam("file")MultipartFile file, @Valid @RequestParam("description") String description, @RequestParam("task_id") Long task_id) throws IOException {
-        if(file.isEmpty()) {
-            return ResponseEntity.badRequest().body("Je moet een bestand uploaden!");
-        }
+    public ResponseEntity<Object> addFile(@RequestParam()MultipartFile file, @RequestParam() String description, @RequestParam() Long task_id) throws IOException {
+        //todo: vraag: zet je de foutmeldingen in de service of de controller?
+//        if(file.isEmpty()) {
+//            return ResponseEntity.badRequest().body("Je moet een bestand uploaden!");
+//        }
 
         FileDto addedFile = fileService.addFile(file, description, task_id);
         URI uri = URI.create(String.valueOf(ServletUriComponentsBuilder.fromCurrentRequest().path("/" + addedFile.id)));
@@ -51,7 +50,7 @@ public class FileController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Object> updateFile(@PathVariable Long id, @RequestParam("file") MultipartFile file, @RequestParam("description") String description, @RequestParam("task_id") Long task_id) throws IOException {
+    public ResponseEntity<Object> updateFile(@PathVariable Long id, @RequestParam() MultipartFile file, @RequestParam() String description, @RequestParam() Long task_id) throws IOException {
         if(file.isEmpty()) {
             return ResponseEntity.badRequest().body("Je moet een bestand uploaden!");
         }

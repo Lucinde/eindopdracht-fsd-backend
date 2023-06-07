@@ -2,7 +2,7 @@ package com.lucinde.plannerpro.services;
 
 import com.lucinde.plannerpro.dtos.FileDto;
 import com.lucinde.plannerpro.exceptions.RecordNotFoundException;
-import com.lucinde.plannerpro.exceptions.StringNotFoundException;
+import com.lucinde.plannerpro.exceptions.ContentNotFoundException;
 import com.lucinde.plannerpro.models.File;
 import com.lucinde.plannerpro.models.Task;
 import com.lucinde.plannerpro.repositories.FileRepository;
@@ -49,9 +49,14 @@ public class FileService {
     }
 
     public FileDto addFile(MultipartFile fileUpload, String description, Long task_id) throws IOException {
+        //todo: dit werkt alleen als de description empty is, niet als de complete parameter mist. Is die nog toe te voegen?
         if(description == null || description.isEmpty()) {
-            throw new StringNotFoundException("Voeg nog een beschrijving toe voor je afbeelding");
+            throw new ContentNotFoundException("Voeg nog een beschrijving toe voor je afbeelding");
         }
+        if(fileUpload.isEmpty()) {
+            throw new ContentNotFoundException("Je moet nog een bestand uploaden");
+        }
+        // task_id wordt al gecheckt in createNewFile
         File newFile = createNewFile(fileUpload, description, task_id);
         fileRepository.save(newFile);
         return transferFileToDto(newFile);
@@ -64,7 +69,7 @@ public class FileService {
             throw new RecordNotFoundException("Geen bestand gevonden met id: " + id);
         }
         if(description == null || description.isEmpty()) {
-            throw new StringNotFoundException("Voeg nog een beschrijving toe voor je afbeelding");
+            throw new ContentNotFoundException("Voeg nog een beschrijving toe voor je afbeelding");
         }
 
         File newFile = createNewFile(fileUpload, description, task_id);

@@ -2,6 +2,7 @@ package com.lucinde.plannerpro.dtos;
 
 import com.lucinde.plannerpro.models.Customer;
 import com.lucinde.plannerpro.models.File;
+import com.lucinde.plannerpro.models.ScheduleTask;
 import jakarta.validation.constraints.NotBlank;
 
 import java.util.List;
@@ -14,5 +15,6 @@ public class TaskDto {
     public Boolean jobDone;
     public Customer customer;
     public List<File> fileList;
+    public ScheduleTask scheduleTask;
 
 }

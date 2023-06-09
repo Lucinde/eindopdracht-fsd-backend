@@ -4,17 +4,18 @@ import com.lucinde.plannerpro.dtos.FileDto;
 import com.lucinde.plannerpro.helpers.Helpers;
 import com.lucinde.plannerpro.services.FileService;
 import jakarta.validation.Valid;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
+import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.io.IOException;
 import java.net.URI;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.List;
 
 @RestController
@@ -22,6 +23,7 @@ import java.util.List;
 public class FileController {
 
     private final FileService fileService;
+    private final Helpers helpers = new Helpers();
 
     public FileController(FileService fileService) {
         this.fileService = fileService;
@@ -38,11 +40,9 @@ public class FileController {
     }
 
     @PostMapping
-    public ResponseEntity<Object> addFile(@RequestParam()MultipartFile file, @RequestParam() String description, @RequestParam() Long task_id) throws IOException {
-        //todo: vraag: zet je de foutmeldingen in de service of de controller?
-//        if(file.isEmpty()) {
-//            return ResponseEntity.badRequest().body("Je moet een bestand uploaden!");
-//        }
+    public ResponseEntity<Object> addFile(@RequestParam()MultipartFile file, @Valid @RequestParam() String description, @RequestParam() Long task_id) throws IOException, HttpClientErrorException.BadRequest {
+        //todo: vraag: Requestparam is required, maar de foutmelding als je de param mist is onduidelijk. Kun je die ook nog aanpassen?
+        System.out.println(description);
 
         FileDto addedFile = fileService.addFile(file, description, task_id);
         URI uri = URI.create(String.valueOf(ServletUriComponentsBuilder.fromCurrentRequest().path("/" + addedFile.id)));

@@ -15,6 +15,5 @@ public class TaskDto {
     public Boolean jobDone;
     public Customer customer;
     public List<File> fileList;
-    public ScheduleTask scheduleTask;
-
+    public List<ScheduleTask> scheduleTaskList;
 }

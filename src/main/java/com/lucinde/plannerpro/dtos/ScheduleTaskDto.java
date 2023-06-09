@@ -2,6 +2,7 @@ package com.lucinde.plannerpro.dtos;
 
 import com.lucinde.plannerpro.models.Task;
 import jakarta.validation.constraints.FutureOrPresent;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
 
 import java.time.LocalDate;
@@ -15,5 +16,6 @@ public class ScheduleTaskDto {
     public LocalTime startTime;
     public LocalTime endTime;
 
-    public List<Task> taskList;
+    @NotEmpty
+    public Task task;
 }

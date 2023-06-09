@@ -5,7 +5,7 @@
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>3.1.0</version>
+		<version>3.0.5</version> <!-- begonnen met versie 3.1.0 en daarop de application.properties aangepast, maar voor de security werd versie 3.0.5 aangeraden -->
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>com.lucinde</groupId>

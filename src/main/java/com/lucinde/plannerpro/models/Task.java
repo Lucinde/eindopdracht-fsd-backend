@@ -24,9 +24,9 @@ public class Task {
     @JsonIgnore
     private Customer customer;
 
-    @ManyToOne
+    @OneToMany(mappedBy = "task")
     @JsonIgnore
-    private ScheduleTask scheduleTask;
+    private List<ScheduleTask> scheduleTaskList;
 
     @OneToMany(mappedBy = "task")
     @JsonIgnore

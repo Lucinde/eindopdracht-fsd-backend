@@ -49,29 +49,19 @@ public class FileService {
     }
 
     public FileDto addFile(MultipartFile fileUpload, String description, Long task_id) throws IOException {
-        //todo: dit werkt alleen als de description empty is, niet als de complete parameter mist. Is die nog toe te voegen?
-        if(description == null || description.isEmpty()) {
-            throw new ContentNotFoundException("Voeg nog een beschrijving toe voor je afbeelding");
-        }
-        if(fileUpload.isEmpty()) {
-            throw new ContentNotFoundException("Je moet nog een bestand uploaden");
-        }
-        // task_id wordt al gecheckt in createNewFile
+        //De foutmelding werkt alleen als de description empty is, niet als de complete parameter mist. Is die nog toe te voegen? -----> de key/param zal altijd meekomen vanuit de frontend dus hier hoef je niet op te checken. Aangezien deze foutmelding/badrequest ook al gebeurt voor je in je methode komt kun je hier geen verdere controle over uitvoeren.
+        //Foutmeldingen worden afgehandeld in createNewFile
         File newFile = createNewFile(fileUpload, description, task_id);
         fileRepository.save(newFile);
         return transferFileToDto(newFile);
     }
 
-    //todo: deze update file nog even goed checken!! Of de foutmeldingen in orde zijn etc.
     public FileDto updateFile(Long id, MultipartFile fileUpload, String description, Long task_id) throws IOException {
         Optional<File> fileOptional = fileRepository.findById(id);
         if(fileOptional.isEmpty()) {
             throw new RecordNotFoundException("Geen bestand gevonden met id: " + id);
         }
-        if(description == null || description.isEmpty()) {
-            throw new ContentNotFoundException("Voeg nog een beschrijving toe voor je afbeelding");
-        }
-
+        //Overige foutmeldingen worden afgehandeld in createNewFile
         File newFile = createNewFile(fileUpload, description, task_id);
         newFile.setId(id);
         fileRepository.save(newFile);
@@ -88,6 +78,13 @@ public class FileService {
     }
 
     private File createNewFile(MultipartFile fileUpload, String description, Long task_id) throws IOException {
+        if(description.isEmpty()) {
+            throw new ContentNotFoundException("Voeg nog een beschrijving toe voor je afbeelding");
+        }
+        if(fileUpload.isEmpty()) {
+            throw new ContentNotFoundException("Je moet nog een bestand uploaden");
+        }
+
         File newFile = new File();
         newFile.setData(fileUpload.getBytes());
         newFile.setMimeType(fileUpload.getContentType());

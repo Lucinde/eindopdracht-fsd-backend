@@ -3,7 +3,9 @@ package com.lucinde.plannerpro.services;
 import com.lucinde.plannerpro.dtos.ScheduleTaskDto;
 import com.lucinde.plannerpro.exceptions.RecordNotFoundException;
 import com.lucinde.plannerpro.models.ScheduleTask;
+import com.lucinde.plannerpro.models.Task;
 import com.lucinde.plannerpro.repositories.ScheduleTaskRepository;
+import com.lucinde.plannerpro.repositories.TaskRepository;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
@@ -14,9 +16,11 @@ import java.util.Optional;
 @Service
 public class ScheduleTaskService {
     private final ScheduleTaskRepository scheduleTaskRepository;
+    private final TaskRepository taskRepository;
 
-    public ScheduleTaskService(ScheduleTaskRepository scheduleTaskRepository) {
+    public ScheduleTaskService(ScheduleTaskRepository scheduleTaskRepository, TaskRepository taskRepository) {
         this.scheduleTaskRepository = scheduleTaskRepository;
+        this.taskRepository = taskRepository;
     }
 
     public List<ScheduleTaskDto> getAllScheduleTasks() {
@@ -64,6 +68,17 @@ public class ScheduleTaskService {
         return transferScheduleTaskToDto(updateScheduleTask);
     }
 
+    public ScheduleTaskDto assignScheduleToTask(Long id, Long task_id) {
+        // in plaats van een aparte optional aan te maken heb ik hier de optie gebruikt om meteen een exception te gooien als het ID niet bestaat
+        ScheduleTask scheduleTask = scheduleTaskRepository.findById(id).orElseThrow(() -> new RecordNotFoundException("Geen planning gevonden met id: " + id));
+        Task task = taskRepository.findById(task_id).orElseThrow(() -> new RecordNotFoundException("Geen taak gevonden met id: " + task_id));
+
+        scheduleTask.setTask(task);
+        scheduleTaskRepository.save(scheduleTask);
+
+        return transferScheduleTaskToDto(scheduleTask);
+    }
+
     public void deleteScheduleTask(Long id) {
         Optional<ScheduleTask> optionalScheduleTask = scheduleTaskRepository.findById(id);
         if(optionalScheduleTask.isEmpty()) {
@@ -79,7 +94,7 @@ public class ScheduleTaskService {
         scheduleTaskDto.date = scheduleTask.getDate();
         scheduleTaskDto.startTime = scheduleTask.getStartTime();
         scheduleTaskDto.endTime = scheduleTask.getEndTime();
-        scheduleTaskDto.taskList = scheduleTask.getTaskList();
+        scheduleTaskDto.task = scheduleTask.getTask();
 
         return scheduleTaskDto;
     }
@@ -91,8 +106,9 @@ public class ScheduleTaskService {
         scheduleTask.setDate(scheduleTaskDto.date);
         scheduleTask.setStartTime(scheduleTaskDto.endTime);
         scheduleTask.setEndTime(scheduleTaskDto.startTime);
-        scheduleTask.setTaskList(scheduleTaskDto.taskList);
+        scheduleTask.setTask(scheduleTaskDto.task);
 
         return scheduleTask;
     }
 }
+

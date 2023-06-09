@@ -43,7 +43,7 @@ public class TaskController {
         return ResponseEntity.created(uri).body(addedTask);
     }
 
-    //todo: Add postmapping to add a customer to a task
+    //todo: Add post/putmapping to add a customer to a task
 
     @PutMapping("/{id}")
     public ResponseEntity<Object> updateTask(@PathVariable Long id, @Valid @RequestBody TaskDto taskDto, BindingResult br) {

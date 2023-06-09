@@ -22,8 +22,8 @@ public class ScheduleTask {
     private LocalTime startTime;
     private LocalTime endTime;
 
-    @OneToMany(mappedBy = "scheduleTask")
+    @ManyToOne
     @JsonIgnore
-    private List<Task> taskList;
+    private Task task;
 
 }

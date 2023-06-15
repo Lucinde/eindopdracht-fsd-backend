@@ -16,4 +16,6 @@ public class TaskDto {
     public Customer customer;
     public List<File> fileList;
     public List<ScheduleTask> scheduleTaskList;
+
+    //todo: DTO's maken waarin de afbeeldingen niet meegegeven worden
 }

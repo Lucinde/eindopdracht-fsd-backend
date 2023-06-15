@@ -30,6 +30,7 @@ public class Task {
 
     @OneToMany(mappedBy = "task")
     @JsonIgnore
+    //todo: wanneer een file toegevoegd wordt zijn de taken niet meer zichtbaar in Postmen
     private List<File> fileList;
 
 }

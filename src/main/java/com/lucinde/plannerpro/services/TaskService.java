@@ -55,9 +55,10 @@ public class TaskService {
         if(taskOptional.isEmpty()) {
             throw new RecordNotFoundException("Geen taak gevonden met id: " + id);
         }
-
-        Task updateTask = transferDtoToTask(taskDto);
+//        Task existingTask = taskOptional.get();
+        Task updateTask = transferDtoToTask(taskDto, taskOptional.get());
         updateTask.setId(id);
+
         taskRepository.save(updateTask);
 
         return transferTaskToDto(updateTask);
@@ -86,15 +87,32 @@ public class TaskService {
     }
 
     public Task transferDtoToTask(TaskDto taskDto) {
+        return transferDtoToTask(taskDto, null);
+    }
+
+    public Task transferDtoToTask(TaskDto taskDto, Task existingTask) {
+
         Task task = new Task();
 
         // Geen setId nodig, deze genereert de database of staat in de URL
         task.setDescription(taskDto.description);
         task.setWorkPerformed(taskDto.workPerformed);
         task.setJobDone(taskDto.jobDone);
-        task.setCustomer(taskDto.customer);
-        task.setFileList(taskDto.fileList);
-        task.setScheduleTaskList(taskDto.scheduleTaskList);
+        if(taskDto.customer != null)
+            task.setCustomer(taskDto.customer);
+        else
+            if(existingTask.getCustomer() != null)
+                task.setCustomer(existingTask.getCustomer());
+        if(taskDto.scheduleTaskList != null)
+            task.setFileList(taskDto.fileList);
+        else
+            if(existingTask.getCustomer() != null)
+                task.setFileList(existingTask.getFileList());
+        if(taskDto.scheduleTaskList != null)
+            task.setScheduleTaskList(taskDto.scheduleTaskList);
+        else
+            if(existingTask.getScheduleTaskList() != null)
+                task.setScheduleTaskList(existingTask.getScheduleTaskList());
 
         return task;
     }

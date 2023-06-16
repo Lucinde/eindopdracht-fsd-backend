@@ -24,12 +24,11 @@ public class Task {
     @JsonIgnore
     private Customer customer;
 
-    @OneToMany(mappedBy = "task", orphanRemoval = true)
+    @OneToMany(mappedBy = "task")
     private List<ScheduleTask> scheduleTaskList;
 
-    @OneToMany(mappedBy = "task", orphanRemoval = true)
+    @OneToMany(mappedBy = "task")
     @JsonIgnore
-    //todo: wanneer een file toegevoegd wordt zijn de taken niet meer zichtbaar in Postman
     private List<File> fileList;
 
 }

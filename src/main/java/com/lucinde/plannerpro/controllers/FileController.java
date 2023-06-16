@@ -41,7 +41,6 @@ public class FileController {
 
     @PostMapping
     public ResponseEntity<Object> addFile(@RequestParam()MultipartFile file, @Valid @RequestParam() String description, @RequestParam() Long task_id) throws IOException, HttpClientErrorException.BadRequest {
-        //todo: vraag: Requestparam is required, maar de foutmelding als je de param mist is onduidelijk. Kun je die ook nog aanpassen?
         System.out.println(description);
 
         FileDto addedFile = fileService.addFile(file, description, task_id);

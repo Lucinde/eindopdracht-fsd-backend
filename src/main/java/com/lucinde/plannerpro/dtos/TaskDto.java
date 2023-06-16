@@ -21,5 +21,4 @@ public class TaskDto {
 
     //todo: DTO's maken waarin de afbeeldingen niet meegegeven worden -> als ik hem als JSON ignore niet nodig?
 
-    //todo: Alle delete services nalopen om te checken of onderdelen niet aan elkaar gekoppeld zijn voor ze verwijderd mogen worden
 }

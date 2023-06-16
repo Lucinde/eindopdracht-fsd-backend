@@ -102,9 +102,12 @@ public class TaskService {
         }
 
         // Geen setId nodig, deze genereert de database of staat in de URL
-        task.setDescription(taskDto.description);
-        task.setWorkPerformed(taskDto.workPerformed);
-        task.setJobDone(taskDto.jobDone);
+        if(taskDto.description != null)
+            task.setDescription(taskDto.description);
+        if(taskDto.workPerformed != null)
+            task.setWorkPerformed(taskDto.workPerformed);
+        if(taskDto.jobDone != null)
+            task.setJobDone(taskDto.jobDone);
         if(taskDto.customer != null)
             task.setCustomer(taskDto.customer);
         if(taskDto.scheduleTaskList != null)

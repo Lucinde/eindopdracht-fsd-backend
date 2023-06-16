@@ -1,12 +1,11 @@
 package com.lucinde.plannerpro.controllers;
 
 import com.lucinde.plannerpro.dtos.ScheduleTaskDto;
-import com.lucinde.plannerpro.helpers.Helpers;
+import com.lucinde.plannerpro.utils.Helpers;
 import com.lucinde.plannerpro.services.ScheduleTaskService;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
-import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 

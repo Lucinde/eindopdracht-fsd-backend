@@ -1,4 +1,4 @@
-package com.lucinde.plannerpro.helpers;
+package com.lucinde.plannerpro.utils;
 
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;

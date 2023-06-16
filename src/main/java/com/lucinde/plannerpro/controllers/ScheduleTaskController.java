@@ -54,6 +54,11 @@ public class ScheduleTaskController {
         return ResponseEntity.ok().body(updateScheduleTask);
     }
 
+    @PutMapping("/{id}/task/{task_id}")
+    public ResponseEntity<ScheduleTaskDto> assignScheduleToTask(@PathVariable Long id, @PathVariable Long task_id) {
+        return ResponseEntity.ok().body(scheduleTaskService.assignScheduleToTask(id, task_id));
+    }
+
     @DeleteMapping("{id}")
     public ResponseEntity<Object> deleteScheduleTask(@PathVariable Long id) {
         scheduleTaskService.deleteScheduleTask(id);

@@ -1,11 +1,13 @@
 package com.lucinde.plannerpro.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.List;
 
 @Getter
 @Setter
@@ -19,5 +21,9 @@ public class ScheduleTask {
     private LocalDate date;
     private LocalTime startTime;
     private LocalTime endTime;
+
+    @ManyToOne
+    @JsonIgnore
+    private Task task;
 
 }

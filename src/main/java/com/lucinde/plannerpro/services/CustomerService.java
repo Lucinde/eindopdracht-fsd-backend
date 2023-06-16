@@ -1,8 +1,11 @@
 package com.lucinde.plannerpro.services;
 
 import com.lucinde.plannerpro.dtos.CustomerDto;
+import com.lucinde.plannerpro.dtos.TaskDto;
 import com.lucinde.plannerpro.exceptions.RecordNotFoundException;
+import com.lucinde.plannerpro.exceptions.RelationFoundException;
 import com.lucinde.plannerpro.models.Customer;
+import com.lucinde.plannerpro.models.Task;
 import com.lucinde.plannerpro.repositories.CustomerRepository;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
@@ -47,30 +50,29 @@ public class CustomerService {
         customerRepository.save(customer);
 
         return transferCustomerToDto(customer);
+        //todo: OPT: DTO maken waarbij de tasklist niet meegegeven wordt. Nu geeft hij null aan omdat die niet meteen toegevoegd worden
     }
 
     public CustomerDto updateCustomer(Long id, CustomerDto customerDto) {
-        Optional<Customer> customerOptional = customerRepository.findById(id);
-        if(customerOptional.isEmpty()) {
-            throw new RecordNotFoundException("Geen klant gevonden met id: " + id);
-        }
-
-        Customer updateCustomer = transferDtoToCustomer(customerDto);
+        Customer updateCustomer = transferDtoToCustomer(customerDto, id);
         updateCustomer.setId(id);
         customerRepository.save(updateCustomer);
 
         return transferCustomerToDto(updateCustomer);
     }
 
+    //todo: assignCustomerToTask toevoegen! Customers kunnen nu nog niet toegevoegd worden aan een taak
+
     public void deleteCustomer(Long id) {
         Optional<Customer> optionalCustomer = customerRepository.findById(id);
         if(optionalCustomer.isEmpty()) {
             throw new RecordNotFoundException("Geen klant gevonden met id: " + id);
         }
+        if(!optionalCustomer.get().getTaskList().isEmpty()) {
+            throw new RelationFoundException("Deze klant is gekoppeld aan een taak en mag niet verwijderd worden");
+        }
         customerRepository.deleteById(id);
     }
-
-
 
     public CustomerDto transferCustomerToDto(Customer customer) {
         CustomerDto customerDto = new CustomerDto();
@@ -83,21 +85,45 @@ public class CustomerService {
         customerDto.city = customer.getCity();
         customerDto.phoneNumber = customer.getPhoneNumber();
         customerDto.email = customer.getEmail();
+        customerDto.taskList = customer.getTaskList();
 
         return customerDto;
     }
 
     public Customer transferDtoToCustomer(CustomerDto customerDto) {
-        Customer customer = new Customer();
+        return transferDtoToCustomer(customerDto, 0L);
+    }
+
+    public Customer transferDtoToCustomer(CustomerDto customerDto, Long id) {
+        Customer customer;
+
+        if(id != 0L) {
+            Optional<Customer> customerOptional = customerRepository.findById(id);
+            if(customerOptional.isEmpty()) {
+                throw new RecordNotFoundException("Geen taak gevonden met id: " + id);
+            }
+            customer = customerOptional.get();
+        } else {
+            customer = new Customer();
+        }
 
         // Geen setId nodig, deze genereert de database of staat in de URL
-        customer.setFirstName(customerDto.firstName);
-        customer.setLastName(customerDto.lastName);
-        customer.setAddress(customerDto.address);
-        customer.setZip(customerDto.zip);
-        customer.setCity(customerDto.city);
-        customer.setPhoneNumber(customerDto.phoneNumber);
-        customer.setEmail(customerDto.email);
+        if(customerDto.firstName != null)
+            customer.setFirstName(customerDto.firstName);
+        if(customerDto.lastName != null)
+            customer.setLastName(customerDto.lastName);
+        if(customerDto.address != null)
+            customer.setAddress(customerDto.address);
+        if(customerDto.zip != null)
+            customer.setZip(customerDto.zip);
+        if(customerDto.city != null)
+            customer.setCity(customerDto.city);
+        if(customerDto.phoneNumber != null)
+            customer.setPhoneNumber(customerDto.phoneNumber);
+        if(customerDto.email != null)
+            customer.setEmail(customerDto.email);
+        if(customerDto.taskList != null)
+            customer.setTaskList(customerDto.taskList);
 
         return customer;
     }

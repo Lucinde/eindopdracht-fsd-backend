@@ -39,14 +39,6 @@ public class SpringSecurityConfig {
                 .build();
     }
 
-
-//    // PasswordEncoderBean. Deze kun je overal in je applicatie injecteren waar nodig.
-//    // Je kunt dit ook in een aparte configuratie klasse zetten.
-//    @Bean
-//    public PasswordEncoder passwordEncoder() {
-//        return new BCryptPasswordEncoder();
-//    }
-
     // Authorizatie met jwt
     @Bean
     protected SecurityFilterChain filter (HttpSecurity http) throws Exception {
@@ -62,15 +54,8 @@ public class SpringSecurityConfig {
                 .requestMatchers(HttpMethod.POST,"/users/**").hasRole("ADMIN")
                 .requestMatchers(HttpMethod.PUT,"/users/**").hasRole("ADMIN")
                 .requestMatchers(HttpMethod.DELETE, "/users/**").hasRole("ADMIN")
-                /*voeg de antmatchers toe voor admin(post en delete) en user (overige)*/
-                .requestMatchers(HttpMethod.POST, "/cimodules").hasRole("ADMIN")
-                .requestMatchers(HttpMethod.DELETE, "/cimodules/**").hasRole("ADMIN")
-                .requestMatchers(HttpMethod.POST, "/remotes").hasRole("ADMIN")
-                .requestMatchers(HttpMethod.DELETE, "/remotes/**").hasRole("ADMIN")
-                .requestMatchers(HttpMethod.POST, "/televisions").hasRole("ADMIN")
-                .requestMatchers(HttpMethod.DELETE, "/televisions/**").hasRole("ADMIN")
-                .requestMatchers(HttpMethod.POST, "/wallbrackets").hasRole("ADMIN")
-                .requestMatchers(HttpMethod.DELETE, "/wallbrackets/**").hasRole("ADMIN")
+                //todo: requestmatchers toevoegen
+
                 // Er kunnen meerdere paths in 1 request staan:
                 .requestMatchers("/cimodules", "/remotes", "/televisions", "/wallbrackets").hasAnyRole("ADMIN", "USER")
                 .requestMatchers("/authenticated").authenticated()

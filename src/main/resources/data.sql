@@ -18,4 +18,8 @@ VALUES ('2022-08-01', '13:00:00', '16:00:00', 1),
        ('2023-08-02', '14:00:00', '16:00:00', 5),
        ('2023-08-03', '09:00:00', '11:00:00', 3);
 
+INSERT INTO users (username, password, enabled, apikey, email) VALUES ('henk', '$2a$12$vL/WjHUF7ZL5bYDQNfCkS.C.eKpd/xZlAzAgeO5ItC9kNBHyajzbW', true, '7847493', 'test@testy.nl');
+-- Het password van henk is password - in de sql aangepast naar Bcrypt omdat anders de authenticatie niet goed verliep (die verwacht een Bcrypt password)
+INSERT INTO authorities (username, authority) VALUES ('henk', 'ROLE_ADMIN');
+
 --todo: niet vergeten inlog voor admin toe te voegen, noem deze gebruikers ook met het plain text-password erbij en niet alleen de encrypted versie

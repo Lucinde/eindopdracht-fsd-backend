@@ -18,4 +18,4 @@ VALUES ('2022-08-01', '13:00:00', '16:00:00', 1),
        ('2023-08-02', '14:00:00', '16:00:00', 5),
        ('2023-08-03', '09:00:00', '11:00:00', 3);
 
---todo: niet vergeten inlog voor admin toe te voegen
+--todo: niet vergeten inlog voor admin toe te voegen, noem deze gebruikers ook met het plain text-password erbij en niet alleen de encrypted versie

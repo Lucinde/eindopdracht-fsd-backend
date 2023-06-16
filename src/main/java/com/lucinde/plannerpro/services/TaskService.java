@@ -2,6 +2,8 @@ package com.lucinde.plannerpro.services;
 
 import com.lucinde.plannerpro.dtos.TaskDto;
 import com.lucinde.plannerpro.exceptions.RecordNotFoundException;
+import com.lucinde.plannerpro.exceptions.RelationFoundException;
+import com.lucinde.plannerpro.models.ScheduleTask;
 import com.lucinde.plannerpro.models.Task;
 import com.lucinde.plannerpro.repositories.TaskRepository;
 import org.springframework.stereotype.Service;

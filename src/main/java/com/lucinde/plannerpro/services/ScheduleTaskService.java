@@ -84,6 +84,7 @@ public class ScheduleTaskService {
         if(optionalScheduleTask.isEmpty()) {
             throw new RecordNotFoundException("Geen ingeplande taak gevonden met id: " + id);
         }
+
         scheduleTaskRepository.deleteById(id);
     }
 

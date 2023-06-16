@@ -2,6 +2,7 @@ package com.lucinde.plannerpro.services;
 
 import com.lucinde.plannerpro.dtos.CustomerDto;
 import com.lucinde.plannerpro.exceptions.RecordNotFoundException;
+import com.lucinde.plannerpro.exceptions.RelationFoundException;
 import com.lucinde.plannerpro.models.Customer;
 import com.lucinde.plannerpro.repositories.CustomerRepository;
 import org.springframework.data.domain.Sort;
@@ -67,10 +68,11 @@ public class CustomerService {
         if(optionalCustomer.isEmpty()) {
             throw new RecordNotFoundException("Geen klant gevonden met id: " + id);
         }
+        if(!optionalCustomer.get().getTaskList().isEmpty()) {
+            throw new RelationFoundException("Deze klant is gekoppeld aan een taak en mag niet verwijderd worden");
+        }
         customerRepository.deleteById(id);
     }
-
-
 
     public CustomerDto transferCustomerToDto(Customer customer) {
         CustomerDto customerDto = new CustomerDto();

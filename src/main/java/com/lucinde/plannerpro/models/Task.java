@@ -24,10 +24,10 @@ public class Task {
     @JsonIgnore
     private Customer customer;
 
-    @OneToMany(mappedBy = "task")
+    @OneToMany(mappedBy = "task", orphanRemoval = true)
     private List<ScheduleTask> scheduleTaskList;
 
-    @OneToMany(mappedBy = "task")
+    @OneToMany(mappedBy = "task", orphanRemoval = true)
     @JsonIgnore
     private List<File> fileList;
 

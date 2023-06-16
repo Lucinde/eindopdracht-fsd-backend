@@ -16,6 +16,5 @@ public class ScheduleTaskDto {
     public LocalTime startTime;
     public LocalTime endTime;
 
-    @NotEmpty
     public Task task;
 }

@@ -55,13 +55,9 @@ public class ScheduleTaskService {
     }
 
     public ScheduleTaskDto updateScheduleTask(Long id, ScheduleTaskDto scheduleTaskDto) {
-        Optional<ScheduleTask> scheduleTaskOptional = scheduleTaskRepository.findById(id);
-        if(scheduleTaskOptional.isEmpty()) {
-            throw new RecordNotFoundException("Geen ingeplande taak gevonden met id: " + id);
-        }
         //todo: controle toevoegen of tijden kloppen en niet overlappen bij monteurs en tijden (het id dat je wilt aanpassen uitsluiten! - optionele parameters? / Optional voor laatste param (standaard null? isPresent check))
 
-        ScheduleTask updateScheduleTask = transferDtoToScheduleTask(scheduleTaskDto);
+        ScheduleTask updateScheduleTask = transferDtoToScheduleTask(scheduleTaskDto, id);
         updateScheduleTask.setId(id);
         scheduleTaskRepository.save(updateScheduleTask);
 
@@ -101,13 +97,31 @@ public class ScheduleTaskService {
     }
 
     public ScheduleTask transferDtoToScheduleTask(ScheduleTaskDto scheduleTaskDto) {
-        ScheduleTask scheduleTask = new ScheduleTask();
+        return transferDtoToScheduleTask(scheduleTaskDto, 0L);
+    }
+
+    public ScheduleTask transferDtoToScheduleTask(ScheduleTaskDto scheduleTaskDto, Long id) {
+        ScheduleTask scheduleTask;
+
+        if(id != 0L) {
+            Optional<ScheduleTask> scheduleTaskOptional = scheduleTaskRepository.findById(id);
+            if(scheduleTaskOptional.isEmpty()) {
+                throw new RecordNotFoundException("Geen ingeplande taak gevonden met id: " + id);
+            }
+            scheduleTask = scheduleTaskOptional.get();
+        } else {
+            scheduleTask = new ScheduleTask();
+        }
 
         // Geen setId nodig, deze genereert de database of staat in de URL
-        scheduleTask.setDate(scheduleTaskDto.date);
-        scheduleTask.setStartTime(scheduleTaskDto.endTime);
-        scheduleTask.setEndTime(scheduleTaskDto.startTime);
-        scheduleTask.setTask(scheduleTaskDto.task);
+        if(scheduleTaskDto.date != null)
+            scheduleTask.setDate(scheduleTaskDto.date);
+        if(scheduleTaskDto.endTime != null)
+            scheduleTask.setStartTime(scheduleTaskDto.endTime);
+        if(scheduleTaskDto.startTime != null)
+            scheduleTask.setEndTime(scheduleTaskDto.startTime);
+        if(scheduleTaskDto.task != null)
+            scheduleTask.setTask(scheduleTaskDto.task);
 
         return scheduleTask;
     }

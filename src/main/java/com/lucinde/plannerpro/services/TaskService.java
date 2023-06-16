@@ -51,12 +51,7 @@ public class TaskService {
     }
 
     public TaskDto updateTask(Long id, TaskDto taskDto) {
-        Optional<Task> taskOptional = taskRepository.findById(id);
-        if(taskOptional.isEmpty()) {
-            throw new RecordNotFoundException("Geen taak gevonden met id: " + id);
-        }
-//        Task existingTask = taskOptional.get();
-        Task updateTask = transferDtoToTask(taskDto, taskOptional.get());
+        Task updateTask = transferDtoToTask(taskDto, id);
         updateTask.setId(id);
 
         taskRepository.save(updateTask);
@@ -87,12 +82,21 @@ public class TaskService {
     }
 
     public Task transferDtoToTask(TaskDto taskDto) {
-        return transferDtoToTask(taskDto, null);
+        return transferDtoToTask(taskDto, 0L);
     }
 
-    public Task transferDtoToTask(TaskDto taskDto, Task existingTask) {
+    public Task transferDtoToTask(TaskDto taskDto, Long id) {
+        Task task;
 
-        Task task = new Task();
+        if(id != 0L) {
+            Optional<Task> taskOptional = taskRepository.findById(id);
+            if(taskOptional.isEmpty()) {
+                throw new RecordNotFoundException("Geen taak gevonden met id: " + id);
+            }
+            task = taskOptional.get();
+        } else {
+            task = new Task();
+        }
 
         // Geen setId nodig, deze genereert de database of staat in de URL
         task.setDescription(taskDto.description);
@@ -100,19 +104,10 @@ public class TaskService {
         task.setJobDone(taskDto.jobDone);
         if(taskDto.customer != null)
             task.setCustomer(taskDto.customer);
-        else
-            if(existingTask.getCustomer() != null)
-                task.setCustomer(existingTask.getCustomer());
         if(taskDto.scheduleTaskList != null)
             task.setFileList(taskDto.fileList);
-        else
-            if(existingTask.getCustomer() != null)
-                task.setFileList(existingTask.getFileList());
         if(taskDto.scheduleTaskList != null)
             task.setScheduleTaskList(taskDto.scheduleTaskList);
-        else
-            if(existingTask.getScheduleTaskList() != null)
-                task.setScheduleTaskList(existingTask.getScheduleTaskList());
 
         return task;
     }

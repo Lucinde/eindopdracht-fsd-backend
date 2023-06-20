@@ -49,17 +49,38 @@ public class SpringSecurityConfig {
                 .httpBasic().disable()
                 .cors().and()
                 .authorizeHttpRequests()
-                .requestMatchers(HttpMethod.POST, "/users").permitAll()
+                // --------------------------- USERS ---------------------------
+                .requestMatchers(HttpMethod.POST, "/users").permitAll() //todo: mag iedereen een user aanmaken of dit beter beveiligen tot admin/planner
                 .requestMatchers(HttpMethod.GET,"/users").hasRole("ADMIN")
                 .requestMatchers(HttpMethod.POST,"/users/**").hasRole("ADMIN")
                 .requestMatchers(HttpMethod.PUT,"/users/**").hasRole("ADMIN")
                 .requestMatchers(HttpMethod.DELETE, "/users/**").hasRole("ADMIN")
-                //todo: requestmatchers toevoegen
 
-                // Er kunnen meerdere paths in 1 request staan:
-                .requestMatchers("/cimodules", "/remotes", "/televisions", "/wallbrackets").hasAnyRole("ADMIN", "USER")
+                // ------------------------- CUSTOMERS -------------------------
+                .requestMatchers(HttpMethod.GET, "/customers").hasAnyRole("ADMIN", "PLANNER", "MECHANIC")
+                .requestMatchers(HttpMethod.GET, "/customers/{id}").hasAnyRole("ADMIN", "PLANNER", "MECHANIC")
+                .requestMatchers(HttpMethod.POST, "/customers").hasAnyRole("ADMIN", "PLANNER")
+                .requestMatchers(HttpMethod.PUT, "/customers").hasAnyRole("ADMIN", "PLANNER")
+                .requestMatchers(HttpMethod.DELETE, "/customers/{id}").hasAnyRole("ADMIN", "PLANNER")
+
+                // --------------------------- TASKS ---------------------------
+                .requestMatchers(HttpMethod.GET, "/tasks").hasAnyRole("ADMIN", "PLANNER", "MECHANIC")
+                .requestMatchers(HttpMethod.GET, "/tasks/{id}").hasAnyRole("ADMIN", "PLANNER", "MECHANIC")
+                .requestMatchers(HttpMethod.GET, "/tasks/{pageNo}/{pageSize}").hasAnyRole("ADMIN", "PLANNER", "MECHANIC")
+                .requestMatchers(HttpMethod.POST, "/tasks").hasAnyRole("ADMIN", "PLANNER")
+                .requestMatchers(HttpMethod.PUT, "/tasks/{id}").hasAnyRole("ADMIN", "PLANNER", "MECHANIC")
+                .requestMatchers(HttpMethod.DELETE, "/tasks").hasAnyRole("ADMIN", "PLANNER")
+
+                // --------------------------- FILES ---------------------------
+                .requestMatchers(HttpMethod.GET, "/files/**").hasAnyRole("ADMIN", "PLANNER", "MECHANIC")
+                .requestMatchers(HttpMethod.POST, "/files/**").hasAnyRole("ADMIN", "PLANNER", "MECHANIC")
+                .requestMatchers(HttpMethod.PUT, "/files/**").hasAnyRole("ADMIN", "PLANNER", "MECHANIC")
+                .requestMatchers(HttpMethod.DELETE, "/files/**").hasAnyRole("ADMIN", "PLANNER", "MECHANIC")
+
+                // ----------------------- AUTHENTICATION ----------------------
                 .requestMatchers("/authenticated").authenticated()
                 .requestMatchers("/authenticate").permitAll()/*allen dit punt mag toegankelijk zijn voor niet ingelogde gebruikers*/
+
                 .anyRequest().denyAll()
                 .and()
                 .sessionManagement()

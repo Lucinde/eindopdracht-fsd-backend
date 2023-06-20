@@ -6,6 +6,8 @@ import com.lucinde.plannerpro.exceptions.RelationFoundException;
 import com.lucinde.plannerpro.models.ScheduleTask;
 import com.lucinde.plannerpro.models.Task;
 import com.lucinde.plannerpro.repositories.TaskRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -41,6 +43,18 @@ public class TaskService {
         Task task = taskOptional.get();
 
         return transferTaskToDto(task);
+    }
+
+    public List<TaskDto> getTasksWithPagination(int pageNo, int pageSize) {
+        PageRequest pageRequest = PageRequest.of(pageNo, pageSize);
+        Page<Task> pagingTask = taskRepository.findAll(pageRequest);
+        List<TaskDto> taskDtos = new ArrayList<>();
+
+        for (Task t: pagingTask) {
+            taskDtos.add(transferTaskToDto(t));
+        }
+
+        return taskDtos;
     }
 
     public TaskDto addTask(TaskDto taskDto) {

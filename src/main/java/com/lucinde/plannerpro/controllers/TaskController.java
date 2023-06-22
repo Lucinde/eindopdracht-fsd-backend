@@ -35,30 +35,30 @@ public class TaskController {
     }
 
     @GetMapping({"/pages"})
-    public ResponseEntity<List<TaskDto>> getTasksWithPagination(@RequestParam Integer pageNo, @RequestParam Integer pageSize) {
-        List<TaskDto> taskDto = taskService.getTasksWithPagination(pageNo, pageSize);
+    public ResponseEntity<Object> getTasksWithPagination(@RequestParam Integer pageNo, @RequestParam Integer pageSize) {
+        TaskService.Response taskDto = taskService.getTasksWithPagination(pageNo, pageSize);
 
         //todo: dit moet in React gedaan worden, als dat werkt kan dit verwijderd worden en de response aangepast
-        int nextPage = pageNo + 1;
-        String nextPageLink = null;
-        if (nextPage > 0 && taskDto != null && !taskDto.isEmpty()) {
-            UriComponentsBuilder builderNext = UriComponentsBuilder.fromHttpUrl("http://localhost:8080/pages")
-                    .queryParam("pageNo", nextPage)
-                    .queryParam("pageSize", pageSize);
-            nextPageLink = builderNext.toUriString();
-        }
+//        int nextPage = pageNo + 1;
+//        String nextPageLink = null;
+//        if (nextPage > 0 && taskDto != null && !taskDto.isEmpty()) {
+//            UriComponentsBuilder builderNext = UriComponentsBuilder.fromHttpUrl("http://localhost:8080/pages")
+//                    .queryParam("pageNo", nextPage)
+//                    .queryParam("pageSize", pageSize);
+//            nextPageLink = builderNext.toUriString();
+//        }
+//
+//        int prevPage = pageNo - 1;
+//        String prevPageLink = null;
+//        if (prevPage >= 0) {
+//            UriComponentsBuilder builderPrev = UriComponentsBuilder.fromHttpUrl("http://localhost:8080/pages")
+//                    .queryParam("pageNo", prevPage)
+//                    .queryParam("pageSize", pageSize);
+//            prevPageLink = builderPrev.toUriString();
+//        }
 
-        int prevPage = pageNo - 1;
-        String prevPageLink = null;
-        if (prevPage >= 0) {
-            UriComponentsBuilder builderPrev = UriComponentsBuilder.fromHttpUrl("http://localhost:8080/pages")
-                    .queryParam("pageNo", prevPage)
-                    .queryParam("pageSize", pageSize);
-            prevPageLink = builderPrev.toUriString();
-        }
-
-//        return ResponseEntity.ok().body(taskService.getTasksWithPagination(pageNo, pageSize));
-        return ResponseEntity.ok().headers(HeaderUtil.createLinkHeader(nextPageLink, prevPageLink)).body(taskDto);
+        return ResponseEntity.ok().body(taskDto);
+//        return ResponseEntity.ok().headers(HeaderUtil.createLinkHeader(nextPageLink, prevPageLink)).body(taskDto);
     }
 
     @PostMapping

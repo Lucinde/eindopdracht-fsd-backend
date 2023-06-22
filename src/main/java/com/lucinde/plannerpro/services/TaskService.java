@@ -45,16 +45,21 @@ public class TaskService {
         return transferTaskToDto(task);
     }
 
-    public List<TaskDto> getTasksWithPagination(int pageNo, int pageSize) {
+    public Response getTasksWithPagination(int pageNo, int pageSize) {
         PageRequest pageRequest = PageRequest.of(pageNo, pageSize);
         Page<Task> pagingTask = taskRepository.findAll(pageRequest);
+        Response response = new Response();
         List<TaskDto> taskDtos = new ArrayList<>();
+        //todo: class aanmaken die count en DTOlist gebruikt en die terug geeft
 
         for (Task t: pagingTask) {
             taskDtos.add(transferTaskToDto(t));
         }
 
-        return taskDtos;
+        response.count = pagingTask.getTotalElements();
+        response.tasks = taskDtos;
+
+        return response;
     }
 
     public TaskDto addTask(TaskDto taskDto) {
@@ -131,4 +136,13 @@ public class TaskService {
 
         return task;
     }
+
+    //todo: mag dit volgens de DTO-techniek? -DTO is maar 1 taak en het hoeft niet naar de database, vandaar in deze class toegevoegd
+    // omdat je de list met TaskDto nodig hebt wel in deze klasse en niet als helper in de algemene helper-klasse
+    public class Response {
+        public Long count;
+        public List<TaskDto> tasks;
+    }
+
 }
+

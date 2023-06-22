@@ -3,6 +3,7 @@ package com.lucinde.plannerpro.controllers;
 import com.lucinde.plannerpro.dtos.TaskDto;
 import com.lucinde.plannerpro.utils.Helpers;
 import com.lucinde.plannerpro.services.TaskService;
+import com.lucinde.plannerpro.utils.PageResponse;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
@@ -36,7 +37,7 @@ public class TaskController {
 
     @GetMapping({"/pages"})
     public ResponseEntity<Object> getTasksWithPagination(@RequestParam Integer pageNo, @RequestParam Integer pageSize) {
-        TaskService.Response taskDto = taskService.getTasksWithPagination(pageNo, pageSize);
+        PageResponse<TaskDto> taskDto = taskService.getTasksWithPagination(pageNo, pageSize);
 
         //todo: dit moet in React gedaan worden, als dat werkt kan dit verwijderd worden en de response aangepast
 //        int nextPage = pageNo + 1;

@@ -6,6 +6,8 @@ import com.lucinde.plannerpro.exceptions.RelationFoundException;
 import com.lucinde.plannerpro.models.ScheduleTask;
 import com.lucinde.plannerpro.models.Task;
 import com.lucinde.plannerpro.repositories.TaskRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -41,6 +43,23 @@ public class TaskService {
         Task task = taskOptional.get();
 
         return transferTaskToDto(task);
+    }
+
+    public Response getTasksWithPagination(int pageNo, int pageSize) {
+        PageRequest pageRequest = PageRequest.of(pageNo, pageSize);
+        Page<Task> pagingTask = taskRepository.findAll(pageRequest);
+        Response response = new Response();
+        List<TaskDto> taskDtos = new ArrayList<>();
+        //todo: class aanmaken die count en DTOlist gebruikt en die terug geeft
+
+        for (Task t: pagingTask) {
+            taskDtos.add(transferTaskToDto(t));
+        }
+
+        response.count = pagingTask.getTotalElements();
+        response.tasks = taskDtos;
+
+        return response;
     }
 
     public TaskDto addTask(TaskDto taskDto) {
@@ -117,4 +136,13 @@ public class TaskService {
 
         return task;
     }
+
+    //todo: mag dit volgens de DTO-techniek? -DTO is maar 1 taak en het hoeft niet naar de database, vandaar in deze class toegevoegd
+    // omdat je de list met TaskDto nodig hebt wel in deze klasse en niet als helper in de algemene helper-klasse
+    public class Response {
+        public Long count;
+        public List<TaskDto> tasks;
+    }
+
 }
+

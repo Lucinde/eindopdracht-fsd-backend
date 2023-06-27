@@ -7,6 +7,9 @@ import com.lucinde.plannerpro.exceptions.RelationFoundException;
 import com.lucinde.plannerpro.models.Customer;
 import com.lucinde.plannerpro.models.Task;
 import com.lucinde.plannerpro.repositories.CustomerRepository;
+import com.lucinde.plannerpro.utils.PageResponse;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
@@ -43,6 +46,25 @@ public class CustomerService {
         Customer customer = customerOptional.get();
 
         return transferCustomerToDto(customer);
+    }
+
+    public PageResponse<CustomerDto> getCustomerWithPagination(int pageNo, int pageSize) {
+        PageRequest pageRequest = PageRequest.of(pageNo, pageSize, Sort.by("id").descending());
+        Page<Customer> pagingCustomer = customerRepository.findAll(pageRequest);
+
+        PageResponse<CustomerDto> response = new PageResponse<>();
+
+        response.count = pagingCustomer.getTotalElements();
+        response.totalPages = pagingCustomer.getTotalPages();
+        response.hasNext = pagingCustomer.hasNext();
+        response.hasPrevious = pagingCustomer.hasPrevious();
+        response.tasks = new ArrayList<>();
+
+        for (Customer c: pagingCustomer) {
+            response.tasks.add(transferCustomerToDto(c));
+        }
+
+        return response;
     }
 
     public CustomerDto addCustomer(CustomerDto customerDto) {

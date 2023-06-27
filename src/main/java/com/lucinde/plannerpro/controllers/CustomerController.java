@@ -1,8 +1,10 @@
 package com.lucinde.plannerpro.controllers;
 
 import com.lucinde.plannerpro.dtos.CustomerDto;
+import com.lucinde.plannerpro.dtos.TaskDto;
 import com.lucinde.plannerpro.utils.Helpers;
 import com.lucinde.plannerpro.services.CustomerService;
+import com.lucinde.plannerpro.utils.PageResponse;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
@@ -30,6 +32,13 @@ public class CustomerController {
     @GetMapping("/{id}")
     public ResponseEntity<CustomerDto> getCustomer(@PathVariable Long id) {
         return ResponseEntity.ok().body(customerService.getCustomer(id));
+    }
+
+    @GetMapping({"/pages"})
+    public ResponseEntity<Object> getTasksWithPagination(@RequestParam Integer pageNo, @RequestParam Integer pageSize) {
+        PageResponse<CustomerDto> customerDto = customerService.getCustomerWithPagination(pageNo, pageSize);
+
+        return ResponseEntity.ok().body(customerDto);
     }
 
     @PostMapping

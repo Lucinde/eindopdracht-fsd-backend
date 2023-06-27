@@ -1,11 +1,9 @@
 package com.lucinde.plannerpro.services;
 
 import com.lucinde.plannerpro.dtos.CustomerDto;
-import com.lucinde.plannerpro.dtos.TaskDto;
 import com.lucinde.plannerpro.exceptions.RecordNotFoundException;
 import com.lucinde.plannerpro.exceptions.RelationFoundException;
 import com.lucinde.plannerpro.models.Customer;
-import com.lucinde.plannerpro.models.Task;
 import com.lucinde.plannerpro.repositories.CustomerRepository;
 import com.lucinde.plannerpro.utils.PageResponse;
 import org.springframework.data.domain.Page;
@@ -58,10 +56,10 @@ public class CustomerService {
         response.totalPages = pagingCustomer.getTotalPages();
         response.hasNext = pagingCustomer.hasNext();
         response.hasPrevious = pagingCustomer.hasPrevious();
-        response.tasks = new ArrayList<>();
+        response.items = new ArrayList<>();
 
         for (Customer c: pagingCustomer) {
-            response.tasks.add(transferCustomerToDto(c));
+            response.items.add(transferCustomerToDto(c));
         }
 
         return response;

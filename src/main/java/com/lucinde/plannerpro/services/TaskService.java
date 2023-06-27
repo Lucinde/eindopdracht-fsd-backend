@@ -6,7 +6,6 @@ import com.lucinde.plannerpro.models.Customer;
 import com.lucinde.plannerpro.models.Task;
 import com.lucinde.plannerpro.repositories.CustomerRepository;
 import com.lucinde.plannerpro.repositories.TaskRepository;
-import com.lucinde.plannerpro.repositories.UserRepository;
 import com.lucinde.plannerpro.utils.PageResponse;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -60,10 +59,10 @@ public class TaskService {
         response.totalPages = pagingTask.getTotalPages();
         response.hasNext = pagingTask.hasNext();
         response.hasPrevious = pagingTask.hasPrevious();
-        response.tasks = new ArrayList<>();
+        response.items = new ArrayList<>();
 
         for (Task t: pagingTask) {
-            response.tasks.add(transferTaskToDto(t));
+            response.items.add(transferTaskToDto(t));
         }
 
         return response;

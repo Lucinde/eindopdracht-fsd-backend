@@ -2,13 +2,15 @@ package com.lucinde.plannerpro.services;
 
 import com.lucinde.plannerpro.dtos.TaskDto;
 import com.lucinde.plannerpro.exceptions.RecordNotFoundException;
-import com.lucinde.plannerpro.exceptions.RelationFoundException;
-import com.lucinde.plannerpro.models.ScheduleTask;
+import com.lucinde.plannerpro.models.Customer;
 import com.lucinde.plannerpro.models.Task;
+import com.lucinde.plannerpro.repositories.CustomerRepository;
 import com.lucinde.plannerpro.repositories.TaskRepository;
+import com.lucinde.plannerpro.repositories.UserRepository;
 import com.lucinde.plannerpro.utils.PageResponse;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -18,9 +20,11 @@ import java.util.Optional;
 @Service
 public class TaskService {
     private final TaskRepository taskRepository;
+    private final CustomerRepository customerRepository;
 
-    public TaskService(TaskRepository taskRepository) {
+    public TaskService(TaskRepository taskRepository, CustomerRepository customerRepository) {
         this.taskRepository = taskRepository;
+        this.customerRepository = customerRepository;
     }
 
     public List<TaskDto> getAllTasks() {
@@ -47,18 +51,20 @@ public class TaskService {
     }
 
     public PageResponse<TaskDto> getTasksWithPagination(int pageNo, int pageSize) {
-        PageRequest pageRequest = PageRequest.of(pageNo, pageSize);
+        PageRequest pageRequest = PageRequest.of(pageNo, pageSize, Sort.by("id").descending());
         Page<Task> pagingTask = taskRepository.findAll(pageRequest);
-        PageResponse<TaskDto> response = new PageResponse<>();
-        List<TaskDto> taskDtos = new ArrayList<>();
-        //todo: class aanmaken die count en DTOlist gebruikt en die terug geeft
 
-        for (Task t: pagingTask) {
-            taskDtos.add(transferTaskToDto(t));
-        }
+        PageResponse<TaskDto> response = new PageResponse<>();
 
         response.count = pagingTask.getTotalElements();
-        response.tasks = taskDtos;
+        response.totalPages = pagingTask.getTotalPages();
+        response.hasNext = pagingTask.hasNext();
+        response.hasPrevious = pagingTask.hasPrevious();
+        response.tasks = new ArrayList<>();
+
+        for (Task t: pagingTask) {
+            response.tasks.add(transferTaskToDto(t));
+        }
 
         return response;
     }
@@ -74,6 +80,28 @@ public class TaskService {
     public TaskDto updateTask(Long id, TaskDto taskDto) {
         Task updateTask = transferDtoToTask(taskDto, id);
         updateTask.setId(id);
+
+        Customer customer = customerRepository.findById(taskDto.customer.getId())
+                .orElseThrow(() -> new RecordNotFoundException("Klant niet gevonden"));
+
+        if(taskDto.customer.getFirstName() != null)
+            customer.setFirstName(taskDto.customer.getFirstName());
+        if(taskDto.customer.getLastName() != null)
+            customer.setLastName(taskDto.customer.getLastName());
+        if(taskDto.customer.getAddress() != null)
+            customer.setAddress(taskDto.customer.getAddress());
+        if(taskDto.customer.getZip() != null)
+            customer.setZip(taskDto.customer.getZip());
+        if(taskDto.customer.getCity() != null)
+            customer.setCity(taskDto.customer.getCity());
+        if(taskDto.customer.getPhoneNumber() != null)
+            customer.setPhoneNumber(taskDto.customer.getPhoneNumber());
+        if(taskDto.customer.getEmail() != null)
+            customer.setEmail(taskDto.customer.getEmail());
+        if(taskDto.customer.getTaskList() != null)
+            customer.setTaskList(taskDto.customer.getTaskList());
+
+        updateTask.setCustomer(customer);
 
         taskRepository.save(updateTask);
 
@@ -137,12 +165,6 @@ public class TaskService {
 
         return task;
     }
-
-
-//    public class Response {
-//        public Long count;
-//        public List<TaskDto> tasks;
-//    }
 
 }
 

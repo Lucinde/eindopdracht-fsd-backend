@@ -89,13 +89,13 @@ public class TaskController {
         return ResponseEntity.noContent().build();
     }
 
-    public static class HeaderUtil {
-        public static HttpHeaders createLinkHeader(String nextPageLink, String previousLink) {
-            HttpHeaders headers = new HttpHeaders();
-            headers.add("next", nextPageLink);
-            headers.add("previous", previousLink);
-            return headers;
-        }
-    }
+//    public static class HeaderUtil {
+//        public static HttpHeaders createLinkHeader(String nextPageLink, String previousLink) {
+//            HttpHeaders headers = new HttpHeaders();
+//            headers.add("next", nextPageLink);
+//            headers.add("previous", previousLink);
+//            return headers;
+//        }
+//    }
 
 }

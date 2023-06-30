@@ -80,27 +80,27 @@ public class TaskService {
         Task updateTask = transferDtoToTask(taskDto, id);
         updateTask.setId(id);
 
-        Customer customer = customerRepository.findById(taskDto.customer.getId())
-                .orElseThrow(() -> new RecordNotFoundException("Klant niet gevonden"));
+//        Customer customer = customerRepository.findById(taskDto.customer.getId())
+//                .orElseThrow(() -> new RecordNotFoundException("Klant niet gevonden"));
+//
+//        if(taskDto.customer.getFirstName() != null)
+//            customer.setFirstName(taskDto.customer.getFirstName());
+//        if(taskDto.customer.getLastName() != null)
+//            customer.setLastName(taskDto.customer.getLastName());
+//        if(taskDto.customer.getAddress() != null)
+//            customer.setAddress(taskDto.customer.getAddress());
+//        if(taskDto.customer.getZip() != null)
+//            customer.setZip(taskDto.customer.getZip());
+//        if(taskDto.customer.getCity() != null)
+//            customer.setCity(taskDto.customer.getCity());
+//        if(taskDto.customer.getPhoneNumber() != null)
+//            customer.setPhoneNumber(taskDto.customer.getPhoneNumber());
+//        if(taskDto.customer.getEmail() != null)
+//            customer.setEmail(taskDto.customer.getEmail());
+//        if(taskDto.customer.getTaskList() != null)
+//            customer.setTaskList(taskDto.customer.getTaskList());
 
-        if(taskDto.customer.getFirstName() != null)
-            customer.setFirstName(taskDto.customer.getFirstName());
-        if(taskDto.customer.getLastName() != null)
-            customer.setLastName(taskDto.customer.getLastName());
-        if(taskDto.customer.getAddress() != null)
-            customer.setAddress(taskDto.customer.getAddress());
-        if(taskDto.customer.getZip() != null)
-            customer.setZip(taskDto.customer.getZip());
-        if(taskDto.customer.getCity() != null)
-            customer.setCity(taskDto.customer.getCity());
-        if(taskDto.customer.getPhoneNumber() != null)
-            customer.setPhoneNumber(taskDto.customer.getPhoneNumber());
-        if(taskDto.customer.getEmail() != null)
-            customer.setEmail(taskDto.customer.getEmail());
-        if(taskDto.customer.getTaskList() != null)
-            customer.setTaskList(taskDto.customer.getTaskList());
-
-        updateTask.setCustomer(customer);
+//        updateTask.setCustomer(customer);
 
         taskRepository.save(updateTask);
 

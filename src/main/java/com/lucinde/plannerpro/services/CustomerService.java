@@ -120,7 +120,7 @@ public class CustomerService {
         if(id != 0L) {
             Optional<Customer> customerOptional = customerRepository.findById(id);
             if(customerOptional.isEmpty()) {
-                throw new RecordNotFoundException("Geen taak gevonden met id: " + id);
+                throw new RecordNotFoundException("Geen klant gevonden met id: " + id);
             }
             customer = customerOptional.get();
         } else {

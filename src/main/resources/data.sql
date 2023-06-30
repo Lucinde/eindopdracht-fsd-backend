@@ -34,10 +34,20 @@ VALUES ('2022-08-01', '13:00:00', '16:00:00', 1),
        ('2023-08-02', '14:00:00', '16:00:00', 5),
        ('2023-08-03', '09:00:00', '11:00:00', 3);
 
+INSERT INTO files (filename, data, mime_type, description, task_id)
+VALUES ('broodrooster.jpg', '31656', 'image/jpeg', 'broodrooster in hotel', 16),
+       ('vaatwasser.jpg', '31720', 'image/jpeg', 'repareren vaatwasser', 1),
+       ('afvoer.jpg', '31721', 'image/jpeg', 'afvoer vaatwasser', 1),
+       ('oven.jpg', '31722', 'image/jpeg', 'oven', 2),
+       ('barista.jpg', '31722', 'image/jpeg', 'koffie zetten kan weer', 3),
+       ('friteuse.jpg', '31725', 'image/jpeg', 'nieuwe friteuse', 4),
+       ('ovenlampen.jpg', '31726', 'image/jpeg', 'nieuwe ovenlampen', 5);
+
 INSERT INTO users (username, password, enabled, apikey, email)
 VALUES ('John', '$2a$12$vL/WjHUF7ZL5bYDQNfCkS.C.eKpd/xZlAzAgeO5ItC9kNBHyajzbW', true, '7847493', 'test@testy.nl'),
        ('Jane', '$2a$12$rCZi4UIXPtrNdQdSfelAcOwweREMl4.AddVv3WOKvl.2U4dIWta9K', true, '7847493', 'test@testy.nl'),
-       ('Mike', '$2a$12$/bn9V1Rs3ddYvJaqu10QwO/oU3BIiWpYtPzutAdz29dGilUSKQSou', true, '7847493', 'test@testy.nl');
+       ('Mike', '$2a$12$/bn9V1Rs3ddYvJaqu10QwO/oU3BIiWpYtPzutAdz29dGilUSKQSou', true, '7847493', 'test@testy.nl'),
+       ('Piet', '$2a$12$7wqdcmKxTFLcCme/G1msROpRiJpEgOzhjvis9QN/c7f4kE1JPXNTi', true, '7847493', 'test@testy.nl');
 -- Alle passwords zijn -> password
 
 INSERT INTO authorities (username, authority)
@@ -46,3 +56,4 @@ VALUES ('John', 'ROLE_ADMIN'),
        ('Mike', 'ROLE_MECHANIC');
 
 --todo: niet vergeten inlog voor admin toe te voegen, noem deze gebruikers in de documentatie ook met het plain text-password erbij en niet alleen de encrypted versie
+

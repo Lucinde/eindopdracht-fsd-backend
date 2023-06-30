@@ -59,8 +59,9 @@ public class SpringSecurityConfig {
                 // ------------------------- CUSTOMERS -------------------------
                 .requestMatchers(HttpMethod.GET, "/customers").hasAnyRole("ADMIN", "PLANNER", "MECHANIC")
                 .requestMatchers(HttpMethod.GET, "/customers/{id}").hasAnyRole("ADMIN", "PLANNER", "MECHANIC")
+                .requestMatchers(HttpMethod.GET, "/customers/pages").hasAnyRole("ADMIN", "PLANNER", "MECHANIC")
                 .requestMatchers(HttpMethod.POST, "/customers").hasAnyRole("ADMIN", "PLANNER")
-                .requestMatchers(HttpMethod.PUT, "/customers").hasAnyRole("ADMIN", "PLANNER")
+                .requestMatchers(HttpMethod.PUT, "/customers/{id}").hasAnyRole("ADMIN", "PLANNER")
                 .requestMatchers(HttpMethod.DELETE, "/customers/{id}").hasAnyRole("ADMIN", "PLANNER")
 
                 // --------------------------- TASKS ---------------------------
@@ -69,13 +70,13 @@ public class SpringSecurityConfig {
                 .requestMatchers(HttpMethod.GET, "/tasks/pages").hasAnyRole("ADMIN", "PLANNER", "MECHANIC")
                 .requestMatchers(HttpMethod.POST, "/tasks").hasAnyRole("ADMIN", "PLANNER")
                 .requestMatchers(HttpMethod.PUT, "/tasks/{id}").hasAnyRole("ADMIN", "PLANNER", "MECHANIC")
-                .requestMatchers(HttpMethod.DELETE, "/tasks").hasAnyRole("ADMIN", "PLANNER")
+                .requestMatchers(HttpMethod.DELETE, "/tasks/{id}").hasAnyRole("ADMIN", "PLANNER")
 
                 // ----------------------- SCHEDULE TASKS -----------------------
                 .requestMatchers(HttpMethod.GET, "/schedule-tasks").hasAnyRole("ADMIN", "PLANNER", "MECHANIC")
                 .requestMatchers(HttpMethod.GET, "/schedule-tasks/{id}").hasAnyRole("ADMIN", "PLANNER", "MECHANIC")
-                .requestMatchers(HttpMethod.POST, "/schedule-tasks").hasAnyRole("ADMIN", "PLANNER")
-                .requestMatchers(HttpMethod.PUT, "/schedule-tasks").hasAnyRole("ADMIN", "PLANNER")
+                .requestMatchers(HttpMethod.POST, "/schedule-tasks/{id}").hasAnyRole("ADMIN", "PLANNER")
+                .requestMatchers(HttpMethod.PUT, "/schedule-tasks/{id}").hasAnyRole("ADMIN", "PLANNER")
                 .requestMatchers(HttpMethod.PUT, "/schedule-tasks/{id}/task/{task_id}").hasAnyRole("ADMIN", "PLANNER")
                 .requestMatchers(HttpMethod.DELETE, "/schedule-tasks").hasAnyRole("ADMIN", "PLANNER")
 

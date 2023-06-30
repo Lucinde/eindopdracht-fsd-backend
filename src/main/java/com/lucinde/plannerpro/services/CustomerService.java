@@ -1,12 +1,13 @@
 package com.lucinde.plannerpro.services;
 
 import com.lucinde.plannerpro.dtos.CustomerDto;
-import com.lucinde.plannerpro.dtos.TaskDto;
 import com.lucinde.plannerpro.exceptions.RecordNotFoundException;
 import com.lucinde.plannerpro.exceptions.RelationFoundException;
 import com.lucinde.plannerpro.models.Customer;
-import com.lucinde.plannerpro.models.Task;
 import com.lucinde.plannerpro.repositories.CustomerRepository;
+import com.lucinde.plannerpro.utils.PageResponse;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
@@ -43,6 +44,25 @@ public class CustomerService {
         Customer customer = customerOptional.get();
 
         return transferCustomerToDto(customer);
+    }
+
+    public PageResponse<CustomerDto> getCustomerWithPagination(int pageNo, int pageSize) {
+        PageRequest pageRequest = PageRequest.of(pageNo, pageSize, Sort.by("id").descending());
+        Page<Customer> pagingCustomer = customerRepository.findAll(pageRequest);
+
+        PageResponse<CustomerDto> response = new PageResponse<>();
+
+        response.count = pagingCustomer.getTotalElements();
+        response.totalPages = pagingCustomer.getTotalPages();
+        response.hasNext = pagingCustomer.hasNext();
+        response.hasPrevious = pagingCustomer.hasPrevious();
+        response.items = new ArrayList<>();
+
+        for (Customer c: pagingCustomer) {
+            response.items.add(transferCustomerToDto(c));
+        }
+
+        return response;
     }
 
     public CustomerDto addCustomer(CustomerDto customerDto) {
@@ -100,7 +120,7 @@ public class CustomerService {
         if(id != 0L) {
             Optional<Customer> customerOptional = customerRepository.findById(id);
             if(customerOptional.isEmpty()) {
-                throw new RecordNotFoundException("Geen taak gevonden met id: " + id);
+                throw new RecordNotFoundException("Geen klant gevonden met id: " + id);
             }
             customer = customerOptional.get();
         } else {

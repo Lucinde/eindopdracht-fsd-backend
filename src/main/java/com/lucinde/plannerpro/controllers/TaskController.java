@@ -3,6 +3,7 @@ package com.lucinde.plannerpro.controllers;
 import com.lucinde.plannerpro.dtos.TaskDto;
 import com.lucinde.plannerpro.utils.Helpers;
 import com.lucinde.plannerpro.services.TaskService;
+import com.lucinde.plannerpro.utils.PageResponse;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
@@ -36,29 +37,9 @@ public class TaskController {
 
     @GetMapping({"/pages"})
     public ResponseEntity<Object> getTasksWithPagination(@RequestParam Integer pageNo, @RequestParam Integer pageSize) {
-        TaskService.Response taskDto = taskService.getTasksWithPagination(pageNo, pageSize);
-
-        //todo: dit moet in React gedaan worden, als dat werkt kan dit verwijderd worden en de response aangepast
-//        int nextPage = pageNo + 1;
-//        String nextPageLink = null;
-//        if (nextPage > 0 && taskDto != null && !taskDto.isEmpty()) {
-//            UriComponentsBuilder builderNext = UriComponentsBuilder.fromHttpUrl("http://localhost:8080/pages")
-//                    .queryParam("pageNo", nextPage)
-//                    .queryParam("pageSize", pageSize);
-//            nextPageLink = builderNext.toUriString();
-//        }
-//
-//        int prevPage = pageNo - 1;
-//        String prevPageLink = null;
-//        if (prevPage >= 0) {
-//            UriComponentsBuilder builderPrev = UriComponentsBuilder.fromHttpUrl("http://localhost:8080/pages")
-//                    .queryParam("pageNo", prevPage)
-//                    .queryParam("pageSize", pageSize);
-//            prevPageLink = builderPrev.toUriString();
-//        }
+        PageResponse<TaskDto> taskDto = taskService.getTasksWithPagination(pageNo, pageSize);
 
         return ResponseEntity.ok().body(taskDto);
-//        return ResponseEntity.ok().headers(HeaderUtil.createLinkHeader(nextPageLink, prevPageLink)).body(taskDto);
     }
 
     @PostMapping
@@ -88,13 +69,13 @@ public class TaskController {
         return ResponseEntity.noContent().build();
     }
 
-    public static class HeaderUtil {
-        public static HttpHeaders createLinkHeader(String nextPageLink, String previousLink) {
-            HttpHeaders headers = new HttpHeaders();
-            headers.add("next", nextPageLink);
-            headers.add("previous", previousLink);
-            return headers;
-        }
-    }
+//    public static class HeaderUtil {
+//        public static HttpHeaders createLinkHeader(String nextPageLink, String previousLink) {
+//            HttpHeaders headers = new HttpHeaders();
+//            headers.add("next", nextPageLink);
+//            headers.add("previous", previousLink);
+//            return headers;
+//        }
+//    }
 
 }

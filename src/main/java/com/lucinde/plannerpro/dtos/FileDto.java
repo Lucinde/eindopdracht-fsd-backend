@@ -11,7 +11,7 @@ public class FileDto {
     @NotBlank
     public byte[] data;
     public String mimeType;
-    @NotBlank(message = "fill in description")
+    @NotBlank
     public String description;
     public Task task;
 }

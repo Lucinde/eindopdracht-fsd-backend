@@ -75,10 +75,10 @@ public class SpringSecurityConfig {
                 // ----------------------- SCHEDULE TASKS -----------------------
                 .requestMatchers(HttpMethod.GET, "/schedule-tasks").hasAnyRole("ADMIN", "PLANNER", "MECHANIC")
                 .requestMatchers(HttpMethod.GET, "/schedule-tasks/{id}").hasAnyRole("ADMIN", "PLANNER", "MECHANIC")
-                .requestMatchers(HttpMethod.POST, "/schedule-tasks/{id}").hasAnyRole("ADMIN", "PLANNER")
+                .requestMatchers(HttpMethod.POST, "/schedule-tasks").hasAnyRole("ADMIN", "PLANNER")
                 .requestMatchers(HttpMethod.PUT, "/schedule-tasks/{id}").hasAnyRole("ADMIN", "PLANNER")
                 .requestMatchers(HttpMethod.PUT, "/schedule-tasks/{id}/task/{task_id}").hasAnyRole("ADMIN", "PLANNER")
-                .requestMatchers(HttpMethod.DELETE, "/schedule-tasks").hasAnyRole("ADMIN", "PLANNER")
+                .requestMatchers(HttpMethod.DELETE, "/schedule-tasks/{id}").hasAnyRole("ADMIN", "PLANNER")
 
                 // --------------------------- FILES ---------------------------
                 .requestMatchers(HttpMethod.GET, "/files/**").hasAnyRole("ADMIN", "PLANNER", "MECHANIC")

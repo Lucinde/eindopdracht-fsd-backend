@@ -35,6 +35,11 @@ public class FileController {
         return ResponseEntity.ok().body(fileService.getFile(id));
     }
 
+    @GetMapping("/task/{task_id}")
+    public ResponseEntity<List<FileDto>> getFilesByTaskId(@PathVariable Long task_id) {
+        return ResponseEntity.ok().body(fileService.getFilesByTaskId(task_id));
+    }
+
     @PostMapping
     public ResponseEntity<Object> addFile(@RequestParam()MultipartFile file, @Valid @RequestParam() String description, @RequestParam() Long task_id) throws IOException, HttpClientErrorException.BadRequest {
         System.out.println(description);

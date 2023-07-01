@@ -9,6 +9,7 @@ import com.lucinde.plannerpro.repositories.FileRepository;
 import com.lucinde.plannerpro.repositories.TaskRepository;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -48,6 +49,17 @@ public class FileService {
         return transferFileToDto(file);
     }
 
+    @Transactional(readOnly = true)
+    public List<FileDto> getFilesByTaskId(Long taskId) {
+        Iterable<File> files = fileRepository.findByTask_Id(taskId);
+        List<FileDto> fileDtos = new ArrayList<>();
+
+        for (File f: files) {
+            fileDtos.add(transferFileToDto(f));
+        }
+        return fileDtos;
+    }
+
     public FileDto addFile(MultipartFile fileUpload, String description, Long task_id) throws IOException {
         //De foutmelding werkt alleen als de description empty is, niet als de complete parameter mist. Is die nog toe te voegen? -----> de key/param zal altijd meekomen vanuit de frontend dus hier hoef je niet op te checken. Aangezien deze foutmelding/badrequest ook al gebeurt voor je in je methode komt kun je hier geen verdere controle over uitvoeren.
         //Foutmeldingen worden afgehandeld in createNewFile
@@ -78,11 +90,12 @@ public class FileService {
     }
 
     private File createNewFile(MultipartFile fileUpload, String description, Long task_id) throws IOException {
-        if(description.isEmpty()) {
-            throw new ContentNotFoundException("Voeg nog een beschrijving toe voor je afbeelding");
-        }
+
         if(fileUpload.isEmpty()) {
             throw new ContentNotFoundException("Je moet nog een bestand uploaden");
+        }
+        if(description.isEmpty() || description.isBlank()) {
+            throw new ContentNotFoundException("Voeg nog een beschrijving toe voor je afbeelding");
         }
 
         File newFile = new File();

@@ -26,4 +26,8 @@ public class ScheduleTask {
     @JsonIgnore
     private Task task;
 
+    @ManyToOne
+    @JsonIgnore
+    private User mechanic;
+
 }

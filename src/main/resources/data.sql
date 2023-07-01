@@ -53,7 +53,8 @@ VALUES ('John', '$2a$12$vL/WjHUF7ZL5bYDQNfCkS.C.eKpd/xZlAzAgeO5ItC9kNBHyajzbW', 
 INSERT INTO authorities (username, authority)
 VALUES ('John', 'ROLE_ADMIN'),
        ('Jane', 'ROLE_PLANNER'),
-       ('Mike', 'ROLE_MECHANIC');
+       ('Mike', 'ROLE_MECHANIC'),
+       ('Piet', 'ROLE_MECHANIC');
 
 --todo: niet vergeten inlog voor admin toe te voegen, noem deze gebruikers in de documentatie ook met het plain text-password erbij en niet alleen de encrypted versie
 

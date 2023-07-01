@@ -89,4 +89,12 @@ public class UserController {
         return ResponseEntity.noContent().build();
     }
 
+    //*------------------- Eigen methodes -------------------*//
+    @GetMapping("/mechanics")
+    public ResponseEntity<List<UserDto>> getMechanics() {
+        List<UserDto> userDtos = userService.getMechanics();
+
+        return ResponseEntity.ok().body(userDtos);
+    }
+
 }

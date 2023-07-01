@@ -3,6 +3,7 @@ package com.lucinde.plannerpro.models;
 import jakarta.persistence.*;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 @Entity
@@ -32,6 +33,9 @@ public class User {
             fetch = FetchType.EAGER)
     private Set<Authority> authorities = new HashSet<>();
 
+    @OneToMany(mappedBy = "mechanic")
+    private List<ScheduleTask> scheduleTask;
+
     public String getUsername() { return username; }
     public void setUsername(String username) {
         this.username = username;
@@ -55,5 +59,13 @@ public class User {
     }
     public void removeAuthority(Authority authority) {
         this.authorities.remove(authority);
+    }
+
+    public List<ScheduleTask> getScheduleTask() {
+        return scheduleTask;
+    }
+
+    public void setScheduleTask(List<ScheduleTask> scheduleTask) {
+        this.scheduleTask = scheduleTask;
     }
 }

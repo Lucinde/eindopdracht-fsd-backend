@@ -52,6 +52,7 @@ public class SpringSecurityConfig {
                 // --------------------------- USERS ---------------------------
                 .requestMatchers(HttpMethod.POST, "/users").permitAll() //todo: mag iedereen een user aanmaken of dit beter beveiligen tot admin/planner
                 .requestMatchers(HttpMethod.GET,"/users").hasRole("ADMIN")
+                .requestMatchers(HttpMethod.GET,"/users/mechanics").hasAnyRole("ADMIN", "PLANNER")
                 .requestMatchers(HttpMethod.POST,"/users/**").hasRole("ADMIN")
                 .requestMatchers(HttpMethod.PUT,"/users/**").hasRole("ADMIN")
                 .requestMatchers(HttpMethod.DELETE, "/users/**").hasRole("ADMIN")

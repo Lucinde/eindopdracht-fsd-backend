@@ -91,6 +91,17 @@ public class UserService {
         userRepository.save(user);
     }
 
+    //*------------------- Eigen methodes -------------------*//
+    public List<UserDto> getMechanics() {
+        List<UserDto> collection = new ArrayList<>();
+        List<User> list = userRepository.findByAuthority("ROLE_MECHANIC");
+        for (User user : list) {
+            collection.add(fromUser(user));
+        }
+        return collection;
+    }
+
+
     public static UserDto fromUser(User user){
 
         var dto = new UserDto();
@@ -101,6 +112,7 @@ public class UserService {
         dto.apikey = user.getApikey();
         dto.email = user.getEmail();
         dto.authorities = user.getAuthorities();
+        dto.scheduleTask = user.getScheduleTask();
 
         return dto;
     }
@@ -114,6 +126,7 @@ public class UserService {
         user.setEnabled(userDto.getEnabled());
         user.setApikey(userDto.getApikey());
         user.setEmail(userDto.getEmail());
+        user.setScheduleTask(userDto.getScheduleTask());
 
         return user;
     }

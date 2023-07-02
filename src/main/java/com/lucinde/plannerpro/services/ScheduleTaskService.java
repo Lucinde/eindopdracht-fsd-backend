@@ -92,6 +92,7 @@ public class ScheduleTaskService {
         scheduleTaskDto.startTime = scheduleTask.getStartTime();
         scheduleTaskDto.endTime = scheduleTask.getEndTime();
         scheduleTaskDto.task = scheduleTask.getTask();
+        scheduleTaskDto.mechanic = scheduleTask.getMechanic();
 
         return scheduleTaskDto;
     }
@@ -122,6 +123,8 @@ public class ScheduleTaskService {
             scheduleTask.setEndTime(scheduleTaskDto.startTime);
         if(scheduleTaskDto.task != null)
             scheduleTask.setTask(scheduleTaskDto.task);
+        if(scheduleTaskDto.mechanic != null)
+            scheduleTask.setMechanic(scheduleTaskDto.mechanic);
 
         return scheduleTask;
     }

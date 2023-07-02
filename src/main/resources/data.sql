@@ -27,13 +27,6 @@ VALUES ('Repareer kapotte vaatwasser', 'Onderdelen vervangen en vaatwasser gerep
        ('Reinig broodrooster', 'Broodrooster gereinigd', false, 7),
        ('Vervang lampen in diepvrieskast', 'Lampen in diepvrieskast vervangen ', true, 8);
 
-INSERT INTO schedule_tasks (date, start_time, end_time, task_id)
-VALUES ('2022-08-01', '13:00:00', '16:00:00', 1),
-       ('2023-08-01', '10:00:00', '12:00:00', 2),
-       ('2023-08-02', '10:00:00', '12:00:00', 4),
-       ('2023-08-02', '14:00:00', '16:00:00', 5),
-       ('2023-08-03', '09:00:00', '11:00:00', 3);
-
 INSERT INTO files (filename, data, mime_type, description, task_id)
 VALUES ('broodrooster.jpg', '31656', 'image/jpeg', 'broodrooster in hotel', 16),
        ('vaatwasser.jpg', '31720', 'image/jpeg', 'repareren vaatwasser', 1),
@@ -58,3 +51,9 @@ VALUES ('John', 'ROLE_ADMIN'),
 
 --todo: niet vergeten inlog voor admin toe te voegen, noem deze gebruikers in de documentatie ook met het plain text-password erbij en niet alleen de encrypted versie
 
+INSERT INTO schedule_tasks (date, start_time, end_time, task_id, mechanic_username)
+VALUES ('2022-08-01', '13:00:00', '16:00:00', 1, 'Mike'),
+       ('2023-08-01', '10:00:00', '12:00:00', 2, 'Mike'),
+       ('2023-08-02', '10:00:00', '12:00:00', 4, 'Piet'),
+       ('2023-08-02', '14:00:00', '16:00:00', 5, 'Piet'),
+       ('2023-08-03', '09:00:00', '11:00:00', 3, 'Mike');

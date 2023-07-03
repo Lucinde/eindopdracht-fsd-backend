@@ -1,14 +1,19 @@
 package com.lucinde.plannerpro.services;
 
 import com.lucinde.plannerpro.dtos.ScheduleTaskDto;
+import com.lucinde.plannerpro.exceptions.BadRequestException;
 import com.lucinde.plannerpro.exceptions.RecordNotFoundException;
+import com.lucinde.plannerpro.exceptions.RelationFoundException;
 import com.lucinde.plannerpro.models.ScheduleTask;
 import com.lucinde.plannerpro.models.Task;
+import com.lucinde.plannerpro.models.User;
 import com.lucinde.plannerpro.repositories.ScheduleTaskRepository;
 import com.lucinde.plannerpro.repositories.TaskRepository;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -48,7 +53,21 @@ public class ScheduleTaskService {
 
     public ScheduleTaskDto addScheduleTask(ScheduleTaskDto scheduleTaskDto) {
         ScheduleTask scheduleTask = transferDtoToScheduleTask(scheduleTaskDto);
-        //todo: controle toevoegen of de tijden kloppen en niet overlappen bij monteurs of tijden
+
+        LocalDate date = scheduleTask.getDate();
+        LocalTime startTime = scheduleTask.getStartTime();
+        LocalTime endTime = scheduleTask.getEndTime();
+        User mechanic = scheduleTask.getMechanic();
+
+        if(endTime.compareTo(startTime) <= 0) {
+            throw new BadRequestException("Eindtijd kan niet voor de begintijd liggen");
+        }
+
+        boolean isMechanicAlreadyScheduled = scheduleTaskRepository.countConflictingTasks(mechanic, date, startTime, endTime) > 0;
+
+        if (isMechanicAlreadyScheduled) {
+            throw new RelationFoundException("De monteur is al ingepland op deze dag en tijd.");
+        }
         scheduleTaskRepository.save(scheduleTask);
 
         return transferScheduleTaskToDto(scheduleTask);
@@ -117,10 +136,10 @@ public class ScheduleTaskService {
         // Geen setId nodig, deze genereert de database of staat in de URL
         if(scheduleTaskDto.date != null)
             scheduleTask.setDate(scheduleTaskDto.date);
-        if(scheduleTaskDto.endTime != null)
-            scheduleTask.setStartTime(scheduleTaskDto.endTime);
         if(scheduleTaskDto.startTime != null)
-            scheduleTask.setEndTime(scheduleTaskDto.startTime);
+            scheduleTask.setStartTime(scheduleTaskDto.startTime);
+        if(scheduleTaskDto.endTime != null)
+            scheduleTask.setEndTime(scheduleTaskDto.endTime);
         if(scheduleTaskDto.task != null)
             scheduleTask.setTask(scheduleTaskDto.task);
         if(scheduleTaskDto.mechanic != null)

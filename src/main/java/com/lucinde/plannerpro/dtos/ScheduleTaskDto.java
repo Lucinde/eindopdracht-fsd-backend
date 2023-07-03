@@ -18,6 +18,5 @@ public class ScheduleTaskDto {
     public LocalTime endTime;
 
     public Task task;
-
     public User mechanic;
 }

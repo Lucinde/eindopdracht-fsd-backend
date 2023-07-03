@@ -78,6 +78,7 @@ public class SpringSecurityConfig {
                 // ----------------------- SCHEDULE TASKS -----------------------
                 .requestMatchers(HttpMethod.GET, "/schedule-tasks").hasAnyRole("ADMIN", "PLANNER", "MECHANIC")
                 .requestMatchers(HttpMethod.GET, "/schedule-tasks/{id}").hasAnyRole("ADMIN", "PLANNER", "MECHANIC")
+                .requestMatchers(HttpMethod.GET, "/schedule-tasks/pages/{mechanic}").hasAnyRole("ADMIN", "PLANNER", "MECHANIC")
                 .requestMatchers(HttpMethod.POST, "/schedule-tasks").hasAnyRole("ADMIN", "PLANNER")
                 .requestMatchers(HttpMethod.PUT, "/schedule-tasks/{id}").hasAnyRole("ADMIN", "PLANNER")
                 .requestMatchers(HttpMethod.PUT, "/schedule-tasks/{id}/task/{task_id}").hasAnyRole("ADMIN", "PLANNER")

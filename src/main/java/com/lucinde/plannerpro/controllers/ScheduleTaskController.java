@@ -1,15 +1,21 @@
 package com.lucinde.plannerpro.controllers;
 
 import com.lucinde.plannerpro.dtos.ScheduleTaskDto;
+import com.lucinde.plannerpro.dtos.TaskDto;
 import com.lucinde.plannerpro.utils.Helpers;
 import com.lucinde.plannerpro.services.ScheduleTaskService;
+import com.lucinde.plannerpro.utils.PageResponse;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.net.URI;
+import java.util.Collection;
 import java.util.List;
 
 @RestController
@@ -31,6 +37,16 @@ public class ScheduleTaskController {
     @GetMapping("/{id}")
     public ResponseEntity<ScheduleTaskDto> getScheduleTask(@PathVariable Long id) {
         return ResponseEntity.ok().body(scheduleTaskService.getScheduleTask(id));
+    }
+
+    @GetMapping("/pages/{mechanic}")
+    public ResponseEntity<Object> getScheduleTasksWithPagination(@PathVariable String mechanic, @RequestParam Integer pageNo, @RequestParam Integer pageSize, Authentication authentication) {
+        String userRole = getUserRole(authentication);
+        String requestingUsername = authentication.getName();
+
+        PageResponse<ScheduleTaskDto> scheduleTaskDto = scheduleTaskService.getScheduleTasksByMechanicWithPagination(mechanic, pageNo, pageSize, userRole, requestingUsername);
+
+        return ResponseEntity.ok().body(scheduleTaskDto);
     }
 
     @PostMapping
@@ -62,5 +78,11 @@ public class ScheduleTaskController {
     public ResponseEntity<Object> deleteScheduleTask(@PathVariable Long id) {
         scheduleTaskService.deleteScheduleTask(id);
         return ResponseEntity.noContent().build();
+    }
+
+    private String getUserRole(Authentication authentication) {
+        Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
+        // Assuming the user has a single role, retrieve the first authority
+        return authorities.iterator().next().getAuthority();
     }
 }

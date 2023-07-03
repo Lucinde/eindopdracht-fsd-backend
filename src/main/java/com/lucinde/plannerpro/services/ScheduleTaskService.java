@@ -9,6 +9,9 @@ import com.lucinde.plannerpro.models.Task;
 import com.lucinde.plannerpro.models.User;
 import com.lucinde.plannerpro.repositories.ScheduleTaskRepository;
 import com.lucinde.plannerpro.repositories.TaskRepository;
+import com.lucinde.plannerpro.utils.PageResponse;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
@@ -16,6 +19,7 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 @Service
@@ -49,6 +53,37 @@ public class ScheduleTaskService {
         ScheduleTask scheduleTask = scheduleTaskOptional.get();
 
         return transferScheduleTaskToDto(scheduleTask);
+    }
+
+    public PageResponse<ScheduleTaskDto> getScheduleTasksByMechanicWithPagination(String mechanicUsername, int pageNo, int pageSize, String userRole, String requestingUsername) {
+        PageRequest pageRequest = PageRequest.of(pageNo, pageSize, Sort.by("id").descending());
+        Page<ScheduleTask> pagingScheduleTask;
+
+        if (userRole.equals("ROLE_ADMIN") || userRole.equals("ROLE_PLANNER")) {
+            // Admin or planner can see all tasks
+            pagingScheduleTask = scheduleTaskRepository.findByMechanicUsername(mechanicUsername, pageRequest);
+        } else {
+            // Mechanic can only see their own tasks
+            if(Objects.equals(requestingUsername, mechanicUsername)) {
+                pagingScheduleTask = scheduleTaskRepository.findByMechanicUsername(mechanicUsername, pageRequest);
+            } else {
+                throw new BadRequestException("U mag deze gegevens niet inzien");
+            }
+        }
+
+        PageResponse<ScheduleTaskDto> response = new PageResponse<>();
+
+        response.count = pagingScheduleTask.getTotalElements();
+        response.totalPages = pagingScheduleTask.getTotalPages();
+        response.hasNext = pagingScheduleTask.hasNext();
+        response.hasPrevious = pagingScheduleTask.hasPrevious();
+        response.items = new ArrayList<>();
+
+        for (ScheduleTask t: pagingScheduleTask) {
+            response.items.add(transferScheduleTaskToDto(t));
+        }
+
+        return response;
     }
 
     public ScheduleTaskDto addScheduleTask(ScheduleTaskDto scheduleTaskDto) {

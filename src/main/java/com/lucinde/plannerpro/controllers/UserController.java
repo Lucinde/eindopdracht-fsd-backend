@@ -4,6 +4,8 @@ import com.lucinde.plannerpro.dtos.UserDto;
 import com.lucinde.plannerpro.exceptions.BadRequestException;
 import com.lucinde.plannerpro.services.UserService;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
@@ -95,6 +97,17 @@ public class UserController {
         List<UserDto> userDtos = userService.getMechanics();
 
         return ResponseEntity.ok().body(userDtos);
+    }
+
+    @GetMapping(value = "/auth/{username}")
+    public ResponseEntity<UserDto> getUserByAuth(@PathVariable("username") String username) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String requestingUsername = authentication.getName();
+
+        UserDto optionalUser = userService.getUserCheckAuth(requestingUsername, username);
+
+        return ResponseEntity.ok().body(optionalUser);
+
     }
 
 }

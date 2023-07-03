@@ -9,4 +9,6 @@ import java.util.List;
 public interface UserRepository extends JpaRepository<User, String> {
     @Query("SELECT u FROM User u JOIN u.authorities a WHERE a.authority = :authority")
     List<User> findByAuthority(String authority);
+
+
 }

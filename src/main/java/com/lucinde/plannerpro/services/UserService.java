@@ -1,8 +1,11 @@
 package com.lucinde.plannerpro.services;
 
 import com.lucinde.plannerpro.dtos.UserDto;
+import com.lucinde.plannerpro.exceptions.BadRequestException;
+import com.lucinde.plannerpro.exceptions.RecordNotFoundException;
 import com.lucinde.plannerpro.exceptions.UsernameNotFoundException;
 import com.lucinde.plannerpro.models.Authority;
+import com.lucinde.plannerpro.models.Task;
 import com.lucinde.plannerpro.models.User;
 import com.lucinde.plannerpro.repositories.UserRepository;
 import com.lucinde.plannerpro.utils.RandomStringGenerator;
@@ -101,8 +104,79 @@ public class UserService {
         return collection;
     }
 
+    public UserDto getUserCheckAuth(String requestingUsername, String targetUsername) {
+        UserDto targetDto;
 
-    public static UserDto fromUser(User user){
+        // Retrieve the user based on the target username
+        Optional<User> user = userRepository.findById(targetUsername);
+        if (user.isPresent()) {
+            User targetUser = user.get();
+
+            // Check if the requesting user has sufficient access rights
+            if (isAllowedToAccess(requestingUsername, targetUser)) {
+                targetDto = fromUser(targetUser);
+            } else {
+                throw new BadRequestException("U heeft geen toegang tot deze gegevens");
+            }
+        } else {
+            throw new UsernameNotFoundException(targetUsername);
+        }
+
+        return targetDto;
+    }
+
+    private boolean isAllowedToAccess(String requestingUsername, User targetUser) {
+        // Admin and Planner can access all data
+        if (isRoleAdmin(requestingUsername) || isRolePlanner(requestingUsername)) {
+            return true;
+        }
+
+        // Mechanics can only access their own data
+        if (isRoleMechanic(requestingUsername)) {
+            return requestingUsername.equals(targetUser.getUsername());
+        }
+
+        return false;
+    }
+
+    private boolean isRoleAdmin(String username) {
+        User user = userRepository.findById(username).orElse(null);
+        if (user != null) {
+            for (Authority authority : user.getAuthorities()) {
+                if (authority.getAuthority().equals("ROLE_ADMIN")) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    private boolean isRolePlanner(String username) {
+        User user = userRepository.findById(username).orElse(null);
+        if (user != null) {
+            for (Authority authority : user.getAuthorities()) {
+                if (authority.getAuthority().equals("ROLE_PLANNER")) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    private boolean isRoleMechanic(String username) {
+        User user = userRepository.findById(username).orElse(null);
+        if (user != null) {
+            for (Authority authority : user.getAuthorities()) {
+                if (authority.getAuthority().equals("ROLE_MECHANIC")) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+
+    public static UserDto fromUser(User user) {
 
         var dto = new UserDto();
 

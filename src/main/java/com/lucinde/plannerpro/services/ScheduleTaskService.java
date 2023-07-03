@@ -56,7 +56,7 @@ public class ScheduleTaskService {
     }
 
     public PageResponse<ScheduleTaskDto> getScheduleTasksByMechanicWithPagination(String mechanicUsername, int pageNo, int pageSize, String userRole, String requestingUsername) {
-        PageRequest pageRequest = PageRequest.of(pageNo, pageSize, Sort.by("id").descending());
+        PageRequest pageRequest = PageRequest.of(pageNo, pageSize, Sort.by("date").ascending());
         Page<ScheduleTask> pagingScheduleTask;
 
         if (userRole.equals("ROLE_ADMIN") || userRole.equals("ROLE_PLANNER")) {

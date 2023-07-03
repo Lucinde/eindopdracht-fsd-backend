@@ -1,7 +1,6 @@
 package com.lucinde.plannerpro.controllers;
 
 import com.lucinde.plannerpro.dtos.ScheduleTaskDto;
-import com.lucinde.plannerpro.dtos.TaskDto;
 import com.lucinde.plannerpro.utils.Helpers;
 import com.lucinde.plannerpro.services.ScheduleTaskService;
 import com.lucinde.plannerpro.utils.PageResponse;
@@ -9,7 +8,6 @@ import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
@@ -40,7 +38,7 @@ public class ScheduleTaskController {
     }
 
     @GetMapping("/pages/{mechanic}")
-    public ResponseEntity<Object> getScheduleTasksWithPagination(@PathVariable String mechanic, @RequestParam Integer pageNo, @RequestParam Integer pageSize, Authentication authentication) {
+    public ResponseEntity<Object> getScheduleTasksByMechanicWithPagination(@PathVariable String mechanic, @RequestParam Integer pageNo, @RequestParam Integer pageSize, Authentication authentication) {
         String userRole = getUserRole(authentication);
         String requestingUsername = authentication.getName();
 

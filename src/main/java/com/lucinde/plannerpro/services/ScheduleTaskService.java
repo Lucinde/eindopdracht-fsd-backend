@@ -85,14 +85,21 @@ public class ScheduleTaskService {
     public PageResponse<ScheduleTaskDto> getScheduleTasksByMechanicWithPagination(String mechanicUsername, int pageNo, int pageSize, String userRole, String requestingUsername, boolean includeOlderTasks) {
         PageRequest pageRequest = PageRequest.of(pageNo, pageSize, Sort.by("date").ascending());
         Page<ScheduleTask> pagingScheduleTask;
+        LocalDate currentDate = LocalDate.now();
 
-        if (userRole.equals("ROLE_ADMIN") || userRole.equals("ROLE_PLANNER")) {
+        if (userRole.equals("ROLE_ADMIN") || userRole.equals("ROLE_PLANNER") && includeOlderTasks) {
             // Admin or planner can see all tasks
             pagingScheduleTask = scheduleTaskRepository.findByMechanicUsername(mechanicUsername, pageRequest);
+        } else if ((userRole.equals("ROLE_ADMIN") || userRole.equals("ROLE_PLANNER") && !includeOlderTasks)) {
+            pagingScheduleTask = scheduleTaskRepository.findByMechanicUsernameAndDateAfter(mechanicUsername, currentDate, pageRequest);
         } else {
             // Mechanic can only see their own tasks
             if(Objects.equals(requestingUsername, mechanicUsername)) {
-                pagingScheduleTask = scheduleTaskRepository.findByMechanicUsername(mechanicUsername, pageRequest);
+                if(includeOlderTasks) {
+                    pagingScheduleTask = scheduleTaskRepository.findByMechanicUsername(mechanicUsername, pageRequest);
+                } else {
+                    pagingScheduleTask = scheduleTaskRepository.findByMechanicUsernameAndDateAfter(mechanicUsername, currentDate, pageRequest);
+                }
             } else {
                 throw new BadRequestException("U mag deze gegevens niet inzien");
             }
@@ -106,13 +113,8 @@ public class ScheduleTaskService {
         response.hasPrevious = pagingScheduleTask.hasPrevious();
         response.items = new ArrayList<>();
 
-        // Nodig wanneer we alleen taken in het heden of de toekomst willen laten zien
-        LocalDate currentDate = LocalDate.now();
-
         for (ScheduleTask t : pagingScheduleTask) {
-            if (includeOlderTasks || t.getDate().isAfter(currentDate) || t.getDate().isEqual(currentDate)) {
-                response.items.add(transferScheduleTaskToDto(t));
-            }
+            response.items.add(transferScheduleTaskToDto(t));
         }
 
         return response;

@@ -1,6 +1,7 @@
 package com.lucinde.plannerpro.controllers;
 
 import com.lucinde.plannerpro.dtos.ScheduleTaskDto;
+import com.lucinde.plannerpro.dtos.TaskDto;
 import com.lucinde.plannerpro.utils.Helpers;
 import com.lucinde.plannerpro.services.ScheduleTaskService;
 import com.lucinde.plannerpro.utils.PageResponse;
@@ -35,6 +36,13 @@ public class ScheduleTaskController {
     @GetMapping("/{id}")
     public ResponseEntity<ScheduleTaskDto> getScheduleTask(@PathVariable Long id) {
         return ResponseEntity.ok().body(scheduleTaskService.getScheduleTask(id));
+    }
+
+    @GetMapping("/pages")
+    public ResponseEntity<Object> getTasksWithPagination(@RequestParam Integer pageNo, @RequestParam Integer pageSize) {
+        PageResponse<ScheduleTaskDto> scheduleTaskDto = scheduleTaskService.getScheduleTaskWithPagination(pageNo, pageSize);
+
+        return ResponseEntity.ok().body(scheduleTaskDto);
     }
 
     @GetMapping("/pages/{mechanic}")

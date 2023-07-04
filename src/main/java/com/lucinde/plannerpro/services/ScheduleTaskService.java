@@ -1,6 +1,7 @@
 package com.lucinde.plannerpro.services;
 
 import com.lucinde.plannerpro.dtos.ScheduleTaskDto;
+import com.lucinde.plannerpro.dtos.TaskDto;
 import com.lucinde.plannerpro.exceptions.BadRequestException;
 import com.lucinde.plannerpro.exceptions.RecordNotFoundException;
 import com.lucinde.plannerpro.exceptions.RelationFoundException;
@@ -53,6 +54,25 @@ public class ScheduleTaskService {
         ScheduleTask scheduleTask = scheduleTaskOptional.get();
 
         return transferScheduleTaskToDto(scheduleTask);
+    }
+
+    public PageResponse<ScheduleTaskDto> getScheduleTaskWithPagination(int pageNo, int pageSize) {
+        PageRequest pageRequest = PageRequest.of(pageNo, pageSize, Sort.by("date").ascending());
+        Page<ScheduleTask> pagingScheduleTask = scheduleTaskRepository.findAll(pageRequest);
+
+        PageResponse<ScheduleTaskDto> response = new PageResponse<>();
+
+        response.count = pagingScheduleTask.getTotalElements();
+        response.totalPages = pagingScheduleTask.getTotalPages();
+        response.hasNext = pagingScheduleTask.hasNext();
+        response.hasPrevious = pagingScheduleTask.hasPrevious();
+        response.items = new ArrayList<>();
+
+        for (ScheduleTask t: pagingScheduleTask) {
+            response.items.add(transferScheduleTaskToDto(t));
+        }
+
+        return response;
     }
 
     public PageResponse<ScheduleTaskDto> getScheduleTasksByMechanicWithPagination(String mechanicUsername, int pageNo, int pageSize, String userRole, String requestingUsername, boolean includeOlderTasks) {

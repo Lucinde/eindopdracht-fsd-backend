@@ -2,7 +2,9 @@ package com.lucinde.plannerpro.dtos;
 
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.lucinde.plannerpro.models.Authority;
+import com.lucinde.plannerpro.models.ScheduleTask;
 
+import java.util.List;
 import java.util.Set;
 
 public class UserDto {
@@ -13,6 +15,8 @@ public class UserDto {
     public String email;
     @JsonSerialize
     public Set<Authority> authorities;
+
+    public List<ScheduleTask> scheduleTask;
 
     public String getUsername() {
         return username;
@@ -62,4 +66,11 @@ public class UserDto {
         this.authorities = authorities;
     }
 
+    public List<ScheduleTask> getScheduleTask() {
+        return scheduleTask;
+    }
+
+    public void setScheduleTask(List<ScheduleTask> scheduleTask) {
+        this.scheduleTask = scheduleTask;
+    }
 }

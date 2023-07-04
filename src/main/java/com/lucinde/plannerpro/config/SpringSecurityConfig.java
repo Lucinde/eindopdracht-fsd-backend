@@ -70,7 +70,8 @@ public class SpringSecurityConfig {
                 // --------------------------- TASKS ---------------------------
                 .requestMatchers(HttpMethod.GET, "/tasks").hasAnyRole("ADMIN", "PLANNER", "MECHANIC")
                 .requestMatchers(HttpMethod.GET, "/tasks/{id}").hasAnyRole("ADMIN", "PLANNER", "MECHANIC")
-                .requestMatchers(HttpMethod.GET, "/tasks/pages").hasAnyRole("ADMIN", "PLANNER", "MECHANIC")
+                .requestMatchers(HttpMethod.GET, "/tasks/pages").hasAnyRole("ADMIN", "PLANNER")
+                .requestMatchers(HttpMethod.GET, "/tasks/pages/{mechanic}").hasAnyRole("ADMIN", "PLANNER", "MECHANIC")
                 .requestMatchers(HttpMethod.POST, "/tasks").hasAnyRole("ADMIN", "PLANNER")
                 .requestMatchers(HttpMethod.PUT, "/tasks/{id}").hasAnyRole("ADMIN", "PLANNER", "MECHANIC")
                 .requestMatchers(HttpMethod.DELETE, "/tasks/{id}").hasAnyRole("ADMIN", "PLANNER")

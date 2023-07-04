@@ -39,8 +39,8 @@ public class ScheduleTaskController {
     }
 
     @GetMapping("/pages")
-    public ResponseEntity<Object> getTasksWithPagination(@RequestParam Integer pageNo, @RequestParam Integer pageSize) {
-        PageResponse<ScheduleTaskDto> scheduleTaskDto = scheduleTaskService.getScheduleTaskWithPagination(pageNo, pageSize);
+    public ResponseEntity<Object> getTasksWithPagination(@RequestParam Integer pageNo, @RequestParam Integer pageSize, @RequestParam boolean includeOlderTasks) {
+        PageResponse<ScheduleTaskDto> scheduleTaskDto = scheduleTaskService.getScheduleTaskWithPagination(pageNo, pageSize, includeOlderTasks);
 
         return ResponseEntity.ok().body(scheduleTaskDto);
     }

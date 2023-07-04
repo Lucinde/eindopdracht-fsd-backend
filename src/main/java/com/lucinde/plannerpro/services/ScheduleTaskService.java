@@ -56,9 +56,16 @@ public class ScheduleTaskService {
         return transferScheduleTaskToDto(scheduleTask);
     }
 
-    public PageResponse<ScheduleTaskDto> getScheduleTaskWithPagination(int pageNo, int pageSize) {
+    public PageResponse<ScheduleTaskDto> getScheduleTaskWithPagination(int pageNo, int pageSize, boolean includeOlderTasks) {
         PageRequest pageRequest = PageRequest.of(pageNo, pageSize, Sort.by("date").ascending());
-        Page<ScheduleTask> pagingScheduleTask = scheduleTaskRepository.findAll(pageRequest);
+        Page<ScheduleTask> pagingScheduleTask;
+        LocalDate currentDate = LocalDate.now();
+
+        if(includeOlderTasks) {
+            pagingScheduleTask = scheduleTaskRepository.findAll(pageRequest);
+        } else {
+            pagingScheduleTask = scheduleTaskRepository.findAllByDateAfter(currentDate, pageRequest);
+        }
 
         PageResponse<ScheduleTaskDto> response = new PageResponse<>();
 
@@ -68,7 +75,7 @@ public class ScheduleTaskService {
         response.hasPrevious = pagingScheduleTask.hasPrevious();
         response.items = new ArrayList<>();
 
-        for (ScheduleTask t: pagingScheduleTask) {
+        for (ScheduleTask t : pagingScheduleTask) {
             response.items.add(transferScheduleTaskToDto(t));
         }
 

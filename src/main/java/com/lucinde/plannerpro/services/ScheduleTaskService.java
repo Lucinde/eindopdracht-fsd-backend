@@ -55,7 +55,7 @@ public class ScheduleTaskService {
         return transferScheduleTaskToDto(scheduleTask);
     }
 
-    public PageResponse<ScheduleTaskDto> getScheduleTasksByMechanicWithPagination(String mechanicUsername, int pageNo, int pageSize, String userRole, String requestingUsername) {
+    public PageResponse<ScheduleTaskDto> getScheduleTasksByMechanicWithPagination(String mechanicUsername, int pageNo, int pageSize, String userRole, String requestingUsername, boolean includeOlderTasks) {
         PageRequest pageRequest = PageRequest.of(pageNo, pageSize, Sort.by("date").ascending());
         Page<ScheduleTask> pagingScheduleTask;
 
@@ -79,8 +79,13 @@ public class ScheduleTaskService {
         response.hasPrevious = pagingScheduleTask.hasPrevious();
         response.items = new ArrayList<>();
 
-        for (ScheduleTask t: pagingScheduleTask) {
-            response.items.add(transferScheduleTaskToDto(t));
+        // Nodig wanneer we alleen taken in het heden of de toekomst willen laten zien
+        LocalDate currentDate = LocalDate.now();
+
+        for (ScheduleTask t : pagingScheduleTask) {
+            if (includeOlderTasks || t.getDate().isAfter(currentDate) || t.getDate().isEqual(currentDate)) {
+                response.items.add(transferScheduleTaskToDto(t));
+            }
         }
 
         return response;

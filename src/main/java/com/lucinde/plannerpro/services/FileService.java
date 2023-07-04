@@ -61,7 +61,6 @@ public class FileService {
     }
 
     public FileDto addFile(MultipartFile fileUpload, String description, Long task_id) throws IOException {
-        //De foutmelding werkt alleen als de description empty is, niet als de complete parameter mist. Is die nog toe te voegen? -----> de key/param zal altijd meekomen vanuit de frontend dus hier hoef je niet op te checken. Aangezien deze foutmelding/badrequest ook al gebeurt voor je in je methode komt kun je hier geen verdere controle over uitvoeren.
         //Foutmeldingen worden afgehandeld in createNewFile
         File newFile = createNewFile(fileUpload, description, task_id);
         fileRepository.save(newFile);

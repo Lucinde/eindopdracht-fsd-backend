@@ -38,11 +38,11 @@ public class ScheduleTaskController {
     }
 
     @GetMapping("/pages/{mechanic}")
-    public ResponseEntity<Object> getScheduleTasksByMechanicWithPagination(@PathVariable String mechanic, @RequestParam Integer pageNo, @RequestParam Integer pageSize, Authentication authentication) {
+    public ResponseEntity<Object> getScheduleTasksByMechanicWithPagination(@PathVariable String mechanic, @RequestParam Integer pageNo, @RequestParam Integer pageSize, Authentication authentication, @RequestParam boolean includeOlderTasks) {
         String userRole = getUserRole(authentication);
         String requestingUsername = authentication.getName();
 
-        PageResponse<ScheduleTaskDto> scheduleTaskDto = scheduleTaskService.getScheduleTasksByMechanicWithPagination(mechanic, pageNo, pageSize, userRole, requestingUsername);
+        PageResponse<ScheduleTaskDto> scheduleTaskDto = scheduleTaskService.getScheduleTasksByMechanicWithPagination(mechanic, pageNo, pageSize, userRole, requestingUsername, includeOlderTasks);
 
         return ResponseEntity.ok().body(scheduleTaskDto);
     }

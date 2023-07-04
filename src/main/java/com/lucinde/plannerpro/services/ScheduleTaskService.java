@@ -87,22 +87,14 @@ public class ScheduleTaskService {
         Page<ScheduleTask> pagingScheduleTask;
         LocalDate currentDate = LocalDate.now();
 
-        if (userRole.equals("ROLE_ADMIN") || userRole.equals("ROLE_PLANNER") && includeOlderTasks) {
-            // Admin or planner can see all tasks
-            pagingScheduleTask = scheduleTaskRepository.findByMechanicUsername(mechanicUsername, pageRequest);
-        } else if ((userRole.equals("ROLE_ADMIN") || userRole.equals("ROLE_PLANNER") && !includeOlderTasks)) {
-            pagingScheduleTask = scheduleTaskRepository.findByMechanicUsernameAndDateAfter(mechanicUsername, currentDate, pageRequest);
-        } else {
-            // Mechanic can only see their own tasks
-            if(Objects.equals(requestingUsername, mechanicUsername)) {
-                if(includeOlderTasks) {
-                    pagingScheduleTask = scheduleTaskRepository.findByMechanicUsername(mechanicUsername, pageRequest);
-                } else {
-                    pagingScheduleTask = scheduleTaskRepository.findByMechanicUsernameAndDateAfter(mechanicUsername, currentDate, pageRequest);
-                }
+        if (userRole.equals("ROLE_ADMIN") || userRole.equals("ROLE_PLANNER") || Objects.equals(requestingUsername, mechanicUsername)) {
+            if (includeOlderTasks) {
+                pagingScheduleTask = scheduleTaskRepository.findByMechanicUsername(mechanicUsername, pageRequest);
             } else {
-                throw new BadRequestException("U mag deze gegevens niet inzien");
+                pagingScheduleTask = scheduleTaskRepository.findByMechanicUsernameAndDateAfter(mechanicUsername, currentDate, pageRequest);
             }
+        } else {
+            throw new BadRequestException("U mag deze gegevens niet inzien");
         }
 
         PageResponse<ScheduleTaskDto> response = new PageResponse<>();

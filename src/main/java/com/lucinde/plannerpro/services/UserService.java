@@ -107,12 +107,11 @@ public class UserService {
     public UserDto getUserCheckAuth(String requestingUsername, String targetUsername) {
         UserDto targetDto;
 
-        // Retrieve the user based on the target username
         Optional<User> user = userRepository.findById(targetUsername);
         if (user.isPresent()) {
             User targetUser = user.get();
 
-            // Check if the requesting user has sufficient access rights
+            // Check of de requestingUser de juiste rechten heeft
             if (isAllowedToAccess(requestingUsername, targetUser)) {
                 targetDto = fromUser(targetUser);
             } else {
@@ -126,12 +125,12 @@ public class UserService {
     }
 
     private boolean isAllowedToAccess(String requestingUsername, User targetUser) {
-        // Admin and Planner can access all data
+        // Admin and Planner kunnen bij alle data
         if (isRoleAdmin(requestingUsername) || isRolePlanner(requestingUsername)) {
             return true;
         }
 
-        // Mechanics can only access their own data
+        // Mechanics kunnen alleen bij eigen data
         if (isRoleMechanic(requestingUsername)) {
             return requestingUsername.equals(targetUser.getUsername());
         }
@@ -174,6 +173,8 @@ public class UserService {
         }
         return false;
     }
+
+    //*------------------- Einde Eigen methodes -------------------*//
 
 
     public static UserDto fromUser(User user) {

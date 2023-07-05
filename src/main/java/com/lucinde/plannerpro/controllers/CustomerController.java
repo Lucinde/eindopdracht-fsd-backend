@@ -1,8 +1,7 @@
 package com.lucinde.plannerpro.controllers;
 
 import com.lucinde.plannerpro.dtos.CustomerDto;
-import com.lucinde.plannerpro.dtos.TaskDto;
-import com.lucinde.plannerpro.utils.Helpers;
+import com.lucinde.plannerpro.utils.FieldError;
 import com.lucinde.plannerpro.services.CustomerService;
 import com.lucinde.plannerpro.utils.PageResponse;
 import jakarta.validation.Valid;
@@ -18,7 +17,7 @@ import java.util.List;
 @RequestMapping("/customers")
 public class CustomerController {
     private final CustomerService customerService;
-    private final Helpers helpers = new Helpers();
+    private final FieldError fieldError = new FieldError();
 
     public CustomerController(CustomerService customerService) {
         this.customerService = customerService;
@@ -44,7 +43,7 @@ public class CustomerController {
     @PostMapping
     public ResponseEntity<Object> addCustomer(@Valid @RequestBody CustomerDto customerDto, BindingResult br) {
         if(br.hasFieldErrors()) {
-            return ResponseEntity.badRequest().body(helpers.fieldErrorBuilder(br));
+            return ResponseEntity.badRequest().body(fieldError.fieldErrorBuilder(br));
         }
         CustomerDto addedCustomer = customerService.addCustomer(customerDto);
         URI uri = URI.create(String.valueOf(ServletUriComponentsBuilder.fromCurrentRequest().path("/" + addedCustomer.id)));
@@ -56,7 +55,7 @@ public class CustomerController {
     @PutMapping("/{id}")
     public ResponseEntity<Object> updateCustomer(@PathVariable Long id, @Valid @RequestBody CustomerDto customerDto, BindingResult br) {
         if(br.hasFieldErrors()) {
-            return ResponseEntity.badRequest().body(helpers.fieldErrorBuilder(br));
+            return ResponseEntity.badRequest().body(fieldError.fieldErrorBuilder(br));
         }
         CustomerDto updateCustomer = customerService.updateCustomer(id, customerDto);
         return ResponseEntity.ok().body(updateCustomer);

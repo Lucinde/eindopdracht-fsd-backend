@@ -3,9 +3,12 @@ package com.lucinde.plannerpro.controllers;
 import com.lucinde.plannerpro.dtos.UserDto;
 import com.lucinde.plannerpro.exceptions.BadRequestException;
 import com.lucinde.plannerpro.services.UserService;
+import com.lucinde.plannerpro.utils.FieldError;
+import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
@@ -18,6 +21,8 @@ import java.util.Map;
 @RequestMapping(value = "/users")
 public class UserController {
     private final UserService userService;
+    private final FieldError fieldError = new FieldError();
+
 
     public UserController(UserService userService) {
         this.userService = userService;
@@ -43,7 +48,10 @@ public class UserController {
     }
 
     @PostMapping(value = "")
-    public ResponseEntity<UserDto> createKlant(@RequestBody UserDto dto) {
+    public ResponseEntity<Object> createKlant(@Valid @RequestBody UserDto dto, BindingResult br) {
+        if(br.hasFieldErrors()) {
+            return ResponseEntity.badRequest().body(fieldError.fieldErrorBuilder(br));
+        }
 
         String newUsername = userService.createUser(dto);
         userService.addAuthority(newUsername, "ROLE_MECHANIC");

@@ -1,6 +1,6 @@
 package com.lucinde.plannerpro.services;
 
-import com.lucinde.plannerpro.dtos.UserDto;
+import com.lucinde.plannerpro.dtos.UserInputDto;
 import com.lucinde.plannerpro.models.Authority;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -23,12 +23,11 @@ public class CustomUserDetailsService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String username) {
-        UserDto userDto = userService.getUser(username);
+        UserInputDto userInputDto = userService.getUserWithPassword(username);
 
+        String password = userInputDto.getPassword();
 
-        String password = userDto.getPassword();
-
-        Set<Authority> authorities = userDto.getAuthorities();
+        Set<Authority> authorities = userInputDto.getAuthorities();
         List<GrantedAuthority> grantedAuthorities = new ArrayList<>();
         for (Authority authority: authorities) {
             grantedAuthorities.add(new SimpleGrantedAuthority(authority.getAuthority()));

@@ -9,13 +9,13 @@ import jakarta.validation.constraints.Size;
 import java.util.List;
 import java.util.Set;
 
-public class UserDto {
+public class UserInputDto {
     @NotBlank
     public String username;
 
     @NotBlank
-    @Size(min = 6)
-    @Size(max = 25)
+    @Size(min = 6, message = "Het wachtwoord moet tussen de 6 en 25 tekens lang zijn")
+    @Size(max = 25, message = "Het wachtwoord moet tussen de 6 en 25 tekens lang zijn")
     public String password;
     public Boolean enabled;
     public String apikey;

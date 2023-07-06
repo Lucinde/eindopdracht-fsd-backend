@@ -55,6 +55,7 @@ public class SpringSecurityConfig {
                 .requestMatchers(HttpMethod.GET,"/users/{username}").hasAnyRole("ADMIN", "PLANNER", "MECHANIC")
                 .requestMatchers(HttpMethod.GET,"/users/mechanics").hasAnyRole("ADMIN", "PLANNER")
                 .requestMatchers(HttpMethod.GET,"/users/auth/{username}").hasAnyRole("ADMIN", "PLANNER", "MECHANIC")
+                .requestMatchers(HttpMethod.GET,"/users/**").hasRole("ADMIN")
                 .requestMatchers(HttpMethod.POST,"/users/**").hasRole("ADMIN")
                 .requestMatchers(HttpMethod.PUT,"/users/**").hasRole("ADMIN")
                 .requestMatchers(HttpMethod.DELETE, "/users/**").hasRole("ADMIN")
@@ -93,7 +94,7 @@ public class SpringSecurityConfig {
 
                 // ----------------------- AUTHENTICATION ----------------------
                 .requestMatchers("/authenticated").authenticated()
-                .requestMatchers("/authenticate").permitAll()/*allen dit punt mag toegankelijk zijn voor niet ingelogde gebruikers*/
+                .requestMatchers("/authenticate").permitAll()/*alleen dit punt mag toegankelijk zijn voor niet ingelogde gebruikers*/
 
                 .anyRequest().denyAll()
                 .and()

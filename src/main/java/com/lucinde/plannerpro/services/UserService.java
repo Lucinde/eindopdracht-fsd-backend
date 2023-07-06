@@ -1,11 +1,10 @@
 package com.lucinde.plannerpro.services;
 
-import com.lucinde.plannerpro.dtos.UserDto;
+import com.lucinde.plannerpro.dtos.UserInputDto;
+import com.lucinde.plannerpro.dtos.UserOutputDto;
 import com.lucinde.plannerpro.exceptions.BadRequestException;
-import com.lucinde.plannerpro.exceptions.RecordNotFoundException;
 import com.lucinde.plannerpro.exceptions.UsernameNotFoundException;
 import com.lucinde.plannerpro.models.Authority;
-import com.lucinde.plannerpro.models.Task;
 import com.lucinde.plannerpro.models.User;
 import com.lucinde.plannerpro.repositories.UserRepository;
 import com.lucinde.plannerpro.utils.RandomStringGenerator;
@@ -27,8 +26,8 @@ public class UserService {
         this.passwordEncoder = passwordEncoder;
     }
 
-    public List<UserDto> getUsers() {
-        List<UserDto> collection = new ArrayList<>();
+    public List<UserOutputDto> getUsers() {
+        List<UserOutputDto> collection = new ArrayList<>();
         List<User> list = userRepository.findAll();
         for (User user : list) {
             collection.add(fromUser(user));
@@ -36,11 +35,22 @@ public class UserService {
         return collection;
     }
 
-    public UserDto getUser(String username) {
-        UserDto dto = new UserDto();
+    public UserOutputDto getUser(String username) {
+        UserOutputDto dto;
         Optional<User> user = userRepository.findById(username);
         if (user.isPresent()){
             dto = fromUser(user.get());
+        }else {
+            throw new UsernameNotFoundException(username);
+        }
+        return dto;
+    }
+
+    public UserInputDto getUserWithPassword(String username) {
+        UserInputDto dto;
+        Optional<User> user = userRepository.findById(username);
+        if (user.isPresent()){
+            dto = fromUserInput(user.get());
         }else {
             throw new UsernameNotFoundException(username);
         }
@@ -51,12 +61,12 @@ public class UserService {
         return userRepository.existsById(username);
     }
 
-    public String createUser(UserDto userDto) {
+    public String createUser(UserInputDto userInputDto) {
         String randomString = RandomStringGenerator.generateAlphaNumeric(20);
-        userDto.setApikey(randomString);
+        userInputDto.setApikey(randomString);
         //passwordencoder voeg ik to in toUser-methode waardoor onderstaande regel kan vervallen
         //passwordEncoder.encode(userDto.password);
-        User newUser = userRepository.save(toUser(userDto));
+        User newUser = userRepository.save(toUser(userInputDto));
         return newUser.getUsername();
     }
 
@@ -64,24 +74,40 @@ public class UserService {
         userRepository.deleteById(username);
     }
 
-    public void updateUser(String username, UserDto newUser) {
+    public void updateUser(String username, UserInputDto newUser) {
         if (!userRepository.existsById(username)) throw new UsernameNotFoundException(username);
         User user = userRepository.findById(username).get();
-        user.setPassword(passwordEncoder.encode(newUser.getPassword()));
+        if(newUser.apikey != null)
+            user.setApikey(newUser.apikey);
+        if(newUser.password != null)
+            user.setPassword(passwordEncoder.encode(newUser.getPassword()));
+        if(newUser.email != null)
+            user.setEmail(newUser.getEmail());
+        if(newUser.enabled != null)
+            user.setEnabled(newUser.getEnabled());
         userRepository.save(user);
     }
 
     public Set<Authority> getAuthorities(String username) {
         if (!userRepository.existsById(username)) throw new UsernameNotFoundException(username);
         User user = userRepository.findById(username).get();
-        UserDto userDto = fromUser(user);
-        return userDto.getAuthorities();
+        UserInputDto userInputDto = fromUserInput(user);
+        return userInputDto.getAuthorities();
     }
 
     public void addAuthority(String username, String authority) {
 
         if (!userRepository.existsById(username)) throw new UsernameNotFoundException(username);
         User user = userRepository.findById(username).get();
+
+        // Check of de gebruiker de rol al heeft
+        Set<Authority> userAuthorities = user.getAuthorities();
+        for (Authority existingAuthority : userAuthorities) {
+            if (existingAuthority.getAuthority().equals(authority)) {
+                throw new BadRequestException("Gebruiker heeft deze rol al");
+            }
+        }
+
         user.addAuthority(new Authority(username, authority));
         userRepository.save(user);
     }
@@ -95,8 +121,8 @@ public class UserService {
     }
 
     //*------------------- Eigen methodes -------------------*//
-    public List<UserDto> getMechanics() {
-        List<UserDto> collection = new ArrayList<>();
+    public List<UserOutputDto> getMechanics() {
+        List<UserOutputDto> collection = new ArrayList<>();
         List<User> list = userRepository.findByAuthority("ROLE_MECHANIC");
         for (User user : list) {
             collection.add(fromUser(user));
@@ -104,8 +130,8 @@ public class UserService {
         return collection;
     }
 
-    public UserDto getUserCheckAuth(String requestingUsername, String targetUsername) {
-        UserDto targetDto;
+    public UserOutputDto getUserCheckAuth(String requestingUsername, String targetUsername) {
+        UserOutputDto targetDto;
 
         Optional<User> user = userRepository.findById(targetUsername);
         if (user.isPresent()) {
@@ -177,14 +203,12 @@ public class UserService {
     //*------------------- Einde Eigen methodes -------------------*//
 
 
-    public static UserDto fromUser(User user) {
+    public static UserOutputDto fromUser(User user) {
 
-        var dto = new UserDto();
+        var dto = new UserOutputDto();
 
         dto.username = user.getUsername();
-        dto.password = user.getPassword();
         dto.enabled = user.isEnabled();
-        dto.apikey = user.getApikey();
         dto.email = user.getEmail();
         dto.authorities = user.getAuthorities();
         dto.scheduleTask = user.getScheduleTask();
@@ -192,16 +216,31 @@ public class UserService {
         return dto;
     }
 
-    public User toUser(UserDto userDto) {
+    public static UserInputDto fromUserInput(User user) {
+
+        var dto = new UserInputDto();
+
+        dto.username = user.getUsername();
+        dto.password = user.getPassword();
+        dto.enabled = user.isEnabled();
+        dto.email = user.getEmail();
+        dto.apikey = user.getApikey();
+        dto.authorities = user.getAuthorities();
+        dto.scheduleTask = user.getScheduleTask();
+
+        return dto;
+    }
+
+    public User toUser(UserInputDto userInputDto) {
 
         var user = new User();
 
-        user.setUsername(userDto.getUsername());
-        user.setPassword(passwordEncoder.encode(userDto.getPassword()));
-        user.setEnabled(userDto.getEnabled());
-        user.setApikey(userDto.getApikey());
-        user.setEmail(userDto.getEmail());
-        user.setScheduleTask(userDto.getScheduleTask());
+        user.setUsername(userInputDto.getUsername());
+        user.setPassword(passwordEncoder.encode(userInputDto.getPassword()));
+        user.setEnabled(userInputDto.getEnabled());
+        user.setApikey(userInputDto.getApikey());
+        user.setEmail(userInputDto.getEmail());
+        user.setScheduleTask(userInputDto.getScheduleTask());
 
         return user;
     }

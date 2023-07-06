@@ -319,4 +319,32 @@ class CustomerServiceTest {
     @Test
     void testTransferDtoToCustomer() {
     }
+
+    @Test
+    void transferDtoToCustomerSetTaskList() {
+        // Arrange
+        ArrayList<Task> mockTaskList = mock(ArrayList.class);
+        Task task1 = new Task();
+        Task task2 = new Task();
+        Task task3 = new Task();
+        mockTaskList.addAll(List.of(task1, task2, task3));
+
+        CustomerDto customerDto6 = new CustomerDto();
+        customerDto6.id = 6L;
+        customerDto6.firstName = "Ada";
+        customerDto6.lastName = "Lovelace";
+        customerDto6.address = "Analytical Street 10";
+        customerDto6.zip = "4567YZ";
+        customerDto6.city = "London";
+        customerDto6.phoneNumber = "06-12345678";
+        customerDto6.email = "ada.lovelace@example.com";
+        customerDto6.taskList = mockTaskList;
+
+        // Act
+        Customer result = customerService.transferDtoToCustomer(customerDto6);
+
+        // Assert
+        assertNotNull(result);
+        assertEquals(customerDto6.taskList, result.getTaskList());
+    }
 }

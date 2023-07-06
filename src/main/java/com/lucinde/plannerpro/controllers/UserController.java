@@ -1,6 +1,6 @@
 package com.lucinde.plannerpro.controllers;
 
-import com.lucinde.plannerpro.dtos.UserDto;
+import com.lucinde.plannerpro.dtos.UserInputDto;
 import com.lucinde.plannerpro.exceptions.BadRequestException;
 import com.lucinde.plannerpro.services.UserService;
 import com.lucinde.plannerpro.utils.FieldError;
@@ -30,17 +30,17 @@ public class UserController {
 
 
     @GetMapping(value = "")
-    public ResponseEntity<List<UserDto>> getUsers() {
+    public ResponseEntity<List<UserInputDto>> getUsers() {
 
-        List<UserDto> userDtos = userService.getUsers();
+        List<UserInputDto> userInputDtos = userService.getUsers();
 
-        return ResponseEntity.ok().body(userDtos);
+        return ResponseEntity.ok().body(userInputDtos);
     }
 
     @GetMapping(value = "/{username}")
-    public ResponseEntity<UserDto> getUser(@PathVariable("username") String username) {
+    public ResponseEntity<UserInputDto> getUser(@PathVariable("username") String username) {
 
-        UserDto optionalUser = userService.getUser(username);
+        UserInputDto optionalUser = userService.getUser(username);
 
 
         return ResponseEntity.ok().body(optionalUser);
@@ -48,7 +48,7 @@ public class UserController {
     }
 
     @PostMapping(value = "")
-    public ResponseEntity<Object> createKlant(@Valid @RequestBody UserDto dto, BindingResult br) {
+    public ResponseEntity<Object> createKlant(@Valid @RequestBody UserInputDto dto, BindingResult br) {
         if(br.hasFieldErrors()) {
             return ResponseEntity.badRequest().body(fieldError.fieldErrorBuilder(br));
         }
@@ -63,7 +63,7 @@ public class UserController {
     }
 
     @PutMapping(value = "/{username}")
-    public ResponseEntity<UserDto> updateKlant(@PathVariable("username") String username, @RequestBody UserDto dto) {
+    public ResponseEntity<UserInputDto> updateKlant(@PathVariable("username") String username, @RequestBody UserInputDto dto) {
 
         userService.updateUser(username, dto);
 
@@ -101,18 +101,18 @@ public class UserController {
 
     //*------------------- Eigen methodes -------------------*//
     @GetMapping("/mechanics")
-    public ResponseEntity<List<UserDto>> getMechanics() {
-        List<UserDto> userDtos = userService.getMechanics();
+    public ResponseEntity<List<UserInputDto>> getMechanics() {
+        List<UserInputDto> userInputDtos = userService.getMechanics();
 
-        return ResponseEntity.ok().body(userDtos);
+        return ResponseEntity.ok().body(userInputDtos);
     }
 
     @GetMapping(value = "/auth/{username}")
-    public ResponseEntity<UserDto> getUserByAuth(@PathVariable("username") String username) {
+    public ResponseEntity<UserInputDto> getUserByAuth(@PathVariable("username") String username) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String requestingUsername = authentication.getName();
 
-        UserDto optionalUser = userService.getUserCheckAuth(requestingUsername, username);
+        UserInputDto optionalUser = userService.getUserCheckAuth(requestingUsername, username);
 
         return ResponseEntity.ok().body(optionalUser);
 

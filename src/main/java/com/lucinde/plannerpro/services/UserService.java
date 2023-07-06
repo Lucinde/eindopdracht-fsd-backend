@@ -1,11 +1,9 @@
 package com.lucinde.plannerpro.services;
 
-import com.lucinde.plannerpro.dtos.UserDto;
+import com.lucinde.plannerpro.dtos.UserInputDto;
 import com.lucinde.plannerpro.exceptions.BadRequestException;
-import com.lucinde.plannerpro.exceptions.RecordNotFoundException;
 import com.lucinde.plannerpro.exceptions.UsernameNotFoundException;
 import com.lucinde.plannerpro.models.Authority;
-import com.lucinde.plannerpro.models.Task;
 import com.lucinde.plannerpro.models.User;
 import com.lucinde.plannerpro.repositories.UserRepository;
 import com.lucinde.plannerpro.utils.RandomStringGenerator;
@@ -27,8 +25,8 @@ public class UserService {
         this.passwordEncoder = passwordEncoder;
     }
 
-    public List<UserDto> getUsers() {
-        List<UserDto> collection = new ArrayList<>();
+    public List<UserInputDto> getUsers() {
+        List<UserInputDto> collection = new ArrayList<>();
         List<User> list = userRepository.findAll();
         for (User user : list) {
             collection.add(fromUser(user));
@@ -36,8 +34,8 @@ public class UserService {
         return collection;
     }
 
-    public UserDto getUser(String username) {
-        UserDto dto = new UserDto();
+    public UserInputDto getUser(String username) {
+        UserInputDto dto = new UserInputDto();
         Optional<User> user = userRepository.findById(username);
         if (user.isPresent()){
             dto = fromUser(user.get());
@@ -51,12 +49,12 @@ public class UserService {
         return userRepository.existsById(username);
     }
 
-    public String createUser(UserDto userDto) {
+    public String createUser(UserInputDto userInputDto) {
         String randomString = RandomStringGenerator.generateAlphaNumeric(20);
-        userDto.setApikey(randomString);
+        userInputDto.setApikey(randomString);
         //passwordencoder voeg ik to in toUser-methode waardoor onderstaande regel kan vervallen
         //passwordEncoder.encode(userDto.password);
-        User newUser = userRepository.save(toUser(userDto));
+        User newUser = userRepository.save(toUser(userInputDto));
         return newUser.getUsername();
     }
 
@@ -64,7 +62,7 @@ public class UserService {
         userRepository.deleteById(username);
     }
 
-    public void updateUser(String username, UserDto newUser) {
+    public void updateUser(String username, UserInputDto newUser) {
         if (!userRepository.existsById(username)) throw new UsernameNotFoundException(username);
         User user = userRepository.findById(username).get();
         user.setPassword(passwordEncoder.encode(newUser.getPassword()));
@@ -74,8 +72,8 @@ public class UserService {
     public Set<Authority> getAuthorities(String username) {
         if (!userRepository.existsById(username)) throw new UsernameNotFoundException(username);
         User user = userRepository.findById(username).get();
-        UserDto userDto = fromUser(user);
-        return userDto.getAuthorities();
+        UserInputDto userInputDto = fromUser(user);
+        return userInputDto.getAuthorities();
     }
 
     public void addAuthority(String username, String authority) {
@@ -95,8 +93,8 @@ public class UserService {
     }
 
     //*------------------- Eigen methodes -------------------*//
-    public List<UserDto> getMechanics() {
-        List<UserDto> collection = new ArrayList<>();
+    public List<UserInputDto> getMechanics() {
+        List<UserInputDto> collection = new ArrayList<>();
         List<User> list = userRepository.findByAuthority("ROLE_MECHANIC");
         for (User user : list) {
             collection.add(fromUser(user));
@@ -104,8 +102,8 @@ public class UserService {
         return collection;
     }
 
-    public UserDto getUserCheckAuth(String requestingUsername, String targetUsername) {
-        UserDto targetDto;
+    public UserInputDto getUserCheckAuth(String requestingUsername, String targetUsername) {
+        UserInputDto targetDto;
 
         Optional<User> user = userRepository.findById(targetUsername);
         if (user.isPresent()) {
@@ -177,9 +175,9 @@ public class UserService {
     //*------------------- Einde Eigen methodes -------------------*//
 
 
-    public static UserDto fromUser(User user) {
+    public static UserInputDto fromUser(User user) {
 
-        var dto = new UserDto();
+        var dto = new UserInputDto();
 
         dto.username = user.getUsername();
         dto.password = user.getPassword();
@@ -192,16 +190,16 @@ public class UserService {
         return dto;
     }
 
-    public User toUser(UserDto userDto) {
+    public User toUser(UserInputDto userInputDto) {
 
         var user = new User();
 
-        user.setUsername(userDto.getUsername());
-        user.setPassword(passwordEncoder.encode(userDto.getPassword()));
-        user.setEnabled(userDto.getEnabled());
-        user.setApikey(userDto.getApikey());
-        user.setEmail(userDto.getEmail());
-        user.setScheduleTask(userDto.getScheduleTask());
+        user.setUsername(userInputDto.getUsername());
+        user.setPassword(passwordEncoder.encode(userInputDto.getPassword()));
+        user.setEnabled(userInputDto.getEnabled());
+        user.setApikey(userInputDto.getApikey());
+        user.setEmail(userInputDto.getEmail());
+        user.setScheduleTask(userInputDto.getScheduleTask());
 
         return user;
     }

@@ -54,6 +54,7 @@ class CustomerServiceTest {
         customer1.setCity("Leeuwarden");
         customer1.setPhoneNumber("06-12467890");
         customer1.setEmail("jessp@hotmail.com");
+        customer1.setTaskList(new ArrayList<>());
         customers.add(customer1);
 
         Customer customer2 = new Customer();
@@ -65,6 +66,7 @@ class CustomerServiceTest {
         customer2.setCity("London");
         customer2.setPhoneNumber("06-98765432");
         customer2.setEmail("newtonisaac@gmail.com");
+        customer2.setTaskList(new ArrayList<>());
         customers.add(customer2);
 
         Customer customer3 = new Customer();
@@ -76,6 +78,7 @@ class CustomerServiceTest {
         customer3.setCity("Paris");
         customer3.setPhoneNumber("06-56781234");
         customer3.setEmail("mariecurie@yahoo.com");
+        customer3.setTaskList(new ArrayList<>());
         customers.add(customer3);
 
         Customer customer4 = new Customer();
@@ -87,6 +90,7 @@ class CustomerServiceTest {
         customer4.setCity("Florence");
         customer4.setPhoneNumber("06-23456789");
         customer4.setEmail("galileogal@gmail.com");
+        customer4.setTaskList(new ArrayList<>());
         customers.add(customer4);
 
         Customer customer5 = new Customer();
@@ -98,6 +102,7 @@ class CustomerServiceTest {
         customer5.setCity("Belgrade");
         customer5.setPhoneNumber("06-87654321");
         customer5.setEmail("teslanikola@hotmail.com");
+        customer5.setTaskList(new ArrayList<>());
         customers.add(customer5);
 
     }
@@ -243,6 +248,15 @@ class CustomerServiceTest {
 
     @Test
     void deleteCustomer() {
+        //Arrange
+        when(customerRepository.findById(2l)).thenReturn(Optional.of(customers.get(1)));
+
+        //Act
+        customerService.deleteCustomer(2L);
+
+        //Assert
+        verify(customerRepository).deleteById(2L);
+
     }
 
     @Test
@@ -250,7 +264,8 @@ class CustomerServiceTest {
     }
 
     @Test
-    void transferDtoToCustomer() {
+    void transferDtoToCustomerThrowsException() {
+        assertThrows(RecordNotFoundException.class, () -> customerService.getCustomer(9L));
     }
 
     @Test

@@ -1,6 +1,7 @@
 package com.lucinde.plannerpro.services;
 
 import com.lucinde.plannerpro.dtos.UserInputDto;
+import com.lucinde.plannerpro.dtos.UserOutputDto;
 import com.lucinde.plannerpro.exceptions.BadRequestException;
 import com.lucinde.plannerpro.exceptions.UsernameNotFoundException;
 import com.lucinde.plannerpro.models.Authority;
@@ -25,8 +26,8 @@ public class UserService {
         this.passwordEncoder = passwordEncoder;
     }
 
-    public List<UserInputDto> getUsers() {
-        List<UserInputDto> collection = new ArrayList<>();
+    public List<UserOutputDto> getUsers() {
+        List<UserOutputDto> collection = new ArrayList<>();
         List<User> list = userRepository.findAll();
         for (User user : list) {
             collection.add(fromUser(user));
@@ -34,11 +35,22 @@ public class UserService {
         return collection;
     }
 
-    public UserInputDto getUser(String username) {
-        UserInputDto dto = new UserInputDto();
+    public UserOutputDto getUser(String username) {
+        UserOutputDto dto;
         Optional<User> user = userRepository.findById(username);
         if (user.isPresent()){
             dto = fromUser(user.get());
+        }else {
+            throw new UsernameNotFoundException(username);
+        }
+        return dto;
+    }
+
+    public UserInputDto getUserWithPassword(String username) {
+        UserInputDto dto;
+        Optional<User> user = userRepository.findById(username);
+        if (user.isPresent()){
+            dto = fromUserInput(user.get());
         }else {
             throw new UsernameNotFoundException(username);
         }
@@ -72,7 +84,7 @@ public class UserService {
     public Set<Authority> getAuthorities(String username) {
         if (!userRepository.existsById(username)) throw new UsernameNotFoundException(username);
         User user = userRepository.findById(username).get();
-        UserInputDto userInputDto = fromUser(user);
+        UserInputDto userInputDto = fromUserInput(user);
         return userInputDto.getAuthorities();
     }
 
@@ -93,8 +105,8 @@ public class UserService {
     }
 
     //*------------------- Eigen methodes -------------------*//
-    public List<UserInputDto> getMechanics() {
-        List<UserInputDto> collection = new ArrayList<>();
+    public List<UserOutputDto> getMechanics() {
+        List<UserOutputDto> collection = new ArrayList<>();
         List<User> list = userRepository.findByAuthority("ROLE_MECHANIC");
         for (User user : list) {
             collection.add(fromUser(user));
@@ -102,8 +114,8 @@ public class UserService {
         return collection;
     }
 
-    public UserInputDto getUserCheckAuth(String requestingUsername, String targetUsername) {
-        UserInputDto targetDto;
+    public UserOutputDto getUserCheckAuth(String requestingUsername, String targetUsername) {
+        UserOutputDto targetDto;
 
         Optional<User> user = userRepository.findById(targetUsername);
         if (user.isPresent()) {
@@ -175,15 +187,28 @@ public class UserService {
     //*------------------- Einde Eigen methodes -------------------*//
 
 
-    public static UserInputDto fromUser(User user) {
+    public static UserOutputDto fromUser(User user) {
+
+        var dto = new UserOutputDto();
+
+        dto.username = user.getUsername();
+        dto.enabled = user.isEnabled();
+        dto.email = user.getEmail();
+        dto.authorities = user.getAuthorities();
+        dto.scheduleTask = user.getScheduleTask();
+
+        return dto;
+    }
+
+    public static UserInputDto fromUserInput(User user) {
 
         var dto = new UserInputDto();
 
         dto.username = user.getUsername();
         dto.password = user.getPassword();
         dto.enabled = user.isEnabled();
-        dto.apikey = user.getApikey();
         dto.email = user.getEmail();
+        dto.apikey = user.getApikey();
         dto.authorities = user.getAuthorities();
         dto.scheduleTask = user.getScheduleTask();
 

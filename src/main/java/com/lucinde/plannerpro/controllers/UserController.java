@@ -1,6 +1,7 @@
 package com.lucinde.plannerpro.controllers;
 
 import com.lucinde.plannerpro.dtos.UserInputDto;
+import com.lucinde.plannerpro.dtos.UserOutputDto;
 import com.lucinde.plannerpro.exceptions.BadRequestException;
 import com.lucinde.plannerpro.services.UserService;
 import com.lucinde.plannerpro.utils.FieldError;
@@ -30,17 +31,17 @@ public class UserController {
 
 
     @GetMapping(value = "")
-    public ResponseEntity<List<UserInputDto>> getUsers() {
+    public ResponseEntity<List<UserOutputDto>> getUsers() {
 
-        List<UserInputDto> userInputDtos = userService.getUsers();
+        List<UserOutputDto> userOutputDtos = userService.getUsers();
 
-        return ResponseEntity.ok().body(userInputDtos);
+        return ResponseEntity.ok().body(userOutputDtos);
     }
 
     @GetMapping(value = "/{username}")
-    public ResponseEntity<UserInputDto> getUser(@PathVariable("username") String username) {
+    public ResponseEntity<UserOutputDto> getUser(@PathVariable("username") String username) {
 
-        UserInputDto optionalUser = userService.getUser(username);
+        UserOutputDto optionalUser = userService.getUser(username);
 
 
         return ResponseEntity.ok().body(optionalUser);
@@ -101,18 +102,18 @@ public class UserController {
 
     //*------------------- Eigen methodes -------------------*//
     @GetMapping("/mechanics")
-    public ResponseEntity<List<UserInputDto>> getMechanics() {
-        List<UserInputDto> userInputDtos = userService.getMechanics();
+    public ResponseEntity<List<UserOutputDto>> getMechanics() {
+        List<UserOutputDto> userOutputDtos = userService.getMechanics();
 
-        return ResponseEntity.ok().body(userInputDtos);
+        return ResponseEntity.ok().body(userOutputDtos);
     }
 
     @GetMapping(value = "/auth/{username}")
-    public ResponseEntity<UserInputDto> getUserByAuth(@PathVariable("username") String username) {
+    public ResponseEntity<UserOutputDto> getUserByAuth(@PathVariable("username") String username) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String requestingUsername = authentication.getName();
 
-        UserInputDto optionalUser = userService.getUserCheckAuth(requestingUsername, username);
+        UserOutputDto optionalUser = userService.getUserCheckAuth(requestingUsername, username);
 
         return ResponseEntity.ok().body(optionalUser);
 

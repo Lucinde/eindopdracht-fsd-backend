@@ -93,7 +93,7 @@ public class SpringSecurityConfig {
 
                 // ----------------------- AUTHENTICATION ----------------------
                 .requestMatchers("/authenticated").authenticated()
-                .requestMatchers("/authenticate").permitAll()/*allen dit punt mag toegankelijk zijn voor niet ingelogde gebruikers*/
+                .requestMatchers("/authenticate").permitAll()/*alleen dit punt mag toegankelijk zijn voor niet ingelogde gebruikers*/
 
                 .anyRequest().denyAll()
                 .and()

@@ -46,7 +46,6 @@ class CustomerServiceTest {
 
     @BeforeEach
     void setUp() {
-        //Aangezien ik alleen constructors zou aanmaken in mijn models voor de test-methodes heb ik deze oplossing gebruikt
         Customer customer1 = new Customer();
         customer1.setId(1L);
         customer1.setFirstName("Albert");
@@ -115,26 +114,20 @@ class CustomerServiceTest {
 
     @Test
     void getAllCustomers() {
-        //Arrange
         when(customerRepository.findAll(Sort.by(Sort.Direction.ASC, "id"))).thenReturn(customers);
 
-        //Act
         List<CustomerDto> customerDtos = customerService.getAllCustomers();
 
-        //Assert
         assertEquals(customers.size(), customerDtos.size());
 
     }
 
     @Test
     void getCustomer() {
-        //Arrange
         when(customerRepository.findById(1L)).thenReturn(Optional.of(customers.get(0)));
 
-        //Act
         CustomerDto customerDto = customerService.getCustomer(1L);
 
-        //Assert
         assertEquals(customers.get(0).getFirstName(), customerDto.firstName);
     }
 
@@ -147,14 +140,11 @@ class CustomerServiceTest {
     void getCustomerWithPagination() {
         int pageNo = 0;
         int pageSize = 3;
-
         Page<Customer> customerPage = new PageImpl<>(customers);
         when(customerRepository.findAll(any(PageRequest.class))).thenReturn(customerPage);
 
-        // Act
         PageResponse<CustomerDto> pageResponse = customerService.getCustomerWithPagination(pageNo, pageSize);
 
-        // Assert
         assertNotNull(pageResponse);
         assertEquals(customers.size(), pageResponse.count);
         assertEquals(1, pageResponse.totalPages);
@@ -167,7 +157,6 @@ class CustomerServiceTest {
 
     @Test
     void addCustomer() {
-        // Arrange
         CustomerDto customerDto6 = new CustomerDto();
         customerDto6.id = 6L;
         customerDto6.firstName = "Ada";
@@ -190,12 +179,10 @@ class CustomerServiceTest {
 
         when(customerRepository.save(any(Customer.class))).thenReturn(customer);
 
-        // Act
         customerService.addCustomer(customerDto6);
         verify(customerRepository, times(1)).save(customerArgumentCaptor.capture());
         Customer savedCustomer = customerArgumentCaptor.getValue();
 
-        // Assert
         assertEquals(customerDto6.firstName, savedCustomer.getFirstName());
         assertEquals(customerDto6.lastName, savedCustomer.getLastName());
         assertEquals(customerDto6.address, savedCustomer.getAddress());
@@ -207,7 +194,6 @@ class CustomerServiceTest {
 
     @Test
     void updateCustomer() {
-        // Arrange
         Long customerId = 1L;
         CustomerDto customerDto6 = new CustomerDto();
         customerDto6.id = 6L;
@@ -232,12 +218,10 @@ class CustomerServiceTest {
         when(customerRepository.findById(customerId)).thenReturn(Optional.of(existingCustomer));
         when(customerRepository.save(any(Customer.class))).thenReturn(existingCustomer);
 
-        // Act
         CustomerDto updatedCustomer = customerService.updateCustomer(customerId, customerDto6);
         verify(customerRepository, times(1)).findById(customerId);
         verify(customerRepository, times(1)).save(any(Customer.class));
 
-        // Assert
         assertNotNull(updatedCustomer);
         assertEquals(customerDto6.firstName, updatedCustomer.firstName);
         assertEquals(customerDto6.lastName, updatedCustomer.lastName);
@@ -250,23 +234,18 @@ class CustomerServiceTest {
 
     @Test
     void deleteCustomer() {
-        //Arrange
         when(customerRepository.findById(2l)).thenReturn(Optional.of(customers.get(1)));
 
-        //Act
         customerService.deleteCustomer(2L);
 
-        //Assert
         verify(customerRepository).deleteById(2L);
 
     }
 
     @Test
     void deleteCustomerThrowsExceptionRecord() {
-        //Arrange
         when(customerRepository.findById(9L)).thenReturn(Optional.empty());
 
-        // Act and Assert
         assertThrows(RecordNotFoundException.class, () -> {
             customerService.deleteCustomer(9L);
         });
@@ -274,7 +253,6 @@ class CustomerServiceTest {
 
     @Test
     void deleteCustomerThrowsExceptionRelation() {
-        //Arrange
         Customer customer = customers.get(0);
         ArrayList<Task> mockTaskList = mock(ArrayList.class);
         customer.setTaskList(mockTaskList);
@@ -286,14 +264,9 @@ class CustomerServiceTest {
 
         when(customerRepository.findById(1L)).thenReturn(Optional.of(customer));
 
-        // Act and Assert
         assertThrows(RelationFoundException.class, () -> {
             customerService.deleteCustomer(1L);
         });
-    }
-
-    @Test
-    void transferCustomerToDto() {
     }
 
     @Test
@@ -310,19 +283,13 @@ class CustomerServiceTest {
 
         when(customerRepository.findById(9L)).thenReturn(Optional.empty());
 
-        // Act and Assert
         assertThrows(RecordNotFoundException.class, () -> {
             customerService.transferDtoToCustomer(customerDto6, 9L);
         });
     }
 
     @Test
-    void testTransferDtoToCustomer() {
-    }
-
-    @Test
     void transferDtoToCustomerSetTaskList() {
-        // Arrange
         ArrayList<Task> mockTaskList = mock(ArrayList.class);
         Task task1 = new Task();
         Task task2 = new Task();
@@ -340,10 +307,8 @@ class CustomerServiceTest {
         customerDto6.email = "ada.lovelace@example.com";
         customerDto6.taskList = mockTaskList;
 
-        // Act
         Customer result = customerService.transferDtoToCustomer(customerDto6);
 
-        // Assert
         assertNotNull(result);
         assertEquals(customerDto6.taskList, result.getTaskList());
     }

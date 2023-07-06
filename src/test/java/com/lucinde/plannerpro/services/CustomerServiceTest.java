@@ -26,7 +26,7 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class CustomerServiceTest {
@@ -160,10 +160,51 @@ class CustomerServiceTest {
 
     @Test
     void addCustomer() {
+        // Arrange
+        CustomerDto customerDto6 = new CustomerDto();
+        customerDto6.id = 6L;
+        customerDto6.firstName = "Ada";
+        customerDto6.lastName = "Lovelace";
+        customerDto6.address = "Analytical Street 10";
+        customerDto6.zip = "4567YZ";
+        customerDto6.city = "London";
+        customerDto6.phoneNumber = "06-12345678";
+        customerDto6.email = "ada.lovelace@example.com";
+
+        Customer customer = new Customer();
+        customer.setId(customerDto6.id);
+        customer.setFirstName(customerDto6.firstName);
+        customer.setLastName(customerDto6.lastName);
+        customer.setAddress(customerDto6.address);
+        customer.setZip(customerDto6.zip);
+        customer.setCity(customerDto6.city);
+        customer.setPhoneNumber(customerDto6.phoneNumber);
+        customer.setEmail(customerDto6.email);
+
+        when(customerRepository.save(any(Customer.class))).thenReturn(customer);
+
+        // Act
+        customerService.addCustomer(customerDto6);
+        verify(customerRepository, times(1)).save(customerArgumentCaptor.capture());
+        Customer savedCustomer = customerArgumentCaptor.getValue();
+
+        // Assert
+        assertEquals(customerDto6.firstName, savedCustomer.getFirstName());
+        assertEquals(customerDto6.lastName, savedCustomer.getLastName());
+        assertEquals(customerDto6.address, savedCustomer.getAddress());
+        assertEquals(customerDto6.zip, savedCustomer.getZip());
+        assertEquals(customerDto6.city, savedCustomer.getCity());
+        assertEquals(customerDto6.phoneNumber, savedCustomer.getPhoneNumber());
+        assertEquals(customerDto6.email, savedCustomer.getEmail());
     }
 
     @Test
     void updateCustomer() {
+        //Arrange
+
+        //Act
+
+        //Assert
     }
 
     @Test

@@ -70,7 +70,6 @@ public class CustomerService {
         customerRepository.save(customer);
 
         return transferCustomerToDto(customer);
-        //todo: OPT: DTO maken waarbij de tasklist niet meegegeven wordt. Nu geeft hij null aan omdat die niet meteen toegevoegd worden
     }
 
     public CustomerDto updateCustomer(Long id, CustomerDto customerDto) {
@@ -80,8 +79,6 @@ public class CustomerService {
 
         return transferCustomerToDto(updateCustomer);
     }
-
-    //todo: assignCustomerToTask toevoegen! Customers kunnen nu nog niet toegevoegd worden aan een taak
 
     public void deleteCustomer(Long id) {
         Optional<Customer> optionalCustomer = customerRepository.findById(id);

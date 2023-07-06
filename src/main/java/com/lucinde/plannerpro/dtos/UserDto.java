@@ -3,15 +3,23 @@ package com.lucinde.plannerpro.dtos;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.lucinde.plannerpro.models.Authority;
 import com.lucinde.plannerpro.models.ScheduleTask;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 
 import java.util.List;
 import java.util.Set;
 
 public class UserDto {
+    @NotBlank
     public String username;
+
+    @NotBlank
+    @Size(min = 6)
+    @Size(max = 25)
     public String password;
     public Boolean enabled;
     public String apikey;
+    @NotBlank
     public String email;
     @JsonSerialize
     public Set<Authority> authorities;

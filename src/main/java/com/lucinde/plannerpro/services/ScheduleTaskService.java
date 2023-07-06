@@ -1,6 +1,7 @@
 package com.lucinde.plannerpro.services;
 
 import com.lucinde.plannerpro.dtos.ScheduleTaskDto;
+import com.lucinde.plannerpro.dtos.TaskDto;
 import com.lucinde.plannerpro.exceptions.BadRequestException;
 import com.lucinde.plannerpro.exceptions.RecordNotFoundException;
 import com.lucinde.plannerpro.exceptions.RelationFoundException;
@@ -55,20 +56,15 @@ public class ScheduleTaskService {
         return transferScheduleTaskToDto(scheduleTask);
     }
 
-    public PageResponse<ScheduleTaskDto> getScheduleTasksByMechanicWithPagination(String mechanicUsername, int pageNo, int pageSize, String userRole, String requestingUsername, boolean includeOlderTasks) {
+    public PageResponse<ScheduleTaskDto> getScheduleTaskWithPagination(int pageNo, int pageSize, boolean includeOlderTasks) {
         PageRequest pageRequest = PageRequest.of(pageNo, pageSize, Sort.by("date").ascending());
         Page<ScheduleTask> pagingScheduleTask;
+        LocalDate currentDate = LocalDate.now();
 
-        if (userRole.equals("ROLE_ADMIN") || userRole.equals("ROLE_PLANNER")) {
-            // Admin or planner can see all tasks
-            pagingScheduleTask = scheduleTaskRepository.findByMechanicUsername(mechanicUsername, pageRequest);
+        if(includeOlderTasks) {
+            pagingScheduleTask = scheduleTaskRepository.findAll(pageRequest);
         } else {
-            // Mechanic can only see their own tasks
-            if(Objects.equals(requestingUsername, mechanicUsername)) {
-                pagingScheduleTask = scheduleTaskRepository.findByMechanicUsername(mechanicUsername, pageRequest);
-            } else {
-                throw new BadRequestException("U mag deze gegevens niet inzien");
-            }
+            pagingScheduleTask = scheduleTaskRepository.findAllByDateAfter(currentDate, pageRequest);
         }
 
         PageResponse<ScheduleTaskDto> response = new PageResponse<>();
@@ -79,13 +75,38 @@ public class ScheduleTaskService {
         response.hasPrevious = pagingScheduleTask.hasPrevious();
         response.items = new ArrayList<>();
 
-        // Nodig wanneer we alleen taken in het heden of de toekomst willen laten zien
+        for (ScheduleTask t : pagingScheduleTask) {
+            response.items.add(transferScheduleTaskToDto(t));
+        }
+
+        return response;
+    }
+
+    public PageResponse<ScheduleTaskDto> getScheduleTasksByMechanicWithPagination(String mechanicUsername, int pageNo, int pageSize, String userRole, String requestingUsername, boolean includeOlderTasks) {
+        PageRequest pageRequest = PageRequest.of(pageNo, pageSize, Sort.by("date").ascending());
+        Page<ScheduleTask> pagingScheduleTask;
         LocalDate currentDate = LocalDate.now();
 
-        for (ScheduleTask t : pagingScheduleTask) {
-            if (includeOlderTasks || t.getDate().isAfter(currentDate) || t.getDate().isEqual(currentDate)) {
-                response.items.add(transferScheduleTaskToDto(t));
+        if (userRole.equals("ROLE_ADMIN") || userRole.equals("ROLE_PLANNER") || Objects.equals(requestingUsername, mechanicUsername)) {
+            if (includeOlderTasks) {
+                pagingScheduleTask = scheduleTaskRepository.findByMechanicUsername(mechanicUsername, pageRequest);
+            } else {
+                pagingScheduleTask = scheduleTaskRepository.findByMechanicUsernameAndDateAfter(mechanicUsername, currentDate, pageRequest);
             }
+        } else {
+            throw new BadRequestException("U mag deze gegevens niet inzien");
+        }
+
+        PageResponse<ScheduleTaskDto> response = new PageResponse<>();
+
+        response.count = pagingScheduleTask.getTotalElements();
+        response.totalPages = pagingScheduleTask.getTotalPages();
+        response.hasNext = pagingScheduleTask.hasNext();
+        response.hasPrevious = pagingScheduleTask.hasPrevious();
+        response.items = new ArrayList<>();
+
+        for (ScheduleTask t : pagingScheduleTask) {
+            response.items.add(transferScheduleTaskToDto(t));
         }
 
         return response;

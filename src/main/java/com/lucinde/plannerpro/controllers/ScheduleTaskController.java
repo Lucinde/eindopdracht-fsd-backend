@@ -1,7 +1,7 @@
 package com.lucinde.plannerpro.controllers;
 
 import com.lucinde.plannerpro.dtos.ScheduleTaskDto;
-import com.lucinde.plannerpro.utils.Helpers;
+import com.lucinde.plannerpro.utils.FieldError;
 import com.lucinde.plannerpro.services.ScheduleTaskService;
 import com.lucinde.plannerpro.utils.PageResponse;
 import jakarta.validation.Valid;
@@ -20,7 +20,7 @@ import java.util.List;
 @RequestMapping("/schedule-tasks")
 public class ScheduleTaskController {
     private final ScheduleTaskService scheduleTaskService;
-    private final Helpers helpers = new Helpers();
+    private final FieldError fieldError = new FieldError();
 
 
     public ScheduleTaskController(ScheduleTaskService scheduleTaskService) {
@@ -37,6 +37,13 @@ public class ScheduleTaskController {
         return ResponseEntity.ok().body(scheduleTaskService.getScheduleTask(id));
     }
 
+    @GetMapping("/pages")
+    public ResponseEntity<Object> getTasksWithPagination(@RequestParam Integer pageNo, @RequestParam Integer pageSize, @RequestParam boolean includeOlderTasks) {
+        PageResponse<ScheduleTaskDto> scheduleTaskDto = scheduleTaskService.getScheduleTaskWithPagination(pageNo, pageSize, includeOlderTasks);
+
+        return ResponseEntity.ok().body(scheduleTaskDto);
+    }
+
     @GetMapping("/pages/{mechanic}")
     public ResponseEntity<Object> getScheduleTasksByMechanicWithPagination(@PathVariable String mechanic, @RequestParam Integer pageNo, @RequestParam Integer pageSize, Authentication authentication, @RequestParam boolean includeOlderTasks) {
         String userRole = getUserRole(authentication);
@@ -50,7 +57,7 @@ public class ScheduleTaskController {
     @PostMapping
     public ResponseEntity<Object> addScheduleTask(@Valid @RequestBody ScheduleTaskDto scheduleTaskDto, BindingResult br) {
         if(br.hasFieldErrors()) {
-            return ResponseEntity.badRequest().body(helpers.fieldErrorBuilder(br));
+            return ResponseEntity.badRequest().body(fieldError.fieldErrorBuilder(br));
         }
         ScheduleTaskDto addedScheduleTask = scheduleTaskService.addScheduleTask(scheduleTaskDto);
         URI uri = URI.create(String.valueOf(ServletUriComponentsBuilder.fromCurrentRequest().path("/" + addedScheduleTask.id)));
@@ -61,7 +68,7 @@ public class ScheduleTaskController {
     public ResponseEntity<Object> updateScheduleTask(@PathVariable Long id, @Valid @RequestBody ScheduleTaskDto scheduleTaskDto, BindingResult br) {
         //todo: goed nadenken of deze check/@Valid nodig is. Bij het updaten van een taak, mag de datum dan wel naar het verleden verplaatst worden?
         if(br.hasFieldErrors()) {
-            return ResponseEntity.badRequest().body(helpers.fieldErrorBuilder(br));
+            return ResponseEntity.badRequest().body(fieldError.fieldErrorBuilder(br));
         }
         ScheduleTaskDto updateScheduleTask = scheduleTaskService.updateScheduleTask(id, scheduleTaskDto);
         return ResponseEntity.ok().body(updateScheduleTask);

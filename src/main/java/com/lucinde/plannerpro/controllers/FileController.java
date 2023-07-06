@@ -1,7 +1,7 @@
 package com.lucinde.plannerpro.controllers;
 
 import com.lucinde.plannerpro.dtos.FileDto;
-import com.lucinde.plannerpro.utils.Helpers;
+import com.lucinde.plannerpro.utils.FieldError;
 import com.lucinde.plannerpro.services.FileService;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
@@ -19,7 +19,7 @@ import java.util.List;
 public class FileController {
 
     private final FileService fileService;
-    private final Helpers helpers = new Helpers();
+    private final FieldError fieldError = new FieldError();
 
     public FileController(FileService fileService) {
         this.fileService = fileService;

@@ -1,16 +1,14 @@
 package com.lucinde.plannerpro.controllers;
 
 import com.lucinde.plannerpro.dtos.TaskDto;
-import com.lucinde.plannerpro.utils.Helpers;
+import com.lucinde.plannerpro.utils.FieldError;
 import com.lucinde.plannerpro.services.TaskService;
 import com.lucinde.plannerpro.utils.PageResponse;
 import jakarta.validation.Valid;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
-import org.springframework.web.util.UriComponentsBuilder;
 
 import java.net.URI;
 import java.util.List;
@@ -19,7 +17,7 @@ import java.util.List;
 @RequestMapping("/tasks")
 public class TaskController {
     private final TaskService taskService;
-    private final Helpers helpers = new Helpers();
+    private final FieldError fieldError = new FieldError();
 
     public TaskController(TaskService taskService) {
         this.taskService = taskService;
@@ -45,19 +43,17 @@ public class TaskController {
     @PostMapping
     public ResponseEntity<Object> addTask(@Valid @RequestBody TaskDto taskDto, BindingResult br) {
         if (br.hasFieldErrors()) {
-            return ResponseEntity.badRequest().body(helpers.fieldErrorBuilder(br));
+            return ResponseEntity.badRequest().body(fieldError.fieldErrorBuilder(br));
         }
         TaskDto addedTask = taskService.addTask(taskDto);
         URI uri = URI.create(String.valueOf(ServletUriComponentsBuilder.fromCurrentRequest().path("/" + addedTask.id)));
         return ResponseEntity.created(uri).body(addedTask);
     }
 
-    //todo: Add post/putmapping to add a customer to a task
-
     @PutMapping("/{id}")
     public ResponseEntity<Object> updateTask(@PathVariable Long id, @Valid @RequestBody TaskDto taskDto, BindingResult br) {
         if (br.hasFieldErrors()) {
-            return ResponseEntity.badRequest().body(helpers.fieldErrorBuilder(br));
+            return ResponseEntity.badRequest().body(fieldError.fieldErrorBuilder(br));
         }
         TaskDto updateTask = taskService.updateTask(id, taskDto);
         return ResponseEntity.ok().body(updateTask);

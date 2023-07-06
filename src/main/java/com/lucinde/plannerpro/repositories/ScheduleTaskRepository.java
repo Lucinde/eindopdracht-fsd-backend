@@ -17,6 +17,9 @@ public interface ScheduleTaskRepository extends JpaRepository<ScheduleTask, Long
     Long countConflictingTasks(User mechanic, LocalDate date, LocalTime startTime, LocalTime endTime);
 
     Page<ScheduleTask> findByMechanicUsername(String mechanicUsername, Pageable pageable);
+    Page<ScheduleTask> findByMechanicUsernameAndDateAfter(String mechanicUsername, LocalDate currentDate, Pageable pageable);
+
+    Page<ScheduleTask> findAllByDateAfter(LocalDate currentDate, Pageable pageable);
 
 //    Deze query werkt wel in PG Admin maar niet in springboot
 //    @Query("SELECT COUNT(st) FROM ScheduleTask st WHERE st.mechanic = :mechanic AND st.date = :date " +

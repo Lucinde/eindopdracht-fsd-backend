@@ -73,7 +73,6 @@ public class TaskService {
         taskRepository.save(task);
 
         return transferTaskToDto(task);
-        //todo: OPT: DTO maken waarbij alleen een customerId (evt zonder ScheduleTaskList omdat die bij het toevoegen nog leeg zal zijn) worden meegegeven of een optie maken waarbij hij de gegevens van de customer ophaalt nav het ID. Nu geeft hij overal null aan terwijl de waardes er wel zijn en dat kan verwarrend zijn. Omdat we in de front-end de JSON niet te zien krijgen heeft dit nog even lagere prioriteit, wellicht is het wel nodig om de juiste gegevens terug te krijgen dus dan kan de prio weer omhoog.
     }
 
     public TaskDto updateTask(Long id, TaskDto taskDto) {
@@ -84,8 +83,6 @@ public class TaskService {
 
         return transferTaskToDto(updateTask);
     }
-
-    //todo: assignTaskToCustomer toevoegen! Customers kunnen nu nog niet aan een taak toegewezen worden
 
     public void deleteTask(Long id) {
         Optional<Task> optionalTask = taskRepository.findById(id);

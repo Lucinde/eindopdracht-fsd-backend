@@ -92,6 +92,15 @@ public class UserService {
 
         if (!userRepository.existsById(username)) throw new UsernameNotFoundException(username);
         User user = userRepository.findById(username).get();
+
+        // Check of de gebruiker de rol al heeft
+        Set<Authority> userAuthorities = user.getAuthorities();
+        for (Authority existingAuthority : userAuthorities) {
+            if (existingAuthority.getAuthority().equals(authority)) {
+                throw new BadRequestException("Gebruiker heeft deze rol al");
+            }
+        }
+
         user.addAuthority(new Authority(username, authority));
         userRepository.save(user);
     }

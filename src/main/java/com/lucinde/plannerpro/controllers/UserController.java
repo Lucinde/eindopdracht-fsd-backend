@@ -90,7 +90,7 @@ public class UserController {
             return ResponseEntity.noContent().build();
         }
         catch (Exception ex) {
-            throw new BadRequestException();
+            throw new BadRequestException(ex.getMessage());
         }
     }
 

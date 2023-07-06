@@ -1,8 +1,10 @@
 package com.lucinde.plannerpro.services;
 
 import com.lucinde.plannerpro.exceptions.RecordNotFoundException;
+import com.lucinde.plannerpro.exceptions.RelationFoundException;
 import com.lucinde.plannerpro.models.Customer;
 import com.lucinde.plannerpro.dtos.CustomerDto;
+import com.lucinde.plannerpro.models.Task;
 import com.lucinde.plannerpro.repositories.CustomerRepository;
 import com.lucinde.plannerpro.utils.PageResponse;
 import org.springframework.data.domain.Page;
@@ -267,6 +269,26 @@ class CustomerServiceTest {
         // Act and Assert
         assertThrows(RecordNotFoundException.class, () -> {
             customerService.deleteCustomer(9L);
+        });
+    }
+
+    @Test
+    void deleteCustomerThrowsExceptionRelation() {
+        //Arrange
+        Customer customer = customers.get(0);
+        ArrayList<Task> mockTaskList = mock(ArrayList.class);
+        customer.setTaskList(mockTaskList);
+
+        Task task1 = new Task();
+        Task task2 = new Task();
+        Task task3 = new Task();
+        mockTaskList.addAll(List.of(task1, task2, task3));
+
+        when(customerRepository.findById(1L)).thenReturn(Optional.of(customer));
+
+        // Act and Assert
+        assertThrows(RelationFoundException.class, () -> {
+            customerService.deleteCustomer(1L);
         });
     }
 

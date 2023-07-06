@@ -4,6 +4,10 @@ import com.lucinde.plannerpro.exceptions.RecordNotFoundException;
 import com.lucinde.plannerpro.models.Customer;
 import com.lucinde.plannerpro.dtos.CustomerDto;
 import com.lucinde.plannerpro.repositories.CustomerRepository;
+import com.lucinde.plannerpro.utils.PageResponse;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 
 import org.junit.jupiter.api.AfterEach;
@@ -14,6 +18,7 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import static org.mockito.ArgumentMatchers.any;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.ArrayList;
@@ -131,10 +136,26 @@ class CustomerServiceTest {
         assertThrows(RecordNotFoundException.class, () -> customerService.getCustomer(9L));
     }
 
-
-
     @Test
     void getCustomerWithPagination() {
+        int pageNo = 0;
+        int pageSize = 3;
+
+        Page<Customer> customerPage = new PageImpl<>(customers);
+        when(customerRepository.findAll(any(PageRequest.class))).thenReturn(customerPage);
+
+        // Act
+        PageResponse<CustomerDto> pageResponse = customerService.getCustomerWithPagination(pageNo, pageSize);
+
+        // Assert
+        assertNotNull(pageResponse);
+        assertEquals(customers.size(), pageResponse.count);
+        assertEquals(1, pageResponse.totalPages);
+        assertEquals(false, pageResponse.hasPrevious);
+        assertEquals(false, pageResponse.hasNext);
+        for (int i = 0; i < customers.size(); i++) {
+            assertEquals(customers.get(i).getFirstName(), pageResponse.items.get(i).firstName);
+        }
     }
 
     @Test

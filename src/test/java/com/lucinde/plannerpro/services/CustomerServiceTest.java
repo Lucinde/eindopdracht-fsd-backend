@@ -260,12 +260,38 @@ class CustomerServiceTest {
     }
 
     @Test
+    void deleteCustomerThrowsExceptionRecord() {
+        //Arrange
+        when(customerRepository.findById(9L)).thenReturn(Optional.empty());
+
+        // Act and Assert
+        assertThrows(RecordNotFoundException.class, () -> {
+            customerService.deleteCustomer(9L);
+        });
+    }
+
+    @Test
     void transferCustomerToDto() {
     }
 
     @Test
     void transferDtoToCustomerThrowsException() {
-        assertThrows(RecordNotFoundException.class, () -> customerService.getCustomer(9L));
+        CustomerDto customerDto6 = new CustomerDto();
+        customerDto6.id = 6L;
+        customerDto6.firstName = "Ada";
+        customerDto6.lastName = "Lovelace";
+        customerDto6.address = "Analytical Street 10";
+        customerDto6.zip = "4567YZ";
+        customerDto6.city = "London";
+        customerDto6.phoneNumber = "06-12345678";
+        customerDto6.email = "ada.lovelace@example.com";
+
+        when(customerRepository.findById(9L)).thenReturn(Optional.empty());
+
+        // Act and Assert
+        assertThrows(RecordNotFoundException.class, () -> {
+            customerService.transferDtoToCustomer(customerDto6, 9L);
+        });
     }
 
     @Test

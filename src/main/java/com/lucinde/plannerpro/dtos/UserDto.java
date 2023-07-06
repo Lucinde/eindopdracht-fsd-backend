@@ -14,8 +14,8 @@ public class UserDto {
     public String username;
 
     @NotBlank
-    @Size(min = 6)
-    @Size(max = 25)
+    @Size(min = 6, message = "Het wachtwoord moet minimaal 6 tekens lang zijn")
+    @Size(max = 25, message = "Het wachtwoord moet tussen de 6 en 25 tekens lang zijn")
     public String password;
     public Boolean enabled;
     public String apikey;

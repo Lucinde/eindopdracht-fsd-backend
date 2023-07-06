@@ -151,8 +151,8 @@ class CustomerServiceTest {
         assertNotNull(pageResponse);
         assertEquals(customers.size(), pageResponse.count);
         assertEquals(1, pageResponse.totalPages);
-        assertEquals(false, pageResponse.hasPrevious);
-        assertEquals(false, pageResponse.hasNext);
+        assertFalse(pageResponse.hasPrevious);
+        assertFalse(pageResponse.hasNext);
         for (int i = 0; i < customers.size(); i++) {
             assertEquals(customers.get(i).getFirstName(), pageResponse.items.get(i).firstName);
         }
@@ -200,11 +200,45 @@ class CustomerServiceTest {
 
     @Test
     void updateCustomer() {
-        //Arrange
+        // Arrange
+        Long customerId = 1L;
+        CustomerDto customerDto6 = new CustomerDto();
+        customerDto6.id = 6L;
+        customerDto6.firstName = "Ada";
+        customerDto6.lastName = "Lovelace";
+        customerDto6.address = "Analytical Street 10";
+        customerDto6.zip = "4567YZ";
+        customerDto6.city = "London";
+        customerDto6.phoneNumber = "06-12345678";
+        customerDto6.email = "ada.lovelace@example.com";
 
-        //Act
+        Customer existingCustomer = new Customer();
+        existingCustomer.setId(customerId);
+        existingCustomer.setFirstName("Oude");
+        existingCustomer.setLastName("Naam");
+        existingCustomer.setAddress("Hoofdstraat 1");
+        existingCustomer.setZip("1234AB");
+        existingCustomer.setCity("Eerste Woonplaats");
+        existingCustomer.setPhoneNumber("06-12345678");
+        existingCustomer.setEmail("eerstemail@example.com");
 
-        //Assert
+        when(customerRepository.findById(customerId)).thenReturn(Optional.of(existingCustomer));
+        when(customerRepository.save(any(Customer.class))).thenReturn(existingCustomer);
+
+        // Act
+        CustomerDto updatedCustomer = customerService.updateCustomer(customerId, customerDto6);
+        verify(customerRepository, times(1)).findById(customerId);
+        verify(customerRepository, times(1)).save(any(Customer.class));
+
+        // Assert
+        assertNotNull(updatedCustomer);
+        assertEquals(customerDto6.firstName, updatedCustomer.firstName);
+        assertEquals(customerDto6.lastName, updatedCustomer.lastName);
+        assertEquals(customerDto6.address, updatedCustomer.address);
+        assertEquals(customerDto6.zip, updatedCustomer.zip);
+        assertEquals(customerDto6.city, updatedCustomer.city);
+        assertEquals(customerDto6.phoneNumber, updatedCustomer.phoneNumber);
+        assertEquals(customerDto6.email, updatedCustomer.email);
     }
 
     @Test

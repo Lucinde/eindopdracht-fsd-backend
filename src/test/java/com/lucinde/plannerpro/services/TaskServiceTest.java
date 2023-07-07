@@ -184,11 +184,22 @@ class TaskServiceTest {
 
     @Test
     void deleteTask() {
+        when(taskRepository.findById(2l)).thenReturn(Optional.of(taskList.get(1)));
+
+        taskService.deleteTask(2L);
+
+        verify(taskRepository).deleteById(2L);
     }
 
     @Test
-    void transferTaskToDto() {
+    void deleteTaskThrowsException() {
+        when(taskRepository.findById(9L)).thenReturn(Optional.empty());
+
+        assertThrows(RecordNotFoundException.class, () -> {
+            taskService.deleteTask(9L);
+        });
     }
+
 
     @Test
     void transferDtoToTask() {

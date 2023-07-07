@@ -1,0 +1,116 @@
+package com.lucinde.plannerpro.services;
+
+import com.lucinde.plannerpro.dtos.CustomerDto;
+import com.lucinde.plannerpro.dtos.TaskDto;
+import com.lucinde.plannerpro.models.Customer;
+import com.lucinde.plannerpro.models.Task;
+import com.lucinde.plannerpro.repositories.CustomerRepository;
+import com.lucinde.plannerpro.repositories.TaskRepository;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Sort;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.when;
+
+@ExtendWith(MockitoExtension.class)
+class TaskServiceTest {
+
+    @Mock
+    TaskRepository taskRepository;
+    @Mock
+    CustomerRepository customerRepository;
+
+    @InjectMocks
+    TaskService taskService;
+
+    @Captor
+    ArgumentCaptor<Task> taskArgumentCaptor;
+
+    List<Task> taskList = new ArrayList<>();
+
+    @BeforeEach
+    void setUp() {
+        Customer customer = new Customer();
+
+        Task task1 = new Task();
+        task1.setId(1L);
+        task1.setDescription("Task 1 description");
+        task1.setWorkPerformed("Task 1 work performed");
+        task1.setJobDone(false);
+        task1.setCustomer(customer);
+        taskList.add(task1);
+
+        Task task2 = new Task();
+        task2.setId(2L);
+        task2.setDescription("Task 2 description");
+        task2.setWorkPerformed("Task 2 work performed");
+        task2.setJobDone(true);
+        task2.setCustomer(customer);
+        taskList.add(task2);
+
+        Task task3 = new Task();
+        task3.setId(3L);
+        task3.setDescription("Task 3 description");
+        task3.setWorkPerformed("Task 3 work performed");
+        task3.setJobDone(false);
+        task3.setCustomer(customer);
+        taskList.add(task3);
+
+    }
+
+    @AfterEach
+    void tearDown() {
+    }
+
+    @Test
+    void getAllTasks() {
+        when(taskRepository.findAll()).thenReturn(taskList);
+
+        List<TaskDto> taskDtos = taskService.getAllTasks();
+
+        assertEquals(taskList.size(), taskDtos.size());
+    }
+
+    @Test
+    void getTask() {
+    }
+
+    @Test
+    void getTasksWithPagination() {
+    }
+
+    @Test
+    void addTask() {
+    }
+
+    @Test
+    void updateTask() {
+    }
+
+    @Test
+    void deleteTask() {
+    }
+
+    @Test
+    void transferTaskToDto() {
+    }
+
+    @Test
+    void transferDtoToTask() {
+    }
+
+    @Test
+    void testTransferDtoToTask() {
+    }
+}

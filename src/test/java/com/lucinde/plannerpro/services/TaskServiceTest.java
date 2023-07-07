@@ -28,7 +28,7 @@ import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class TaskServiceTest {
@@ -130,10 +130,56 @@ class TaskServiceTest {
 
     @Test
     void addTask() {
+        TaskDto taskDto4 = new TaskDto();
+        taskDto4.id = 4L;
+        taskDto4.description = "Task 4 description";
+        taskDto4.workPerformed = "Task 4 work performed";
+        taskDto4.jobDone = true;
+
+        Task task = new Task();
+        task.setId(taskDto4.id);
+        task.setDescription(taskDto4.description);
+        task.setWorkPerformed(taskDto4.workPerformed);
+        task.setJobDone(taskDto4.jobDone);
+
+        when(taskRepository.save(any(Task.class))).thenReturn(task);
+
+        taskService.addTask(taskDto4);
+        verify(taskRepository, times(1)).save(taskArgumentCaptor.capture());
+        Task savedTask = taskArgumentCaptor.getValue();
+
+        assertEquals(taskDto4.description, savedTask.getDescription());
+        assertEquals(taskDto4.workPerformed, savedTask.getWorkPerformed());
+        assertEquals(taskDto4.jobDone, savedTask.getJobDone());
     }
 
     @Test
     void updateTask() {
+        Long taskId = 1L;
+
+        TaskDto taskDto4 = new TaskDto();
+        taskDto4.id = 1L;
+        taskDto4.description = "Task 4 description";
+        taskDto4.workPerformed = "Task 4 work performed";
+        taskDto4.jobDone = true;
+
+        Task existingTask = new Task();
+        existingTask.setId(taskId);
+        existingTask.setDescription("Oude omschrijving");
+        existingTask.setWorkPerformed("Oude werkzaamheden");
+        existingTask.setJobDone(false);
+
+        when(taskRepository.findById(taskId)).thenReturn(Optional.of(existingTask));
+        when(taskRepository.save(any(Task.class))).thenReturn(existingTask);
+
+        TaskDto updatedTask = taskService.updateTask(taskId, taskDto4);
+        verify(taskRepository, times(1)).findById(taskId);
+        verify(taskRepository, times(1)).save(any(Task.class));
+
+        assertNotNull(updatedTask);
+        assertEquals(taskDto4.description, updatedTask.description);
+        assertEquals(taskDto4.workPerformed, updatedTask.workPerformed);
+        assertEquals(taskDto4.jobDone, updatedTask.jobDone);
     }
 
     @Test

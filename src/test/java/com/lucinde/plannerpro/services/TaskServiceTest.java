@@ -7,6 +7,7 @@ import com.lucinde.plannerpro.models.Customer;
 import com.lucinde.plannerpro.models.Task;
 import com.lucinde.plannerpro.repositories.CustomerRepository;
 import com.lucinde.plannerpro.repositories.TaskRepository;
+import com.lucinde.plannerpro.utils.PageResponse;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -16,6 +17,9 @@ import org.mockito.Captor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 
 import java.util.ArrayList;
@@ -23,6 +27,7 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -103,6 +108,24 @@ class TaskServiceTest {
 
     @Test
     void getTasksWithPagination() {
+        int pageNo = 0;
+        int pageSize = 3;
+        Page<Task> taskPage = new PageImpl<>(taskList);
+        when(taskRepository.findAll(any(PageRequest.class))).thenReturn(taskPage);
+
+        PageResponse<TaskDto> pageResponse = taskService.getTasksWithPagination(pageNo, pageSize);
+
+        assertNotNull(pageResponse);
+        assertEquals(taskList.size(), pageResponse.count);
+        assertEquals(1, pageResponse.totalPages);
+        assertFalse(pageResponse.hasPrevious);
+        assertFalse(pageResponse.hasNext);
+        for (int i = 0; i < taskList.size(); i++) {
+            assertEquals(taskList.get(i).getDescription(), pageResponse.items.get(i).description);
+            assertEquals(taskList.get(i).getWorkPerformed(), pageResponse.items.get(i).workPerformed);
+            assertEquals(taskList.get(i).getJobDone(), pageResponse.items.get(i).jobDone);
+            assertEquals(taskList.get(i).getCustomer(), pageResponse.items.get(i).customer);
+        }
     }
 
     @Test

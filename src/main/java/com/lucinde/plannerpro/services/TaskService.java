@@ -132,7 +132,7 @@ public class TaskService {
             task.setJobDone(taskDto.jobDone);
         if(taskDto.customer != null)
             task.setCustomer(taskDto.customer);
-        if(taskDto.scheduleTaskList != null)
+        if(taskDto.fileList != null)
             task.setFileList(taskDto.fileList);
         if(taskDto.scheduleTaskList != null)
             task.setScheduleTaskList(taskDto.scheduleTaskList);

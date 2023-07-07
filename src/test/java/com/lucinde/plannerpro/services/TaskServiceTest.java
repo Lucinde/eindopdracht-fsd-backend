@@ -4,6 +4,8 @@ import com.lucinde.plannerpro.dtos.CustomerDto;
 import com.lucinde.plannerpro.dtos.TaskDto;
 import com.lucinde.plannerpro.exceptions.RecordNotFoundException;
 import com.lucinde.plannerpro.models.Customer;
+import com.lucinde.plannerpro.models.File;
+import com.lucinde.plannerpro.models.ScheduleTask;
 import com.lucinde.plannerpro.models.Task;
 import com.lucinde.plannerpro.repositories.CustomerRepository;
 import com.lucinde.plannerpro.repositories.TaskRepository;
@@ -200,12 +202,64 @@ class TaskServiceTest {
         });
     }
 
-
     @Test
-    void transferDtoToTask() {
+    void transferDtoToTaskThrowsException() {
+        TaskDto taskDto4 = new TaskDto();
+        taskDto4.id = 1L;
+        taskDto4.description = "Task 4 description";
+        taskDto4.workPerformed = "Task 4 work performed";
+        taskDto4.jobDone = true;
+
+        when(taskRepository.findById(9L)).thenReturn(Optional.empty());
+
+        assertThrows(RecordNotFoundException.class, () -> {
+            taskService.transferDtoToTask(taskDto4, 9L);
+        });
     }
 
     @Test
-    void testTransferDtoToTask() {
+    void testTransferDtoToTaskSetLists() {
+        ArrayList<ScheduleTask> mockTaskList = mock(ArrayList.class);
+        ScheduleTask task1 = new ScheduleTask();
+        ScheduleTask task2 = new ScheduleTask();
+        ScheduleTask task3 = new ScheduleTask();
+        mockTaskList.addAll(List.of(task1, task2, task3));
+
+        ArrayList<File> mockFileList = mock(ArrayList.class);
+        File file1 = new File();
+        File file2 = new File();
+        File file3 = new File();
+        mockFileList.addAll(List.of(file1, file2, file3));
+
+        TaskDto taskDto4 = new TaskDto();
+        taskDto4.id = 1L;
+        taskDto4.description = "Task 4 description";
+        taskDto4.workPerformed = "Task 4 work performed";
+        taskDto4.jobDone = true;
+        taskDto4.fileList = mockFileList;
+        taskDto4.scheduleTaskList = mockTaskList;
+
+        Task result = taskService.transferDtoToTask(taskDto4);
+
+        assertNotNull(result);
+        assertEquals(taskDto4.scheduleTaskList, result.getScheduleTaskList());
+        assertEquals(taskDto4.fileList, result.getFileList());
+    }
+
+    @Test
+    void testTransferDtoToTaskSetCustomer() {
+        Customer customer = new Customer();
+
+        TaskDto taskDto4 = new TaskDto();
+        taskDto4.id = 1L;
+        taskDto4.description = "Task 4 description";
+        taskDto4.workPerformed = "Task 4 work performed";
+        taskDto4.jobDone = true;
+        taskDto4.customer = customer;
+
+        Task result = taskService.transferDtoToTask(taskDto4);
+
+        assertNotNull(result);
+        assertEquals(taskDto4.customer, result.getCustomer());
     }
 }

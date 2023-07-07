@@ -2,6 +2,7 @@ package com.lucinde.plannerpro.services;
 
 import com.lucinde.plannerpro.dtos.CustomerDto;
 import com.lucinde.plannerpro.dtos.TaskDto;
+import com.lucinde.plannerpro.exceptions.RecordNotFoundException;
 import com.lucinde.plannerpro.models.Customer;
 import com.lucinde.plannerpro.models.Task;
 import com.lucinde.plannerpro.repositories.CustomerRepository;
@@ -19,6 +20,7 @@ import org.springframework.data.domain.Sort;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.when;
@@ -84,6 +86,19 @@ class TaskServiceTest {
 
     @Test
     void getTask() {
+        when(taskRepository.findById(1L)).thenReturn(Optional.of(taskList.get(0)));
+
+        TaskDto taskDto = taskService.getTask(1L);
+
+        assertEquals(taskList.get(0).getDescription(), taskDto.description);
+        assertEquals(taskList.get(0).getWorkPerformed(), taskDto.workPerformed);
+        assertEquals(taskList.get(0).getJobDone(), taskDto.jobDone);
+        assertEquals(taskList.get(0).getCustomer(), taskDto.customer);
+    }
+
+    @Test
+    void getTaskThrowsException() {
+        assertThrows(RecordNotFoundException.class, () -> taskService.getTask(9L));
     }
 
     @Test

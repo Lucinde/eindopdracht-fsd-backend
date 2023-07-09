@@ -164,19 +164,6 @@ public class ScheduleTaskService {
         scheduleTaskRepository.deleteById(id);
     }
 
-//    public ScheduleTaskInputDto transferScheduleTaskToDto(ScheduleTask scheduleTask) {
-//        ScheduleTaskInputDto scheduleTaskInputDto = new ScheduleTaskInputDto();
-//
-//        scheduleTaskInputDto.id = scheduleTask.getId();
-//        scheduleTaskInputDto.date = scheduleTask.getDate();
-//        scheduleTaskInputDto.startTime = scheduleTask.getStartTime();
-//        scheduleTaskInputDto.endTime = scheduleTask.getEndTime();
-//        scheduleTaskInputDto.task = scheduleTask.getTask();
-//        scheduleTaskInputDto.mechanic = scheduleTask.getMechanic();
-//
-//        return scheduleTaskInputDto;
-//    }
-
     public ScheduleTaskOutputDto transferScheduleTaskToOutputDto(ScheduleTask scheduleTask) {
         ScheduleTaskOutputDto scheduleTaskOutputDto = new ScheduleTaskOutputDto();
 

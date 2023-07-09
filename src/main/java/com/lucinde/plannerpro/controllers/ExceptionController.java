@@ -19,7 +19,7 @@ public class ExceptionController {
 
     @ExceptionHandler(value = RelationFoundException.class)
     public ResponseEntity<Object> exception(RelationFoundException exception) {
-        return new ResponseEntity<>(exception.getMessage(), HttpStatus.NOT_FOUND);
+        return new ResponseEntity<>(exception.getMessage(), HttpStatus.CONFLICT);
     }
 
     @ExceptionHandler(value = BadRequestException.class)

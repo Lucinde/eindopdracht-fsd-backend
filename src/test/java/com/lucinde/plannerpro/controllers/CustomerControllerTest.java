@@ -1,43 +1,26 @@
 package com.lucinde.plannerpro.controllers;
 
 import com.lucinde.plannerpro.dtos.CustomerDto;
-import com.lucinde.plannerpro.filters.JwtRequestFilter;
 import com.lucinde.plannerpro.models.Customer;
 import com.lucinde.plannerpro.repositories.CustomerRepository;
 import com.lucinde.plannerpro.services.CustomerService;
-import org.checkerframework.checker.units.qual.C;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.test.context.support.WithMockUser;
 
-import org.springframework.boot.test.context.TestConfiguration;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.ComponentScan;
-import org.springframework.context.annotation.FilterType;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
-import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.mock;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.BDDMockito.given;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.hamcrest.Matchers.hasSize;
 
 
 @SpringBootTest
@@ -48,7 +31,7 @@ class CustomerControllerTest {
     @Autowired
     private MockMvc mockMvc;
 
-    @Autowired
+    @Mock
     private CustomerService customerService;
 
     @Autowired
@@ -97,24 +80,24 @@ class CustomerControllerTest {
         customers.add(customer3);
 
         customerDto1.id = 4L;
-        customerDto1.firstName = "Galileo";
-        customerDto1.lastName = "Galilei";
-        customerDto1.address = "Observatory Road 12";
-        customerDto1.zip = "1234AB";
-        customerDto1.city = "Florence";
-        customerDto1.phoneNumber = "06-23456789";
-        customerDto1.email = "galileogal@gmail.com";
+        customerDto1.firstName = "Albert";
+        customerDto1.lastName = "Einstein";
+        customerDto1.address = "Lindenlaan 23";
+        customerDto1.zip = "1590AB";
+        customerDto1.city = "Leeuwarden";
+        customerDto1.phoneNumber = "06-12467890";
+        customerDto1.email = "jessp@hotmail.com";
         customerDto1.taskList = new ArrayList<>();
 
         customerDto2.id = 5L;
-        customerDto2.firstName = "Nikola";
-        customerDto2.lastName = "Tesla";
-        customerDto2.address = "Wireless Street 8";
-        customerDto2.zip = "5678CD";
-        customerDto2.city = "Belgrade";
-        customerDto2.phoneNumber = "06-87654321";
-        customerDto2.email = "teslanikola@hotmail.com";
-        customerDto2.taskList = (new ArrayList<>());
+        customerDto2.firstName = "Isaac";
+        customerDto2.lastName = "Newton";
+        customerDto2.address = "Apple Street 5";
+        customerDto2.zip = "3456YZ";
+        customerDto2.city = "London";
+        customerDto2.phoneNumber = "06-98765432";
+        customerDto2.email = "newtonisaac@gmail.com";
+        customerDto2.taskList = new ArrayList<>();
 
         customerRepository.save(customer1);
         customerRepository.save(customer2);
@@ -122,8 +105,28 @@ class CustomerControllerTest {
     }
 
     @Test
-//    @WithMockUser(username="John", roles="ROLE_ADMIN")
+    @WithMockUser(username="John", roles="ADMIN")
     void getAllCustomers() throws Exception {
+
+        mockMvc.perform(get("/customers"))
+                .andExpect(status().isOk())
+                // $[?(@.id == 1)] checkt voor de gegevens van de persoon in de lijst met dit ID, zo maakt de volgorde van de lijst niet uit
+                .andExpect(jsonPath("$[?(@.id == 1)].firstName").value("Albert"))
+                .andExpect(jsonPath("$[?(@.id == 1)].lastName").value("Einstein"))
+                .andExpect(jsonPath("$[?(@.id == 1)].address").value("Lindenlaan 23"))
+                .andExpect(jsonPath("$[?(@.id == 1)].zip").value("1590AB"))
+                .andExpect(jsonPath("$[?(@.id == 1)].city").value("Leeuwarden"))
+                .andExpect(jsonPath("$[?(@.id == 1)].phoneNumber").value("06-12467890"))
+                .andExpect(jsonPath("$[?(@.id == 1)].email").value("jessp@hotmail.com"))
+                .andExpect(jsonPath("$[?(@.id == 1)].taskList", hasSize(1)))
+                .andExpect(jsonPath("$[?(@.id == 3)].firstName").value("Marie"))
+                .andExpect(jsonPath("$[?(@.id == 3)].lastName").value("Curie"))
+                .andExpect(jsonPath("$[?(@.id == 3)].address").value("Radiation Avenue 7"))
+                .andExpect(jsonPath("$[?(@.id == 3)].zip").value("7890XY"))
+                .andExpect(jsonPath("$[?(@.id == 3)].city").value("Paris"))
+                .andExpect(jsonPath("$[?(@.id == 3)].phoneNumber").value("06-56781234"))
+                .andExpect(jsonPath("$[?(@.id == 3)].email").value("mariecurie@yahoo.com"))
+                .andExpect(jsonPath("$[?(@.id == 3)].taskList", hasSize(1)));
 
     }
 

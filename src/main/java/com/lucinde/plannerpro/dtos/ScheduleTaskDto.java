@@ -21,10 +21,14 @@ public class ScheduleTaskDto {
 
     public Task task;
 
-    @JsonIgnore
     public User mechanic;
-    @JsonProperty("mechanic")
-    public String getMechanicUsername() {
-        return mechanic.getUsername();
-    }
+
+    // todo: Dit voor de output DTO gebruiken en voor de input wel de oude versie houden
+//    @JsonIgnore
+//    public User mechanic;
+//
+//    @JsonProperty("mechanic")
+//    public String getMechanicUsername() {
+//        return mechanic.getUsername();
+//    }
 }

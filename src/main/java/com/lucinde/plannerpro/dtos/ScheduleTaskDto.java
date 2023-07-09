@@ -1,5 +1,7 @@
 package com.lucinde.plannerpro.dtos;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.lucinde.plannerpro.models.Task;
 import com.lucinde.plannerpro.models.User;
 import jakarta.validation.constraints.FutureOrPresent;
@@ -18,5 +20,11 @@ public class ScheduleTaskDto {
     public LocalTime endTime;
 
     public Task task;
+
+    @JsonIgnore
     public User mechanic;
+    @JsonProperty("mechanic")
+    public String getMechanicUsername() {
+        return mechanic.getUsername();
+    }
 }

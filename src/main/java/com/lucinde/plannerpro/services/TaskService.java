@@ -19,11 +19,9 @@ import java.util.Optional;
 @Service
 public class TaskService {
     private final TaskRepository taskRepository;
-    private final CustomerRepository customerRepository;
 
-    public TaskService(TaskRepository taskRepository, CustomerRepository customerRepository) {
+    public TaskService(TaskRepository taskRepository) {
         this.taskRepository = taskRepository;
-        this.customerRepository = customerRepository;
     }
 
     public List<TaskDto> getAllTasks() {

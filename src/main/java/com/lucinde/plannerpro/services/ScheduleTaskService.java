@@ -67,19 +67,7 @@ public class ScheduleTaskService {
             pagingScheduleTask = scheduleTaskRepository.findAllByDateAfter(currentDate, pageRequest);
         }
 
-        PageResponse<ScheduleTaskOutputDto> response = new PageResponse<>();
-
-        response.count = pagingScheduleTask.getTotalElements();
-        response.totalPages = pagingScheduleTask.getTotalPages();
-        response.hasNext = pagingScheduleTask.hasNext();
-        response.hasPrevious = pagingScheduleTask.hasPrevious();
-        response.items = new ArrayList<>();
-
-        for (ScheduleTask t : pagingScheduleTask) {
-            response.items.add(transferScheduleTaskToOutputDto(t));
-        }
-
-        return response;
+        return createPageResponse(pagingScheduleTask);
     }
 
     public PageResponse<ScheduleTaskOutputDto> getScheduleTasksByMechanicWithPagination(String mechanicUsername, int pageNo, int pageSize, String userRole, String requestingUsername, boolean includeOlderTasks) {
@@ -97,19 +85,7 @@ public class ScheduleTaskService {
             throw new BadRequestException("U mag deze gegevens niet inzien");
         }
 
-        PageResponse<ScheduleTaskOutputDto> response = new PageResponse<>();
-
-        response.count = pagingScheduleTask.getTotalElements();
-        response.totalPages = pagingScheduleTask.getTotalPages();
-        response.hasNext = pagingScheduleTask.hasNext();
-        response.hasPrevious = pagingScheduleTask.hasPrevious();
-        response.items = new ArrayList<>();
-
-        for (ScheduleTask t : pagingScheduleTask) {
-            response.items.add(transferScheduleTaskToOutputDto(t));
-        }
-
-        return response;
+        return createPageResponse(pagingScheduleTask);
     }
 
     public ScheduleTaskOutputDto addScheduleTask(ScheduleTaskInputDto scheduleTaskInputDto) {
@@ -216,6 +192,22 @@ public class ScheduleTaskService {
         if (isMechanicAlreadyScheduled) {
             throw new RelationFoundException("De monteur is al ingepland op deze dag en tijd.");
         }
+    }
+
+    private PageResponse<ScheduleTaskOutputDto> createPageResponse(Page<ScheduleTask> pagingScheduleTask) {
+        PageResponse<ScheduleTaskOutputDto> response = new PageResponse<>();
+
+        response.count = pagingScheduleTask.getTotalElements();
+        response.totalPages = pagingScheduleTask.getTotalPages();
+        response.hasNext = pagingScheduleTask.hasNext();
+        response.hasPrevious = pagingScheduleTask.hasPrevious();
+        response.items = new ArrayList<>();
+
+        for (ScheduleTask t : pagingScheduleTask) {
+            response.items.add(transferScheduleTaskToOutputDto(t));
+        }
+
+        return response;
     }
 }
 

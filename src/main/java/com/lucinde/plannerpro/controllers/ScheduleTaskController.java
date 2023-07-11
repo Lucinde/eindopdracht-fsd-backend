@@ -66,8 +66,7 @@ public class ScheduleTaskController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Object> updateScheduleTask(@PathVariable Long id, @Valid @RequestBody ScheduleTaskInputDto scheduleTaskInputDto, BindingResult br) {
-        //todo: goed nadenken of deze check/@Valid nodig is. Bij het updaten van een taak, mag de datum dan wel naar het verleden verplaatst worden?
+    public ResponseEntity<Object> updateScheduleTask(@PathVariable Long id, @RequestBody ScheduleTaskInputDto scheduleTaskInputDto, BindingResult br) {
         if(br.hasFieldErrors()) {
             return ResponseEntity.badRequest().body(fieldError.fieldErrorBuilder(br));
         }

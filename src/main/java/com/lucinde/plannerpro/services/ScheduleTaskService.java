@@ -115,30 +115,17 @@ public class ScheduleTaskService {
     public ScheduleTaskOutputDto addScheduleTask(ScheduleTaskInputDto scheduleTaskInputDto) {
         ScheduleTask scheduleTask = transferDtoToScheduleTask(scheduleTaskInputDto);
 
-        LocalDate date = scheduleTask.getDate();
-        LocalTime startTime = scheduleTask.getStartTime();
-        LocalTime endTime = scheduleTask.getEndTime();
-        User mechanic = scheduleTask.getMechanic();
-
-        if(endTime.compareTo(startTime) <= 0) {
-            throw new BadRequestException("Eindtijd kan niet voor de begintijd liggen");
-        }
-
-        boolean isMechanicAlreadyScheduled = scheduleTaskRepository.countConflictingTasks(mechanic, date, startTime, endTime) > 0;
-
-        if (isMechanicAlreadyScheduled) {
-            throw new RelationFoundException("De monteur is al ingepland op deze dag en tijd.");
-        }
+        scheduleTaskCheckTimeAndAvailability(scheduleTask);
         scheduleTaskRepository.save(scheduleTask);
 
         return transferScheduleTaskToOutputDto(scheduleTask);
     }
 
     public ScheduleTaskOutputDto updateScheduleTask(Long id, ScheduleTaskInputDto scheduleTaskInputDto) {
-        //todo: controle toevoegen of tijden kloppen en niet overlappen bij monteurs en tijden (het id dat je wilt aanpassen uitsluiten! - optionele parameters? / Optional voor laatste param (standaard null? isPresent check))
 
         ScheduleTask updateScheduleTask = transferDtoToScheduleTask(scheduleTaskInputDto, id);
         updateScheduleTask.setId(id);
+        scheduleTaskCheckTimeAndAvailability(updateScheduleTask);
         scheduleTaskRepository.save(updateScheduleTask);
 
         return transferScheduleTaskToOutputDto(updateScheduleTask);
@@ -207,6 +194,29 @@ public class ScheduleTaskService {
             scheduleTask.setMechanic(scheduleTaskInputDto.mechanic);
 
         return scheduleTask;
+    }
+
+    public void scheduleTaskCheckTimeAndAvailability(ScheduleTask scheduleTask) {
+        LocalDate date = scheduleTask.getDate();
+        LocalTime startTime = scheduleTask.getStartTime();
+        LocalTime endTime = scheduleTask.getEndTime();
+        User mechanic = scheduleTask.getMechanic();
+        Long id;
+        if(scheduleTask.getId() == null) {
+            id = -1L;
+        } else {
+            id = scheduleTask.getId();
+        }
+
+        if(endTime.compareTo(startTime) <= 0) {
+            throw new BadRequestException("Eindtijd kan niet voor de begintijd liggen");
+        }
+
+        boolean isMechanicAlreadyScheduled = scheduleTaskRepository.countConflictingTasks(mechanic, date, startTime, endTime, id) > 0;
+
+        if (isMechanicAlreadyScheduled) {
+            throw new RelationFoundException("De monteur is al ingepland op deze dag en tijd.");
+        }
     }
 }
 

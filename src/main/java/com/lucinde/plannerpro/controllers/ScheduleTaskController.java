@@ -112,7 +112,6 @@ public class ScheduleTaskController {
 
     private String getUserRole(Authentication authentication) {
         Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
-        // Assuming the user has a single role, retrieve the first authority
         return authorities.iterator().next().getAuthority();
     }
 }

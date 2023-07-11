@@ -4,7 +4,6 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.lucinde.plannerpro.models.Task;
 import com.lucinde.plannerpro.models.User;
-import jakarta.validation.constraints.FutureOrPresent;
 
 import java.time.LocalDate;
 import java.time.LocalTime;

@@ -3,6 +3,7 @@ package com.lucinde.plannerpro.controllers;
 import com.lucinde.plannerpro.exceptions.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
@@ -36,6 +37,11 @@ public class ExceptionController {
 
     @ExceptionHandler(value = FileNotFoundException.class)
     public ResponseEntity<Object> exception(FileNotFoundException exception) {
+        return new ResponseEntity<>(exception.getMessage(), HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(value = BadCredentialsException.class)
+    public ResponseEntity<Object> exception(BadCredentialsException exception) {
         return new ResponseEntity<>(exception.getMessage(), HttpStatus.BAD_REQUEST);
     }
 }

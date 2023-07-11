@@ -1,6 +1,7 @@
 package com.lucinde.plannerpro.controllers;
 
 import com.lucinde.plannerpro.dtos.CustomerDto;
+import com.lucinde.plannerpro.exceptions.BadRequestException;
 import com.lucinde.plannerpro.utils.FieldError;
 import com.lucinde.plannerpro.services.CustomerService;
 import com.lucinde.plannerpro.utils.PageResponse;
@@ -34,7 +35,17 @@ public class CustomerController {
     }
 
     @GetMapping({"/pages"})
-    public ResponseEntity<Object> getTasksWithPagination(@RequestParam Integer pageNo, @RequestParam Integer pageSize) {
+    public ResponseEntity<Object> getTasksWithPagination(
+            @RequestParam(required = false) Integer pageNo,
+            @RequestParam(required = false) Integer pageSize) {
+
+        if(pageNo == null) {
+            throw new BadRequestException("Vul een pageNo in");
+        }
+        if(pageSize == null) {
+            throw new BadRequestException("Vul een pageSize in");
+        }
+
         PageResponse<CustomerDto> customerDto = customerService.getCustomerWithPagination(pageNo, pageSize);
 
         return ResponseEntity.ok().body(customerDto);

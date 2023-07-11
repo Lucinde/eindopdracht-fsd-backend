@@ -50,7 +50,7 @@ public class UserController {
 
     @PostMapping(value = "")
     public ResponseEntity<Object> createKlant(@Valid @RequestBody UserInputDto dto, BindingResult br) {
-        if(br.hasFieldErrors()) {
+        if (br.hasFieldErrors()) {
             return ResponseEntity.badRequest().body(fieldError.fieldErrorBuilder(br));
         }
 
@@ -88,8 +88,7 @@ public class UserController {
             String authorityName = (String) fields.get("authority");
             userService.addAuthority(username, authorityName);
             return ResponseEntity.noContent().build();
-        }
-        catch (Exception ex) {
+        } catch (Exception ex) {
             throw new BadRequestException(ex.getMessage());
         }
     }

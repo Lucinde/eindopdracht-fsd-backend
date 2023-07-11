@@ -3,8 +3,6 @@ package com.lucinde.plannerpro.dtos;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.lucinde.plannerpro.models.Authority;
 import com.lucinde.plannerpro.models.ScheduleTask;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Size;
 
 import java.util.List;
 import java.util.Set;

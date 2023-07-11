@@ -85,6 +85,9 @@ public class ScheduleTaskController {
         if(br.hasFieldErrors()) {
             return ResponseEntity.badRequest().body(fieldError.fieldErrorBuilder(br));
         }
+        if(scheduleTaskInputDto.mechanic == null) {
+            throw new BadRequestException("Voeg nog een monteur toe");
+        }
         ScheduleTaskOutputDto addedScheduleTask = scheduleTaskService.addScheduleTask(scheduleTaskInputDto);
         URI uri = URI.create(String.valueOf(ServletUriComponentsBuilder.fromCurrentRequest().path("/" + addedScheduleTask.id)));
         return ResponseEntity.created(uri).body(addedScheduleTask);

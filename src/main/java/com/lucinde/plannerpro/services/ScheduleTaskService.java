@@ -37,7 +37,7 @@ public class ScheduleTaskService {
         Iterable<ScheduleTask> scheduleTasks = scheduleTaskRepository.findAll(Sort.by(Sort.Direction.ASC, "id"));
         List<ScheduleTaskOutputDto> scheduleTaskOutputDtos = new ArrayList<>();
 
-        for (ScheduleTask st: scheduleTasks) {
+        for (ScheduleTask st : scheduleTasks) {
             scheduleTaskOutputDtos.add(transferScheduleTaskToOutputDto(st));
         }
 
@@ -47,7 +47,7 @@ public class ScheduleTaskService {
     public ScheduleTaskOutputDto getScheduleTask(Long id) {
         Optional<ScheduleTask> scheduleTaskOptional = scheduleTaskRepository.findById(id);
 
-        if(scheduleTaskOptional.isEmpty()) {
+        if (scheduleTaskOptional.isEmpty()) {
             throw new RecordNotFoundException("Geen ingeplande taak gevonden met id: " + id);
         }
 
@@ -61,7 +61,7 @@ public class ScheduleTaskService {
         Page<ScheduleTask> pagingScheduleTask;
         LocalDate currentDate = LocalDate.now();
 
-        if(includeOlderTasks) {
+        if (includeOlderTasks) {
             pagingScheduleTask = scheduleTaskRepository.findAll(pageRequest);
         } else {
             pagingScheduleTask = scheduleTaskRepository.findAllByDateAfter(currentDate, pageRequest);
@@ -70,7 +70,13 @@ public class ScheduleTaskService {
         return createPageResponse(pagingScheduleTask);
     }
 
-    public PageResponse<ScheduleTaskOutputDto> getScheduleTasksByMechanicWithPagination(String mechanicUsername, int pageNo, int pageSize, String userRole, String requestingUsername, boolean includeOlderTasks) {
+    public PageResponse<ScheduleTaskOutputDto> getScheduleTasksByMechanicWithPagination(
+            String mechanicUsername,
+            int pageNo,
+            int pageSize,
+            String userRole,
+            String requestingUsername,
+            boolean includeOlderTasks) {
         PageRequest pageRequest = PageRequest.of(pageNo, pageSize, Sort.by("date").ascending());
         Page<ScheduleTask> pagingScheduleTask;
         LocalDate currentDate = LocalDate.now();
@@ -119,7 +125,7 @@ public class ScheduleTaskService {
 
     public void deleteScheduleTask(Long id) {
         Optional<ScheduleTask> optionalScheduleTask = scheduleTaskRepository.findById(id);
-        if(optionalScheduleTask.isEmpty()) {
+        if (optionalScheduleTask.isEmpty()) {
             throw new RecordNotFoundException("Geen ingeplande taak gevonden met id: " + id);
         }
 
@@ -146,9 +152,9 @@ public class ScheduleTaskService {
     public ScheduleTask transferDtoToScheduleTask(ScheduleTaskInputDto scheduleTaskInputDto, Long id) {
         ScheduleTask scheduleTask;
 
-        if(id != 0L) {
+        if (id != 0L) {
             Optional<ScheduleTask> scheduleTaskOptional = scheduleTaskRepository.findById(id);
-            if(scheduleTaskOptional.isEmpty()) {
+            if (scheduleTaskOptional.isEmpty()) {
                 throw new RecordNotFoundException("Geen ingeplande taak gevonden met id: " + id);
             }
             scheduleTask = scheduleTaskOptional.get();
@@ -157,15 +163,15 @@ public class ScheduleTaskService {
         }
 
         // Geen setId nodig, deze genereert de database of staat in de URL
-        if(scheduleTaskInputDto.date != null)
+        if (scheduleTaskInputDto.date != null)
             scheduleTask.setDate(scheduleTaskInputDto.date);
-        if(scheduleTaskInputDto.startTime != null)
+        if (scheduleTaskInputDto.startTime != null)
             scheduleTask.setStartTime(scheduleTaskInputDto.startTime);
-        if(scheduleTaskInputDto.endTime != null)
+        if (scheduleTaskInputDto.endTime != null)
             scheduleTask.setEndTime(scheduleTaskInputDto.endTime);
-        if(scheduleTaskInputDto.task != null)
+        if (scheduleTaskInputDto.task != null)
             scheduleTask.setTask(scheduleTaskInputDto.task);
-        if(scheduleTaskInputDto.mechanic != null)
+        if (scheduleTaskInputDto.mechanic != null)
             scheduleTask.setMechanic(scheduleTaskInputDto.mechanic);
 
         return scheduleTask;
@@ -177,13 +183,13 @@ public class ScheduleTaskService {
         LocalTime endTime = scheduleTask.getEndTime();
         User mechanic = scheduleTask.getMechanic();
         Long id;
-        if(scheduleTask.getId() == null) {
+        if (scheduleTask.getId() == null) {
             id = -1L;
         } else {
             id = scheduleTask.getId();
         }
 
-        if(endTime.compareTo(startTime) <= 0) {
+        if (endTime.compareTo(startTime) <= 0) {
             throw new BadRequestException("Eindtijd kan niet voor de begintijd liggen");
         }
 

@@ -6,6 +6,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
+import java.io.FileNotFoundException;
+
 @ControllerAdvice
 public class ExceptionController {
     @ExceptionHandler(value = RecordNotFoundException.class)
@@ -30,5 +32,10 @@ public class ExceptionController {
     @ExceptionHandler(value = UsernameNotFoundException.class)
     public ResponseEntity<Object> exception(UsernameNotFoundException exception) {
         return new ResponseEntity<>(exception.getMessage(), HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(value = FileNotFoundException.class)
+    public ResponseEntity<Object> exception(FileNotFoundException exception) {
+        return new ResponseEntity<>(exception.getMessage(), HttpStatus.BAD_REQUEST);
     }
 }

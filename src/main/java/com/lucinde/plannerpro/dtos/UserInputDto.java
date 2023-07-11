@@ -3,6 +3,7 @@ package com.lucinde.plannerpro.dtos;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.lucinde.plannerpro.models.Authority;
 import com.lucinde.plannerpro.models.ScheduleTask;
+import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 
@@ -20,6 +21,7 @@ public class UserInputDto {
     public Boolean enabled;
     public String apikey;
     @NotBlank
+    @Email
     public String email;
     @JsonSerialize
     public Set<Authority> authorities;

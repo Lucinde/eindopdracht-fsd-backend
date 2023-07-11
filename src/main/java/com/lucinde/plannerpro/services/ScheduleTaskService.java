@@ -1,7 +1,7 @@
 package com.lucinde.plannerpro.services;
 
-import com.lucinde.plannerpro.dtos.ScheduleTaskDto;
-import com.lucinde.plannerpro.dtos.TaskDto;
+import com.lucinde.plannerpro.dtos.ScheduleTaskInputDto;
+import com.lucinde.plannerpro.dtos.ScheduleTaskOutputDto;
 import com.lucinde.plannerpro.exceptions.BadRequestException;
 import com.lucinde.plannerpro.exceptions.RecordNotFoundException;
 import com.lucinde.plannerpro.exceptions.RelationFoundException;
@@ -33,18 +33,18 @@ public class ScheduleTaskService {
         this.taskRepository = taskRepository;
     }
 
-    public List<ScheduleTaskDto> getAllScheduleTasks() {
+    public List<ScheduleTaskOutputDto> getAllScheduleTasks() {
         Iterable<ScheduleTask> scheduleTasks = scheduleTaskRepository.findAll(Sort.by(Sort.Direction.ASC, "id"));
-        List<ScheduleTaskDto> scheduleTaskDtos = new ArrayList<>();
+        List<ScheduleTaskOutputDto> scheduleTaskOutputDtos = new ArrayList<>();
 
         for (ScheduleTask st: scheduleTasks) {
-            scheduleTaskDtos.add(transferScheduleTaskToDto(st));
+            scheduleTaskOutputDtos.add(transferScheduleTaskToOutputDto(st));
         }
 
-        return scheduleTaskDtos;
+        return scheduleTaskOutputDtos;
     }
 
-    public ScheduleTaskDto getScheduleTask(Long id) {
+    public ScheduleTaskOutputDto getScheduleTask(Long id) {
         Optional<ScheduleTask> scheduleTaskOptional = scheduleTaskRepository.findById(id);
 
         if(scheduleTaskOptional.isEmpty()) {
@@ -53,10 +53,10 @@ public class ScheduleTaskService {
 
         ScheduleTask scheduleTask = scheduleTaskOptional.get();
 
-        return transferScheduleTaskToDto(scheduleTask);
+        return transferScheduleTaskToOutputDto(scheduleTask);
     }
 
-    public PageResponse<ScheduleTaskDto> getScheduleTaskWithPagination(int pageNo, int pageSize, boolean includeOlderTasks) {
+    public PageResponse<ScheduleTaskOutputDto> getScheduleTaskWithPagination(int pageNo, int pageSize, boolean includeOlderTasks) {
         PageRequest pageRequest = PageRequest.of(pageNo, pageSize, Sort.by("date").ascending());
         Page<ScheduleTask> pagingScheduleTask;
         LocalDate currentDate = LocalDate.now();
@@ -67,22 +67,10 @@ public class ScheduleTaskService {
             pagingScheduleTask = scheduleTaskRepository.findAllByDateAfter(currentDate, pageRequest);
         }
 
-        PageResponse<ScheduleTaskDto> response = new PageResponse<>();
-
-        response.count = pagingScheduleTask.getTotalElements();
-        response.totalPages = pagingScheduleTask.getTotalPages();
-        response.hasNext = pagingScheduleTask.hasNext();
-        response.hasPrevious = pagingScheduleTask.hasPrevious();
-        response.items = new ArrayList<>();
-
-        for (ScheduleTask t : pagingScheduleTask) {
-            response.items.add(transferScheduleTaskToDto(t));
-        }
-
-        return response;
+        return createPageResponse(pagingScheduleTask);
     }
 
-    public PageResponse<ScheduleTaskDto> getScheduleTasksByMechanicWithPagination(String mechanicUsername, int pageNo, int pageSize, String userRole, String requestingUsername, boolean includeOlderTasks) {
+    public PageResponse<ScheduleTaskOutputDto> getScheduleTasksByMechanicWithPagination(String mechanicUsername, int pageNo, int pageSize, String userRole, String requestingUsername, boolean includeOlderTasks) {
         PageRequest pageRequest = PageRequest.of(pageNo, pageSize, Sort.by("date").ascending());
         Page<ScheduleTask> pagingScheduleTask;
         LocalDate currentDate = LocalDate.now();
@@ -97,62 +85,36 @@ public class ScheduleTaskService {
             throw new BadRequestException("U mag deze gegevens niet inzien");
         }
 
-        PageResponse<ScheduleTaskDto> response = new PageResponse<>();
-
-        response.count = pagingScheduleTask.getTotalElements();
-        response.totalPages = pagingScheduleTask.getTotalPages();
-        response.hasNext = pagingScheduleTask.hasNext();
-        response.hasPrevious = pagingScheduleTask.hasPrevious();
-        response.items = new ArrayList<>();
-
-        for (ScheduleTask t : pagingScheduleTask) {
-            response.items.add(transferScheduleTaskToDto(t));
-        }
-
-        return response;
+        return createPageResponse(pagingScheduleTask);
     }
 
-    public ScheduleTaskDto addScheduleTask(ScheduleTaskDto scheduleTaskDto) {
-        ScheduleTask scheduleTask = transferDtoToScheduleTask(scheduleTaskDto);
+    public ScheduleTaskOutputDto addScheduleTask(ScheduleTaskInputDto scheduleTaskInputDto) {
+        ScheduleTask scheduleTask = transferDtoToScheduleTask(scheduleTaskInputDto);
 
-        LocalDate date = scheduleTask.getDate();
-        LocalTime startTime = scheduleTask.getStartTime();
-        LocalTime endTime = scheduleTask.getEndTime();
-        User mechanic = scheduleTask.getMechanic();
-
-        if(endTime.compareTo(startTime) <= 0) {
-            throw new BadRequestException("Eindtijd kan niet voor de begintijd liggen");
-        }
-
-        boolean isMechanicAlreadyScheduled = scheduleTaskRepository.countConflictingTasks(mechanic, date, startTime, endTime) > 0;
-
-        if (isMechanicAlreadyScheduled) {
-            throw new RelationFoundException("De monteur is al ingepland op deze dag en tijd.");
-        }
+        scheduleTaskCheckTimeAndAvailability(scheduleTask);
         scheduleTaskRepository.save(scheduleTask);
 
-        return transferScheduleTaskToDto(scheduleTask);
+        return transferScheduleTaskToOutputDto(scheduleTask);
     }
 
-    public ScheduleTaskDto updateScheduleTask(Long id, ScheduleTaskDto scheduleTaskDto) {
-        //todo: controle toevoegen of tijden kloppen en niet overlappen bij monteurs en tijden (het id dat je wilt aanpassen uitsluiten! - optionele parameters? / Optional voor laatste param (standaard null? isPresent check))
+    public ScheduleTaskOutputDto updateScheduleTask(Long id, ScheduleTaskInputDto scheduleTaskInputDto) {
 
-        ScheduleTask updateScheduleTask = transferDtoToScheduleTask(scheduleTaskDto, id);
+        ScheduleTask updateScheduleTask = transferDtoToScheduleTask(scheduleTaskInputDto, id);
         updateScheduleTask.setId(id);
+        scheduleTaskCheckTimeAndAvailability(updateScheduleTask);
         scheduleTaskRepository.save(updateScheduleTask);
 
-        return transferScheduleTaskToDto(updateScheduleTask);
+        return transferScheduleTaskToOutputDto(updateScheduleTask);
     }
 
-    public ScheduleTaskDto assignScheduleToTask(Long id, Long task_id) {
-        // in plaats van een aparte optional aan te maken heb ik hier de optie gebruikt om meteen een exception te gooien als het ID niet bestaat
+    public ScheduleTaskOutputDto assignScheduleToTask(Long id, Long task_id) {
         ScheduleTask scheduleTask = scheduleTaskRepository.findById(id).orElseThrow(() -> new RecordNotFoundException("Geen planning gevonden met id: " + id));
         Task task = taskRepository.findById(task_id).orElseThrow(() -> new RecordNotFoundException("Geen taak gevonden met id: " + task_id));
 
         scheduleTask.setTask(task);
         scheduleTaskRepository.save(scheduleTask);
 
-        return transferScheduleTaskToDto(scheduleTask);
+        return transferScheduleTaskToOutputDto(scheduleTask);
     }
 
     public void deleteScheduleTask(Long id) {
@@ -164,24 +126,24 @@ public class ScheduleTaskService {
         scheduleTaskRepository.deleteById(id);
     }
 
-    public ScheduleTaskDto transferScheduleTaskToDto(ScheduleTask scheduleTask) {
-        ScheduleTaskDto scheduleTaskDto = new ScheduleTaskDto();
+    public ScheduleTaskOutputDto transferScheduleTaskToOutputDto(ScheduleTask scheduleTask) {
+        ScheduleTaskOutputDto scheduleTaskOutputDto = new ScheduleTaskOutputDto();
 
-        scheduleTaskDto.id = scheduleTask.getId();
-        scheduleTaskDto.date = scheduleTask.getDate();
-        scheduleTaskDto.startTime = scheduleTask.getStartTime();
-        scheduleTaskDto.endTime = scheduleTask.getEndTime();
-        scheduleTaskDto.task = scheduleTask.getTask();
-        scheduleTaskDto.mechanic = scheduleTask.getMechanic();
+        scheduleTaskOutputDto.id = scheduleTask.getId();
+        scheduleTaskOutputDto.date = scheduleTask.getDate();
+        scheduleTaskOutputDto.startTime = scheduleTask.getStartTime();
+        scheduleTaskOutputDto.endTime = scheduleTask.getEndTime();
+        scheduleTaskOutputDto.task = scheduleTask.getTask();
+        scheduleTaskOutputDto.mechanic = scheduleTask.getMechanic();
 
-        return scheduleTaskDto;
+        return scheduleTaskOutputDto;
     }
 
-    public ScheduleTask transferDtoToScheduleTask(ScheduleTaskDto scheduleTaskDto) {
-        return transferDtoToScheduleTask(scheduleTaskDto, 0L);
+    public ScheduleTask transferDtoToScheduleTask(ScheduleTaskInputDto scheduleTaskInputDto) {
+        return transferDtoToScheduleTask(scheduleTaskInputDto, 0L);
     }
 
-    public ScheduleTask transferDtoToScheduleTask(ScheduleTaskDto scheduleTaskDto, Long id) {
+    public ScheduleTask transferDtoToScheduleTask(ScheduleTaskInputDto scheduleTaskInputDto, Long id) {
         ScheduleTask scheduleTask;
 
         if(id != 0L) {
@@ -195,18 +157,57 @@ public class ScheduleTaskService {
         }
 
         // Geen setId nodig, deze genereert de database of staat in de URL
-        if(scheduleTaskDto.date != null)
-            scheduleTask.setDate(scheduleTaskDto.date);
-        if(scheduleTaskDto.startTime != null)
-            scheduleTask.setStartTime(scheduleTaskDto.startTime);
-        if(scheduleTaskDto.endTime != null)
-            scheduleTask.setEndTime(scheduleTaskDto.endTime);
-        if(scheduleTaskDto.task != null)
-            scheduleTask.setTask(scheduleTaskDto.task);
-        if(scheduleTaskDto.mechanic != null)
-            scheduleTask.setMechanic(scheduleTaskDto.mechanic);
+        if(scheduleTaskInputDto.date != null)
+            scheduleTask.setDate(scheduleTaskInputDto.date);
+        if(scheduleTaskInputDto.startTime != null)
+            scheduleTask.setStartTime(scheduleTaskInputDto.startTime);
+        if(scheduleTaskInputDto.endTime != null)
+            scheduleTask.setEndTime(scheduleTaskInputDto.endTime);
+        if(scheduleTaskInputDto.task != null)
+            scheduleTask.setTask(scheduleTaskInputDto.task);
+        if(scheduleTaskInputDto.mechanic != null)
+            scheduleTask.setMechanic(scheduleTaskInputDto.mechanic);
 
         return scheduleTask;
+    }
+
+    public void scheduleTaskCheckTimeAndAvailability(ScheduleTask scheduleTask) {
+        LocalDate date = scheduleTask.getDate();
+        LocalTime startTime = scheduleTask.getStartTime();
+        LocalTime endTime = scheduleTask.getEndTime();
+        User mechanic = scheduleTask.getMechanic();
+        Long id;
+        if(scheduleTask.getId() == null) {
+            id = -1L;
+        } else {
+            id = scheduleTask.getId();
+        }
+
+        if(endTime.compareTo(startTime) <= 0) {
+            throw new BadRequestException("Eindtijd kan niet voor de begintijd liggen");
+        }
+
+        boolean isMechanicAlreadyScheduled = scheduleTaskRepository.countConflictingTasks(mechanic, date, startTime, endTime, id) > 0;
+
+        if (isMechanicAlreadyScheduled) {
+            throw new RelationFoundException("De monteur is al ingepland op deze dag en tijd.");
+        }
+    }
+
+    private PageResponse<ScheduleTaskOutputDto> createPageResponse(Page<ScheduleTask> pagingScheduleTask) {
+        PageResponse<ScheduleTaskOutputDto> response = new PageResponse<>();
+
+        response.count = pagingScheduleTask.getTotalElements();
+        response.totalPages = pagingScheduleTask.getTotalPages();
+        response.hasNext = pagingScheduleTask.hasNext();
+        response.hasPrevious = pagingScheduleTask.hasPrevious();
+        response.items = new ArrayList<>();
+
+        for (ScheduleTask t : pagingScheduleTask) {
+            response.items.add(transferScheduleTaskToOutputDto(t));
+        }
+
+        return response;
     }
 }
 

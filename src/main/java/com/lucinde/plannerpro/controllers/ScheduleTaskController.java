@@ -1,6 +1,8 @@
 package com.lucinde.plannerpro.controllers;
 
-import com.lucinde.plannerpro.dtos.ScheduleTaskDto;
+import com.lucinde.plannerpro.dtos.ScheduleTaskInputDto;
+import com.lucinde.plannerpro.dtos.ScheduleTaskOutputDto;
+import com.lucinde.plannerpro.exceptions.BadRequestException;
 import com.lucinde.plannerpro.utils.FieldError;
 import com.lucinde.plannerpro.services.ScheduleTaskService;
 import com.lucinde.plannerpro.utils.PageResponse;
@@ -28,54 +30,80 @@ public class ScheduleTaskController {
     }
 
     @GetMapping
-    public ResponseEntity<List<ScheduleTaskDto>> getAllScheduleTasks() {
+    public ResponseEntity<List<ScheduleTaskOutputDto>> getAllScheduleTasks() {
         return ResponseEntity.ok().body(scheduleTaskService.getAllScheduleTasks());
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<ScheduleTaskDto> getScheduleTask(@PathVariable Long id) {
+    public ResponseEntity<ScheduleTaskOutputDto> getScheduleTask(@PathVariable Long id) {
         return ResponseEntity.ok().body(scheduleTaskService.getScheduleTask(id));
     }
 
     @GetMapping("/pages")
-    public ResponseEntity<Object> getTasksWithPagination(@RequestParam Integer pageNo, @RequestParam Integer pageSize, @RequestParam boolean includeOlderTasks) {
-        PageResponse<ScheduleTaskDto> scheduleTaskDto = scheduleTaskService.getScheduleTaskWithPagination(pageNo, pageSize, includeOlderTasks);
+    public ResponseEntity<Object> getTasksWithPagination(
+            @RequestParam(required = false) Integer pageNo,
+            @RequestParam(required = false) Integer pageSize,
+            @RequestParam(defaultValue = "false") boolean includeOlderTasks) {
+
+        if(pageNo == null) {
+            throw new BadRequestException("Vul een pageNo in");
+        }
+        if(pageSize == null) {
+            throw new BadRequestException("Vul een pageSize in");
+        }
+
+        PageResponse<ScheduleTaskOutputDto> scheduleTaskDto = scheduleTaskService.getScheduleTaskWithPagination(pageNo, pageSize, includeOlderTasks);
 
         return ResponseEntity.ok().body(scheduleTaskDto);
     }
 
     @GetMapping("/pages/{mechanic}")
-    public ResponseEntity<Object> getScheduleTasksByMechanicWithPagination(@PathVariable String mechanic, @RequestParam Integer pageNo, @RequestParam Integer pageSize, Authentication authentication, @RequestParam boolean includeOlderTasks) {
+    public ResponseEntity<Object> getScheduleTasksByMechanicWithPagination(
+            @PathVariable String mechanic,
+            @RequestParam(required = false) Integer pageNo,
+            @RequestParam(required = false) Integer pageSize,
+            Authentication authentication,
+            @RequestParam(defaultValue = "false") boolean includeOlderTasks) {
+
+        if(pageNo == null) {
+            throw new BadRequestException("Vul een pageNo in");
+        }
+        if(pageSize == null) {
+            throw new BadRequestException("Vul een pageSize in");
+        }
+
         String userRole = getUserRole(authentication);
         String requestingUsername = authentication.getName();
 
-        PageResponse<ScheduleTaskDto> scheduleTaskDto = scheduleTaskService.getScheduleTasksByMechanicWithPagination(mechanic, pageNo, pageSize, userRole, requestingUsername, includeOlderTasks);
+        PageResponse<ScheduleTaskOutputDto> scheduleTaskDto = scheduleTaskService.getScheduleTasksByMechanicWithPagination(mechanic, pageNo, pageSize, userRole, requestingUsername, includeOlderTasks);
 
         return ResponseEntity.ok().body(scheduleTaskDto);
     }
 
     @PostMapping
-    public ResponseEntity<Object> addScheduleTask(@Valid @RequestBody ScheduleTaskDto scheduleTaskDto, BindingResult br) {
+    public ResponseEntity<Object> addScheduleTask(@Valid @RequestBody ScheduleTaskInputDto scheduleTaskInputDto, BindingResult br) {
         if(br.hasFieldErrors()) {
             return ResponseEntity.badRequest().body(fieldError.fieldErrorBuilder(br));
         }
-        ScheduleTaskDto addedScheduleTask = scheduleTaskService.addScheduleTask(scheduleTaskDto);
+        if(scheduleTaskInputDto.mechanic == null) {
+            throw new BadRequestException("Voeg nog een monteur toe");
+        }
+        ScheduleTaskOutputDto addedScheduleTask = scheduleTaskService.addScheduleTask(scheduleTaskInputDto);
         URI uri = URI.create(String.valueOf(ServletUriComponentsBuilder.fromCurrentRequest().path("/" + addedScheduleTask.id)));
         return ResponseEntity.created(uri).body(addedScheduleTask);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Object> updateScheduleTask(@PathVariable Long id, @Valid @RequestBody ScheduleTaskDto scheduleTaskDto, BindingResult br) {
-        //todo: goed nadenken of deze check/@Valid nodig is. Bij het updaten van een taak, mag de datum dan wel naar het verleden verplaatst worden?
+    public ResponseEntity<Object> updateScheduleTask(@PathVariable Long id, @RequestBody ScheduleTaskInputDto scheduleTaskInputDto, BindingResult br) {
         if(br.hasFieldErrors()) {
             return ResponseEntity.badRequest().body(fieldError.fieldErrorBuilder(br));
         }
-        ScheduleTaskDto updateScheduleTask = scheduleTaskService.updateScheduleTask(id, scheduleTaskDto);
+        ScheduleTaskOutputDto updateScheduleTask = scheduleTaskService.updateScheduleTask(id, scheduleTaskInputDto);
         return ResponseEntity.ok().body(updateScheduleTask);
     }
 
     @PutMapping("/{id}/task/{task_id}")
-    public ResponseEntity<ScheduleTaskDto> assignScheduleToTask(@PathVariable Long id, @PathVariable Long task_id) {
+    public ResponseEntity<ScheduleTaskOutputDto> assignScheduleToTask(@PathVariable Long id, @PathVariable Long task_id) {
         return ResponseEntity.ok().body(scheduleTaskService.assignScheduleToTask(id, task_id));
     }
 
@@ -87,7 +115,6 @@ public class ScheduleTaskController {
 
     private String getUserRole(Authentication authentication) {
         Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
-        // Assuming the user has a single role, retrieve the first authority
         return authorities.iterator().next().getAuthority();
     }
 }

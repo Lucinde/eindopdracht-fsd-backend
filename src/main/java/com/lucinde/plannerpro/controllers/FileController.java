@@ -10,6 +10,7 @@ import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.URI;
 import java.util.List;
@@ -42,7 +43,9 @@ public class FileController {
 
     @PostMapping
     public ResponseEntity<Object> addFile(@RequestParam()MultipartFile file, @Valid @RequestParam() String description, @RequestParam() Long task_id) throws IOException, HttpClientErrorException.BadRequest {
-        System.out.println(description);
+        if(file.isEmpty()) {
+            throw new FileNotFoundException("Je moet een bestand uploaden!");
+        }
 
         FileDto addedFile = fileService.addFile(file, description, task_id);
         URI uri = URI.create(String.valueOf(ServletUriComponentsBuilder.fromCurrentRequest().path("/" + addedFile.id)));
@@ -52,7 +55,7 @@ public class FileController {
     @PutMapping("/{id}")
     public ResponseEntity<Object> updateFile(@PathVariable Long id, @RequestParam() MultipartFile file, @RequestParam() String description, @RequestParam() Long task_id) throws IOException {
         if(file.isEmpty()) {
-            return ResponseEntity.badRequest().body("Je moet een bestand uploaden!");
+            throw new FileNotFoundException("Je moet een bestand uploaden!");
         }
 
         FileDto updateFile = fileService.updateFile(id, file, description, task_id);

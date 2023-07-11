@@ -35,7 +35,7 @@ public class CustomerController {
     }
 
     @GetMapping({"/pages"})
-    public ResponseEntity<Object> getTasksWithPagination(
+    public ResponseEntity<Object> getCustomersWithPagination(
             @RequestParam(required = false) Integer pageNo,
             @RequestParam(required = false) Integer pageSize) {
 

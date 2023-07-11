@@ -132,7 +132,6 @@ public class ScheduleTaskService {
     }
 
     public ScheduleTaskOutputDto assignScheduleToTask(Long id, Long task_id) {
-        // in plaats van een aparte optional aan te maken heb ik hier de optie gebruikt om meteen een exception te gooien als het ID niet bestaat
         ScheduleTask scheduleTask = scheduleTaskRepository.findById(id).orElseThrow(() -> new RecordNotFoundException("Geen planning gevonden met id: " + id));
         Task task = taskRepository.findById(task_id).orElseThrow(() -> new RecordNotFoundException("Geen taak gevonden met id: " + task_id));
 

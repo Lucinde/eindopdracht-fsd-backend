@@ -2,6 +2,7 @@ package com.lucinde.plannerpro.controllers;
 
 import com.lucinde.plannerpro.dtos.ScheduleTaskInputDto;
 import com.lucinde.plannerpro.dtos.ScheduleTaskOutputDto;
+import com.lucinde.plannerpro.exceptions.BadRequestException;
 import com.lucinde.plannerpro.utils.FieldError;
 import com.lucinde.plannerpro.services.ScheduleTaskService;
 import com.lucinde.plannerpro.utils.PageResponse;
@@ -39,14 +40,38 @@ public class ScheduleTaskController {
     }
 
     @GetMapping("/pages")
-    public ResponseEntity<Object> getTasksWithPagination(@RequestParam Integer pageNo, @RequestParam Integer pageSize, @RequestParam boolean includeOlderTasks) {
+    public ResponseEntity<Object> getTasksWithPagination(
+            @RequestParam(required = false) Integer pageNo,
+            @RequestParam(required = false) Integer pageSize,
+            @RequestParam(defaultValue = "false") boolean includeOlderTasks) {
+
+        if(pageNo == null) {
+            throw new BadRequestException("Vul een pageNo in");
+        }
+        if(pageSize == null) {
+            throw new BadRequestException("Vul een pageSize in");
+        }
+
         PageResponse<ScheduleTaskOutputDto> scheduleTaskDto = scheduleTaskService.getScheduleTaskWithPagination(pageNo, pageSize, includeOlderTasks);
 
         return ResponseEntity.ok().body(scheduleTaskDto);
     }
 
     @GetMapping("/pages/{mechanic}")
-    public ResponseEntity<Object> getScheduleTasksByMechanicWithPagination(@PathVariable String mechanic, @RequestParam Integer pageNo, @RequestParam Integer pageSize, Authentication authentication, @RequestParam boolean includeOlderTasks) {
+    public ResponseEntity<Object> getScheduleTasksByMechanicWithPagination(
+            @PathVariable String mechanic,
+            @RequestParam(required = false) Integer pageNo,
+            @RequestParam(required = false) Integer pageSize,
+            Authentication authentication,
+            @RequestParam(defaultValue = "false") boolean includeOlderTasks) {
+
+        if(pageNo == null) {
+            throw new BadRequestException("Vul een pageNo in");
+        }
+        if(pageSize == null) {
+            throw new BadRequestException("Vul een pageSize in");
+        }
+
         String userRole = getUserRole(authentication);
         String requestingUsername = authentication.getName();
 

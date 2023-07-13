@@ -46,9 +46,14 @@ public class CustomerService {
         return transferCustomerToDto(customer);
     }
 
-    public PageResponse<CustomerDto> getCustomerWithPagination(int pageNo, int pageSize) {
+    public PageResponse<CustomerDto> getCustomerWithPagination(int pageNo, int pageSize, String searchValue) {
         PageRequest pageRequest = PageRequest.of(pageNo, pageSize, Sort.by("id").descending());
-        Page<Customer> pagingCustomer = customerRepository.findAll(pageRequest);
+        Page<Customer> pagingCustomer;
+        if(searchValue == null) {
+            pagingCustomer = customerRepository.findAll(pageRequest);
+        } else {
+            pagingCustomer = customerRepository.findAllByFirstNameOrLastNameContainingIgnoreCase(searchValue, searchValue, pageRequest);
+        }
 
         PageResponse<CustomerDto> response = new PageResponse<>();
 
@@ -64,6 +69,26 @@ public class CustomerService {
 
         return response;
     }
+
+//    public PageResponse<CustomerDto> findCustomerByName(int pageNo, int pageSize, String searchValue) {
+//        PageRequest pageRequest = PageRequest.of(pageNo, pageSize);
+//        Page<Customer> pagingCustomer = customerRepository.findAllByFirstNameContainingIgnoreCaseOrLastNameContainingIgnoreCase(pageRequest, searchValue);
+//
+//        PageResponse<CustomerDto> response = new PageResponse<>();
+//
+//        response.count = pagingCustomer.getTotalElements();
+//        response.totalPages = pagingCustomer.getTotalPages();
+//        response.hasNext = pagingCustomer.hasNext();
+//        response.hasPrevious = pagingCustomer.hasPrevious();
+//        response.items = new ArrayList<>();
+//
+//        for (Customer c : pagingCustomer) {
+//            response.items.add(transferCustomerToDto(c));
+//        }
+//
+//        return response;
+//
+//    }
 
     public CustomerDto addCustomer(CustomerDto customerDto) {
         Customer customer = transferDtoToCustomer(customerDto);

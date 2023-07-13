@@ -1,6 +1,7 @@
 package com.lucinde.plannerpro.controllers;
 
 import com.lucinde.plannerpro.dtos.TaskDto;
+import com.lucinde.plannerpro.exceptions.BadRequestException;
 import com.lucinde.plannerpro.utils.FieldError;
 import com.lucinde.plannerpro.services.TaskService;
 import com.lucinde.plannerpro.utils.PageResponse;
@@ -34,7 +35,17 @@ public class TaskController {
     }
 
     @GetMapping({"/pages"})
-    public ResponseEntity<Object> getTasksWithPagination(@RequestParam Integer pageNo, @RequestParam Integer pageSize) {
+    public ResponseEntity<Object> getTasksWithPagination(
+            @RequestParam(required = false) Integer pageNo,
+            @RequestParam(required = false) Integer pageSize) {
+
+        if (pageNo == null) {
+            throw new BadRequestException("Vul een pageNo in");
+        }
+        if (pageSize == null) {
+            throw new BadRequestException("Vul een pageSize in");
+        }
+
         PageResponse<TaskDto> taskDto = taskService.getTasksWithPagination(pageNo, pageSize);
 
         return ResponseEntity.ok().body(taskDto);
@@ -51,7 +62,10 @@ public class TaskController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Object> updateTask(@PathVariable Long id, @Valid @RequestBody TaskDto taskDto, BindingResult br) {
+    public ResponseEntity<Object> updateTask(
+            @PathVariable Long id,
+            @Valid @RequestBody TaskDto taskDto,
+            BindingResult br) {
         if (br.hasFieldErrors()) {
             return ResponseEntity.badRequest().body(fieldError.fieldErrorBuilder(br));
         }
@@ -64,14 +78,5 @@ public class TaskController {
         taskService.deleteTask(id);
         return ResponseEntity.noContent().build();
     }
-
-//    public static class HeaderUtil {
-//        public static HttpHeaders createLinkHeader(String nextPageLink, String previousLink) {
-//            HttpHeaders headers = new HttpHeaders();
-//            headers.add("next", nextPageLink);
-//            headers.add("previous", previousLink);
-//            return headers;
-//        }
-//    }
 
 }

@@ -1,7 +1,7 @@
 package com.lucinde.plannerpro.controllers;
 
 import com.lucinde.plannerpro.dtos.FileDto;
-import com.lucinde.plannerpro.utils.FieldError;
+import com.lucinde.plannerpro.exceptions.BadRequestException;
 import com.lucinde.plannerpro.services.FileService;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
@@ -20,7 +20,6 @@ import java.util.List;
 public class FileController {
 
     private final FileService fileService;
-    private final FieldError fieldError = new FieldError();
 
     public FileController(FileService fileService) {
         this.fileService = fileService;
@@ -42,9 +41,15 @@ public class FileController {
     }
 
     @PostMapping
-    public ResponseEntity<Object> addFile(@RequestParam()MultipartFile file, @Valid @RequestParam() String description, @RequestParam() Long task_id) throws IOException, HttpClientErrorException.BadRequest {
-        if(file.isEmpty()) {
+    public ResponseEntity<Object> addFile(
+            @RequestParam() MultipartFile file,
+            @Valid @RequestParam() String description,
+            @RequestParam(required = false) Long task_id) throws IOException, HttpClientErrorException.BadRequest {
+        if (file.isEmpty()) {
             throw new FileNotFoundException("Je moet een bestand uploaden!");
+        }
+        if (task_id == null) {
+            throw new BadRequestException("Vul een task_id in");
         }
 
         FileDto addedFile = fileService.addFile(file, description, task_id);
@@ -53,8 +58,12 @@ public class FileController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Object> updateFile(@PathVariable Long id, @RequestParam() MultipartFile file, @RequestParam() String description, @RequestParam() Long task_id) throws IOException {
-        if(file.isEmpty()) {
+    public ResponseEntity<Object> updateFile(
+            @PathVariable Long id,
+            @RequestParam() MultipartFile file,
+            @RequestParam() String description,
+            @RequestParam() Long task_id) throws IOException {
+        if (file.isEmpty()) {
             throw new FileNotFoundException("Je moet een bestand uploaden!");
         }
 
@@ -67,6 +76,5 @@ public class FileController {
         fileService.deleteFile(id);
         return ResponseEntity.noContent().build();
     }
-
 
 }

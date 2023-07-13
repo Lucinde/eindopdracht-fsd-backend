@@ -38,9 +38,9 @@ public class UserService {
     public UserOutputDto getUser(String username) {
         UserOutputDto dto;
         Optional<User> user = userRepository.findById(username);
-        if (user.isPresent()){
+        if (user.isPresent()) {
             dto = fromUser(user.get());
-        }else {
+        } else {
             throw new UsernameNotFoundException(username);
         }
         return dto;
@@ -49,9 +49,9 @@ public class UserService {
     public UserInputDto getUserWithPassword(String username) {
         UserInputDto dto;
         Optional<User> user = userRepository.findById(username);
-        if (user.isPresent()){
+        if (user.isPresent()) {
             dto = fromUserInput(user.get());
-        }else {
+        } else {
             throw new UsernameNotFoundException(username);
         }
         return dto;
@@ -77,13 +77,13 @@ public class UserService {
     public void updateUser(String username, UserInputDto newUser) {
         if (!userRepository.existsById(username)) throw new UsernameNotFoundException(username);
         User user = userRepository.findById(username).get();
-        if(newUser.apikey != null)
+        if (newUser.apikey != null)
             user.setApikey(newUser.apikey);
-        if(newUser.password != null)
+        if (newUser.password != null)
             user.setPassword(passwordEncoder.encode(newUser.getPassword()));
-        if(newUser.email != null)
+        if (newUser.email != null)
             user.setEmail(newUser.getEmail());
-        if(newUser.enabled != null)
+        if (newUser.enabled != null)
             user.setEnabled(newUser.getEnabled());
         userRepository.save(user);
     }

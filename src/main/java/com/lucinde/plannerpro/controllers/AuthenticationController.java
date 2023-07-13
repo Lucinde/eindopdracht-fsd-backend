@@ -57,9 +57,10 @@ public class AuthenticationController {
                     new UsernamePasswordAuthenticationToken(username, password)
             );
         }
-        catch (BadCredentialsException ex) {
-            throw new Exception("Incorrect username or password", ex);
+        catch (RuntimeException ex) {
+            throw new BadCredentialsException("Gebruikersnaam of wachtwoord is incorrect", ex);
         }
+
 
         final UserDetails userDetails = userDetailsService
                 .loadUserByUsername(username);

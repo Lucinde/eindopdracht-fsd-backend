@@ -45,10 +45,10 @@ public class ScheduleTaskController {
             @RequestParam(required = false) Integer pageSize,
             @RequestParam(defaultValue = "false") boolean includeOlderTasks) {
 
-        if(pageNo == null) {
+        if (pageNo == null) {
             throw new BadRequestException("Vul een pageNo in");
         }
-        if(pageSize == null) {
+        if (pageSize == null) {
             throw new BadRequestException("Vul een pageSize in");
         }
 
@@ -65,10 +65,10 @@ public class ScheduleTaskController {
             Authentication authentication,
             @RequestParam(defaultValue = "false") boolean includeOlderTasks) {
 
-        if(pageNo == null) {
+        if (pageNo == null) {
             throw new BadRequestException("Vul een pageNo in");
         }
-        if(pageSize == null) {
+        if (pageSize == null) {
             throw new BadRequestException("Vul een pageSize in");
         }
 
@@ -82,10 +82,10 @@ public class ScheduleTaskController {
 
     @PostMapping
     public ResponseEntity<Object> addScheduleTask(@Valid @RequestBody ScheduleTaskInputDto scheduleTaskInputDto, BindingResult br) {
-        if(br.hasFieldErrors()) {
+        if (br.hasFieldErrors()) {
             return ResponseEntity.badRequest().body(fieldError.fieldErrorBuilder(br));
         }
-        if(scheduleTaskInputDto.mechanic == null) {
+        if (scheduleTaskInputDto.mechanic == null) {
             throw new BadRequestException("Voeg nog een monteur toe");
         }
         ScheduleTaskOutputDto addedScheduleTask = scheduleTaskService.addScheduleTask(scheduleTaskInputDto);
@@ -95,7 +95,7 @@ public class ScheduleTaskController {
 
     @PutMapping("/{id}")
     public ResponseEntity<Object> updateScheduleTask(@PathVariable Long id, @RequestBody ScheduleTaskInputDto scheduleTaskInputDto, BindingResult br) {
-        if(br.hasFieldErrors()) {
+        if (br.hasFieldErrors()) {
             return ResponseEntity.badRequest().body(fieldError.fieldErrorBuilder(br));
         }
         ScheduleTaskOutputDto updateScheduleTask = scheduleTaskService.updateScheduleTask(id, scheduleTaskInputDto);

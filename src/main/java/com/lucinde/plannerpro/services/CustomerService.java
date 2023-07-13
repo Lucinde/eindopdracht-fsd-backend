@@ -27,7 +27,7 @@ public class CustomerService {
         Iterable<Customer> customers = customerRepository.findAll(Sort.by(Sort.Direction.ASC, "id"));
         List<CustomerDto> customerDtos = new ArrayList<>();
 
-        for (Customer c: customers) {
+        for (Customer c : customers) {
             customerDtos.add(transferCustomerToDto(c));
         }
 
@@ -37,7 +37,7 @@ public class CustomerService {
     public CustomerDto getCustomer(Long id) {
         Optional<Customer> customerOptional = customerRepository.findById(id);
 
-        if(customerOptional.isEmpty()) {
+        if (customerOptional.isEmpty()) {
             throw new RecordNotFoundException("Geen klant gevonden met id: " + id);
         }
 
@@ -58,7 +58,7 @@ public class CustomerService {
         response.hasPrevious = pagingCustomer.hasPrevious();
         response.items = new ArrayList<>();
 
-        for (Customer c: pagingCustomer) {
+        for (Customer c : pagingCustomer) {
             response.items.add(transferCustomerToDto(c));
         }
 
@@ -82,10 +82,10 @@ public class CustomerService {
 
     public void deleteCustomer(Long id) {
         Optional<Customer> optionalCustomer = customerRepository.findById(id);
-        if(optionalCustomer.isEmpty()) {
+        if (optionalCustomer.isEmpty()) {
             throw new RecordNotFoundException("Geen klant gevonden met id: " + id);
         }
-        if(!optionalCustomer.get().getTaskList().isEmpty()) {
+        if (!optionalCustomer.get().getTaskList().isEmpty()) {
             throw new RelationFoundException("Deze klant is gekoppeld aan een taak en mag niet verwijderd worden");
         }
         customerRepository.deleteById(id);
@@ -114,9 +114,9 @@ public class CustomerService {
     public Customer transferDtoToCustomer(CustomerDto customerDto, Long id) {
         Customer customer;
 
-        if(id != 0L) {
+        if (id != 0L) {
             Optional<Customer> customerOptional = customerRepository.findById(id);
-            if(customerOptional.isEmpty()) {
+            if (customerOptional.isEmpty()) {
                 throw new RecordNotFoundException("Geen klant gevonden met id: " + id);
             }
             customer = customerOptional.get();
@@ -125,21 +125,21 @@ public class CustomerService {
         }
 
         // Geen setId nodig, deze genereert de database of staat in de URL
-        if(customerDto.firstName != null)
+        if (customerDto.firstName != null)
             customer.setFirstName(customerDto.firstName);
-        if(customerDto.lastName != null)
+        if (customerDto.lastName != null)
             customer.setLastName(customerDto.lastName);
-        if(customerDto.address != null)
+        if (customerDto.address != null)
             customer.setAddress(customerDto.address);
-        if(customerDto.zip != null)
+        if (customerDto.zip != null)
             customer.setZip(customerDto.zip);
-        if(customerDto.city != null)
+        if (customerDto.city != null)
             customer.setCity(customerDto.city);
-        if(customerDto.phoneNumber != null)
+        if (customerDto.phoneNumber != null)
             customer.setPhoneNumber(customerDto.phoneNumber);
-        if(customerDto.email != null)
+        if (customerDto.email != null)
             customer.setEmail(customerDto.email);
-        if(customerDto.taskList != null)
+        if (customerDto.taskList != null)
             customer.setTaskList(customerDto.taskList);
 
         return customer;

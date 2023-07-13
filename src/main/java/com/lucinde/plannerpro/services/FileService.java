@@ -31,7 +31,7 @@ public class FileService {
         Iterable<File> files = fileRepository.findAll(Sort.by(Sort.Direction.ASC, "id"));
         List<FileDto> fileDtos = new ArrayList<>();
 
-        for (File f: files) {
+        for (File f : files) {
             fileDtos.add(transferFileToDto(f));
         }
         return fileDtos;
@@ -40,7 +40,7 @@ public class FileService {
     public FileDto getFile(Long id) {
         Optional<File> fileOptional = fileRepository.findById(id);
 
-        if(fileOptional.isEmpty()) {
+        if (fileOptional.isEmpty()) {
             throw new RecordNotFoundException("Geen bestand gevonden met id: " + id);
         }
 
@@ -54,7 +54,7 @@ public class FileService {
         Iterable<File> files = fileRepository.findByTask_Id(taskId);
         List<FileDto> fileDtos = new ArrayList<>();
 
-        for (File f: files) {
+        for (File f : files) {
             fileDtos.add(transferFileToDto(f));
         }
         return fileDtos;
@@ -69,7 +69,7 @@ public class FileService {
 
     public FileDto updateFile(Long id, MultipartFile fileUpload, String description, Long task_id) throws IOException {
         Optional<File> fileOptional = fileRepository.findById(id);
-        if(fileOptional.isEmpty()) {
+        if (fileOptional.isEmpty()) {
             throw new RecordNotFoundException("Geen bestand gevonden met id: " + id);
         }
         //Overige foutmeldingen worden afgehandeld in createNewFile
@@ -82,7 +82,7 @@ public class FileService {
 
     public void deleteFile(Long id) {
         Optional<File> optionalFile = fileRepository.findById(id);
-        if(optionalFile.isEmpty()) {
+        if (optionalFile.isEmpty()) {
             throw new RecordNotFoundException("Geen bestand gevonden met id: " + id);
         }
         fileRepository.deleteById(id);
@@ -90,10 +90,10 @@ public class FileService {
 
     private File createNewFile(MultipartFile fileUpload, String description, Long task_id) throws IOException {
 
-        if(fileUpload.isEmpty()) {
+        if (fileUpload.isEmpty()) {
             throw new ContentNotFoundException("Je moet nog een bestand uploaden");
         }
-        if(description.isEmpty() || description.isBlank()) {
+        if (description.isEmpty() || description.isBlank()) {
             throw new ContentNotFoundException("Voeg nog een beschrijving toe voor je afbeelding");
         }
 

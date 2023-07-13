@@ -41,7 +41,7 @@ public class SpringSecurityConfig {
 
     // Authorizatie met jwt
     @Bean
-    protected SecurityFilterChain filter (HttpSecurity http) throws Exception {
+    protected SecurityFilterChain filter(HttpSecurity http) throws Exception {
 
         //JWT token authentication
         http
@@ -51,13 +51,13 @@ public class SpringSecurityConfig {
                 .authorizeHttpRequests()
                 // --------------------------- USERS ---------------------------
                 .requestMatchers(HttpMethod.POST, "/users").permitAll()
-                .requestMatchers(HttpMethod.GET,"/users").hasRole("ADMIN")
-                .requestMatchers(HttpMethod.GET,"/users/{username}").hasAnyRole("ADMIN", "PLANNER", "MECHANIC")
-                .requestMatchers(HttpMethod.GET,"/users/mechanics").hasAnyRole("ADMIN", "PLANNER")
-                .requestMatchers(HttpMethod.GET,"/users/auth/{username}").hasAnyRole("ADMIN", "PLANNER", "MECHANIC")
-                .requestMatchers(HttpMethod.GET,"/users/**").hasRole("ADMIN")
-                .requestMatchers(HttpMethod.POST,"/users/**").hasRole("ADMIN")
-                .requestMatchers(HttpMethod.PUT,"/users/**").hasRole("ADMIN")
+                .requestMatchers(HttpMethod.GET, "/users").hasRole("ADMIN")
+                .requestMatchers(HttpMethod.GET, "/users/{username}").hasAnyRole("ADMIN", "PLANNER", "MECHANIC")
+                .requestMatchers(HttpMethod.GET, "/users/mechanics").hasAnyRole("ADMIN", "PLANNER")
+                .requestMatchers(HttpMethod.GET, "/users/auth/{username}").hasAnyRole("ADMIN", "PLANNER", "MECHANIC")
+                .requestMatchers(HttpMethod.GET, "/users/**").hasRole("ADMIN")
+                .requestMatchers(HttpMethod.POST, "/users/**").hasRole("ADMIN")
+                .requestMatchers(HttpMethod.PUT, "/users/**").hasRole("ADMIN")
                 .requestMatchers(HttpMethod.DELETE, "/users/**").hasRole("ADMIN")
 
                 // ------------------------- CUSTOMERS -------------------------

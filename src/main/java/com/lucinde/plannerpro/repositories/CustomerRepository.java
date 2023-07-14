@@ -7,5 +7,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 
 public interface CustomerRepository extends JpaRepository<Customer, Long> {
-    Page<Customer> findAllByFirstNameOrLastNameContainingIgnoreCase(String firstName, String lastName, Pageable pageable);
+    Page<Customer> findAllByFirstNameContainingIgnoreCaseOrLastNameContainingIgnoreCase(String firstName, String lastName, Pageable pageable);
 }

@@ -143,7 +143,27 @@ class CustomerServiceTest {
         Page<Customer> customerPage = new PageImpl<>(customers);
         when(customerRepository.findAll(any(PageRequest.class))).thenReturn(customerPage);
 
-        PageResponse<CustomerDto> pageResponse = customerService.getCustomerWithPagination(pageNo, pageSize);
+        PageResponse<CustomerDto> pageResponse = customerService.getCustomerWithPagination(pageNo, pageSize, null);
+
+        assertNotNull(pageResponse);
+        assertEquals(customers.size(), pageResponse.count);
+        assertEquals(1, pageResponse.totalPages);
+        assertFalse(pageResponse.hasPrevious);
+        assertFalse(pageResponse.hasNext);
+        for (int i = 0; i < customers.size(); i++) {
+            assertEquals(customers.get(i).getFirstName(), pageResponse.items.get(i).firstName);
+        }
+    }
+
+    @Test
+    void getCustomerWithPaginationWithSearchValue() {
+        int pageNo = 0;
+        int pageSize = 3;
+        String searchValue = "Marie";
+        Page<Customer> customerPage = new PageImpl<>(customers);
+        when(customerRepository.findAllByFirstNameOrLastNameContainingIgnoreCase( eq(searchValue), eq(searchValue), any(PageRequest.class))).thenReturn(customerPage);
+
+        PageResponse<CustomerDto> pageResponse = customerService.getCustomerWithPagination(pageNo, pageSize, searchValue);
 
         assertNotNull(pageResponse);
         assertEquals(customers.size(), pageResponse.count);

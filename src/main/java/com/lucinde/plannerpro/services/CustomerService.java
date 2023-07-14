@@ -46,9 +46,17 @@ public class CustomerService {
         return transferCustomerToDto(customer);
     }
 
-    public PageResponse<CustomerDto> getCustomerWithPagination(int pageNo, int pageSize) {
+    public PageResponse<CustomerDto> getCustomerWithPagination(int pageNo, int pageSize, String searchValue) {
         PageRequest pageRequest = PageRequest.of(pageNo, pageSize, Sort.by("id").descending());
-        Page<Customer> pagingCustomer = customerRepository.findAll(pageRequest);
+        Page<Customer> pagingCustomer;
+        if(searchValue == null) {
+            pagingCustomer = customerRepository.findAll(pageRequest);
+        } else {
+            pagingCustomer = customerRepository.findAllByFirstNameContainingIgnoreCaseOrLastNameContainingIgnoreCase(searchValue, searchValue, pageRequest);
+            if(pagingCustomer.isEmpty()) {
+                throw new RecordNotFoundException("Geen klanten gevonden. Probeer een andere zoekopdracht.");
+            }
+        }
 
         PageResponse<CustomerDto> response = new PageResponse<>();
 

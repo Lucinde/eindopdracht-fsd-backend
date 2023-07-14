@@ -37,7 +37,8 @@ public class CustomerController {
     @GetMapping({"/pages"})
     public ResponseEntity<Object> getCustomersWithPagination(
             @RequestParam(required = false) Integer pageNo,
-            @RequestParam(required = false) Integer pageSize) {
+            @RequestParam(required = false) Integer pageSize,
+            @RequestParam(required = false) String searchValue) {
 
         if (pageNo == null) {
             throw new BadRequestException("Vul een pageNo in");
@@ -46,7 +47,7 @@ public class CustomerController {
             throw new BadRequestException("Vul een pageSize in");
         }
 
-        PageResponse<CustomerDto> customerDto = customerService.getCustomerWithPagination(pageNo, pageSize);
+        PageResponse<CustomerDto> customerDto = customerService.getCustomerWithPagination(pageNo, pageSize, searchValue);
 
         return ResponseEntity.ok().body(customerDto);
     }

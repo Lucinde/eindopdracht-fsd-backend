@@ -161,7 +161,7 @@ class CustomerServiceTest {
         int pageSize = 3;
         String searchValue = "Marie";
         Page<Customer> customerPage = new PageImpl<>(customers);
-        when(customerRepository.findAllByFirstNameOrLastNameContainingIgnoreCase( eq(searchValue), eq(searchValue), any(PageRequest.class))).thenReturn(customerPage);
+        when(customerRepository.findAllByFirstNameContainingIgnoreCaseOrLastNameContainingIgnoreCase( eq(searchValue), eq(searchValue), any(PageRequest.class))).thenReturn(customerPage);
 
         PageResponse<CustomerDto> pageResponse = customerService.getCustomerWithPagination(pageNo, pageSize, searchValue);
 
@@ -173,6 +173,20 @@ class CustomerServiceTest {
         for (int i = 0; i < customers.size(); i++) {
             assertEquals(customers.get(i).getFirstName(), pageResponse.items.get(i).firstName);
         }
+    }
+
+    @Test
+    void getCustomerWithPaginationWithSearchValueThrowsException() {
+        int pageNo = 0;
+        int pageSize = 3;
+        String searchValue = "asd";
+        Page<Customer> emptyPage = Page.empty();
+        when(customerRepository.findAllByFirstNameContainingIgnoreCaseOrLastNameContainingIgnoreCase(eq(searchValue), eq(searchValue), any(PageRequest.class)))
+                .thenReturn(emptyPage);
+
+        assertThrows(RecordNotFoundException.class, () -> {
+            customerService.getCustomerWithPagination(pageNo, pageSize, searchValue);
+        });
     }
 
     @Test
